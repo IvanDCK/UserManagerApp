@@ -1,0 +1,6 @@
+package org.martarcas.usermanager.manager.domain.model
+
+enum class Role {
+    MOBILE_DEVELOPER, BACKEND_DEVELOPER, FRONTEND_DEVELOPER,
+    UX_UI_DESIGNER, DATA_SCIENTIST, DATA_ANALYST, CEO, PROJECT_MANAGER, HUMAN_RESOURCES
+}
