@@ -56,7 +56,7 @@ class UserApiImpl(
         }
     }
 
-    override suspend fun updateUser(updateUserRequest: UpdateUserRequest): Result<Boolean, DataError.Remote> {
+    override suspend fun updateUser(updateUserRequest: UpdateUserRequest): Result<Unit, DataError.Remote> {
         return safeCall {
             httpClient.put(BASE_URL){
                 setBody(updateUserRequest)
@@ -64,7 +64,7 @@ class UserApiImpl(
         }
     }
 
-    override suspend fun deleteUser(deleteUserRequest: DeleteUserRequest): Result<Boolean, DataError.Remote> {
+    override suspend fun deleteUser(deleteUserRequest: DeleteUserRequest): Result<Unit, DataError.Remote> {
         return safeCall {
             httpClient.delete(BASE_URL){
                 setBody(deleteUserRequest)
@@ -80,7 +80,7 @@ class UserApiImpl(
         }
     }
 
-    override suspend fun changeRole(updateRoleRequest: UpdateRoleRequest): Result<Boolean, DataError.Remote> {
+    override suspend fun changeRole(updateRoleRequest: UpdateRoleRequest): Result<Unit, DataError.Remote> {
         return safeCall {
             httpClient.put("${BASE_URL}/role"){
                 setBody(updateRoleRequest)

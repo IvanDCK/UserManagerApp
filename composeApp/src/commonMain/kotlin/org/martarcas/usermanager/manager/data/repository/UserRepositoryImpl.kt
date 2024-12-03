@@ -45,19 +45,19 @@ class UserRepositoryImpl(
         return userApi.registerUser(createUserRequest)
     }
 
-    override suspend fun updateUser(updateUserRequest: UpdateUserRequest): Result<Boolean, DataError.Remote> {
+    override suspend fun updateUser(updateUserRequest: UpdateUserRequest): Result<Unit, DataError.Remote> {
         return userApi.updateUser(updateUserRequest)
     }
 
-    override suspend fun deleteUser(deleteUserRequest: DeleteUserRequest): Result<Boolean, DataError.Remote> {
-        return userApi.deleteUser(deleteUserRequest).map { true }
-    }
+        override suspend fun deleteUser(deleteUserRequest: DeleteUserRequest): Result<Unit, DataError.Remote> {
+            return userApi.deleteUser(deleteUserRequest)
+        }
 
     override suspend fun login(loginRequest: LoginUserRequest): Result<Boolean, DataError.Remote> {
         return userApi.login(loginRequest)
     }
 
-    override suspend fun changeRole(updateRoleRequest: UpdateRoleRequest): Result<Boolean, DataError.Remote> {
+    override suspend fun changeRole(updateRoleRequest: UpdateRoleRequest): Result<Unit, DataError.Remote> {
        return userApi.changeRole(updateRoleRequest)
     }
 
