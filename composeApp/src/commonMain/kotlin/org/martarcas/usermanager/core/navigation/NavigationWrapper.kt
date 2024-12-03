@@ -7,10 +7,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import org.koin.compose.viewmodel.koinViewModel
+import org.martarcas.usermanager.manager.presentation.list.UserListViewModel
 
 @Composable
 fun NavigationWrapper() {
     val navController = rememberNavController()
+
+    val listViewModel: UserListViewModel = koinViewModel()
 
     NavHost(navController = navController, startDestination = Login) {
 
