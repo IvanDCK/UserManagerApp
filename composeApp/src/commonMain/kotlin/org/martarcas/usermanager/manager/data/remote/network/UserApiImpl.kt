@@ -48,7 +48,7 @@ class UserApiImpl(
         }
     }
 
-    override suspend fun registerUser(createUserRequest: CreateUserRequest): Result<Boolean, DataError.Remote> {
+    override suspend fun registerUser(createUserRequest: CreateUserRequest): Result<Unit, DataError.Remote> {
         return safeCall {
             httpClient.post("${BASE_URL}/register"){
                 setBody(createUserRequest)
@@ -72,7 +72,7 @@ class UserApiImpl(
         }
     }
 
-    override suspend fun login(loginRequest: LoginUserRequest): Result<Boolean, DataError.Remote> {
+    override suspend fun login(loginRequest: LoginUserRequest): Result<Unit, DataError.Remote> {
         return safeCall {
             httpClient.post("${BASE_URL}/login"){
                 setBody(loginRequest)

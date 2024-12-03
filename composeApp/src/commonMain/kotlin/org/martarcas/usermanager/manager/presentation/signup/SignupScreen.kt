@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -62,6 +63,7 @@ fun SignUpScreen(
     LaunchedEffect(uiState) {
         if (uiState.shouldNavigateToLogin) {
             navigateToLogin()
+            signupViewModel.onNavigatedToLogin()
         }
     }
 
@@ -221,15 +223,17 @@ fun SignUpContent(modifier: Modifier, viewModel: SignUpViewModel, uiState: Signu
                 containerColor = MaterialTheme.colorScheme.secondary
             )
         ) {
-            Text("Sign up", color = Color.White, fontSize = 20.sp)
+            if (uiState.isLoadingOnClick) CircularProgressIndicator()
+            else Text("Sign up", color = Color.White, fontSize = 20.sp)
         }
         Spacer(modifier = Modifier.height(7.dp))
-        if (uiState.validationErrors.isNotEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.9f)
-            ) {
-                Column(modifier = Modifier.align(Alignment.CenterStart)) {
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+        ) {
+            Column(modifier = Modifier.align(Alignment.CenterStart)) {
+                if (uiState.validationErrors.isNotEmpty()) {
                     uiState.validationErrors.forEach { error ->
                         Text(
                             text = "* $error",
@@ -239,9 +243,16 @@ fun SignUpContent(modifier: Modifier, viewModel: SignUpViewModel, uiState: Signu
                             fontWeight = FontWeight.Light
                         )
                     }
+                } else if (uiState.errorMessage != null) {
+                    Text(
+                        text = uiState.errorMessage.asString(),
+                        color = Color.Red.copy(0.7f),
+                        fontSize = 15.sp,
+                        textAlign = TextAlign.Start,
+                        fontWeight = FontWeight.Light
+                    )
                 }
             }
         }
-
     }
 }

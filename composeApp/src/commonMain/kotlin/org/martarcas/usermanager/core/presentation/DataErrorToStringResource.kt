@@ -7,6 +7,8 @@ import usermanagerapp.composeapp.generated.resources.error_serialization
 import usermanagerapp.composeapp.generated.resources.error_too_many_requests
 import usermanagerapp.composeapp.generated.resources.error_unknown
 import usermanagerapp.composeapp.generated.resources.Res
+import usermanagerapp.composeapp.generated.resources.badrequest_login
+import usermanagerapp.composeapp.generated.resources.conflict_request
 import usermanagerapp.composeapp.generated.resources.error_disk_full
 
 fun DataError.toUiText(): UiText {
@@ -19,6 +21,7 @@ fun DataError.toUiText(): UiText {
         DataError.Remote.SERVER -> Res.string.error_unknown
         DataError.Remote.SERIALIZATION -> Res.string.error_serialization
         DataError.Remote.UNKNOWN -> Res.string.error_unknown
+        DataError.Remote.CONFLICT -> Res.string.conflict_request
     }
 
     return UiText.StringResourceId(stringRes)

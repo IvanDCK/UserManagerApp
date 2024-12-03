@@ -19,11 +19,11 @@ interface UserRepository {
     suspend fun getUserById(getUserByIdRequest: GetUserByIdRequest): Result<UserPublic, DataError.Remote>
     suspend fun getLoggedUser(getUserByIdRequest: GetUserByIdRequest): Result<User, DataError.Remote>
 
-    suspend fun registerUser(createUserRequest: CreateUserRequest): Result<Boolean, DataError.Remote>
+    suspend fun registerUser(createUserRequest: CreateUserRequest): Result<Unit, DataError.Remote>
 
     suspend fun updateUser(updateUserRequest: UpdateUserRequest): Result<Unit, DataError.Remote>
     suspend fun deleteUser(deleteUserRequest: DeleteUserRequest): Result<Unit, DataError.Remote>
-    suspend fun login(loginRequest: LoginUserRequest): Result<Boolean, DataError.Remote>
+    suspend fun login(loginRequest: LoginUserRequest): Result<Unit, DataError.Remote>
     suspend fun changeRole(updateRoleRequest: UpdateRoleRequest): Result<Unit, DataError.Remote>
 
 }

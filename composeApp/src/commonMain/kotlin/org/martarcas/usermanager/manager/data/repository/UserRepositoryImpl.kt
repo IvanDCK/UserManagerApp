@@ -41,7 +41,7 @@ class UserRepositoryImpl(
         }
     }
 
-    override suspend fun registerUser(createUserRequest: CreateUserRequest): Result<Boolean, DataError.Remote> {
+    override suspend fun registerUser(createUserRequest: CreateUserRequest): Result<Unit, DataError.Remote> {
         return userApi.registerUser(createUserRequest)
     }
 
@@ -53,7 +53,7 @@ class UserRepositoryImpl(
             return userApi.deleteUser(deleteUserRequest)
         }
 
-    override suspend fun login(loginRequest: LoginUserRequest): Result<Boolean, DataError.Remote> {
+    override suspend fun login(loginRequest: LoginUserRequest): Result<Unit, DataError.Remote> {
         return userApi.login(loginRequest)
     }
 

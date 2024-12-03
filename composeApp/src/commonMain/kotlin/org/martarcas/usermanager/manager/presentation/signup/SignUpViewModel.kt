@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 import org.martarcas.usermanager.core.domain.onError
 import org.martarcas.usermanager.core.domain.onSuccess
+import org.martarcas.usermanager.core.presentation.toUiText
 import org.martarcas.usermanager.manager.domain.use_cases.auth.SignUpRequestUseCase
 import org.martarcas.usermanager.manager.presentation.mappers.toCreateUserRequest
 import org.martarcas.usermanager.manager.presentation.signup.model.SignupActions
@@ -58,6 +59,10 @@ class SignUpViewModel(
 
             is SignupActions.OnSignupButtonClick -> {
 
+                _uiState.update { uiStateValue ->
+                    uiStateValue.copy(isLoadingOnClick = true)
+                }
+
                 val validationResult = validateSignupInputs(
                     name = _uiState.value.firstName,
                     surname = _uiState.value.lastName,
@@ -80,16 +85,18 @@ class SignUpViewModel(
                             _uiState.update { uiStateValue ->
                                 uiStateValue.copy(shouldNavigateToLogin = true)
                             }
-                        }.onError {
+                        }.onError { error ->
                             _uiState.update { uiStateValue ->
-                                uiStateValue.copy(validationErrors = listOf(it.name))
+                                uiStateValue.copy(errorMessage = error.toUiText())
                             }
+                            resetLoadingProgress()
                         }
                     }
                 } else {
                     _uiState.update { uiStateValue ->
                         uiStateValue.copy(validationErrors = validationResult.errors)
                     }
+                    resetLoadingProgress()
                 }
 
             }
@@ -128,9 +135,16 @@ class SignUpViewModel(
         return ValidationResult(errors.isEmpty(), errors)
     }
 
-    private fun resetUiState(){
-        _uiState.update {
-            SignupUiState()
+    fun onNavigatedToLogin(){
+        _uiState.update { uiStateValue ->
+            uiStateValue.copy(shouldNavigateToLogin = false)
+        }
+        resetLoadingProgress()
+    }
+
+    private fun resetLoadingProgress(){
+        _uiState.update { uiStateValue ->
+            uiStateValue.copy(isLoadingOnClick = false)
         }
     }
 }

@@ -9,7 +9,7 @@ import org.martarcas.usermanager.manager.domain.UserRepository
 class SignUpRequestUseCase(
     private val userRepository: UserRepository
 )  {
-    suspend operator fun invoke(createRequest: CreateUserRequest): Result<Boolean, DataError.Remote> {
+    suspend operator fun invoke(createRequest: CreateUserRequest): Result<Unit, DataError.Remote> {
         return userRepository.registerUser(createRequest)
     }
 }

@@ -11,6 +11,7 @@ import org.martarcas.usermanager.manager.domain.model.Role
 import org.martarcas.usermanager.manager.domain.model.user.User
 import org.martarcas.usermanager.manager.presentation.list.UserListScreenRoot
 import org.martarcas.usermanager.manager.presentation.list.UserListViewModel
+import org.martarcas.usermanager.manager.presentation.login.LoginScreen
 import org.martarcas.usermanager.manager.presentation.signup.SignUpScreen
 
 @Composable
@@ -29,8 +30,14 @@ fun NavigationWrapper() {
                 initialOffset
             } }
         ) {
-
-
+            LoginScreen(
+                navigateToSignup = {
+                    navController.navigate(SignUp)
+                },
+                navigateToList = {
+                    navController.navigate(List)
+                }
+            )
         }
 
         composable<SignUp> {
