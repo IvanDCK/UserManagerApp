@@ -79,6 +79,9 @@ kotlin {
 
             implementation(libs.paging.compose.common)
             implementation(libs.paging.common)
+
+            implementation(libs.datastore.preferences)
+            implementation(libs.atomicfu)
         }
         nativeMain.dependencies {
             implementation(libs.ktor.client.darwin)
