@@ -7,6 +7,6 @@ import org.koin.ksp.generated.module
 fun initKoin(config: KoinAppDeclaration? = null) {
     startKoin {
         config?.invoke(this)
-        modules(dataModule, domainModule, PresentationModule().module, platformModule)
+        modules(databaseModule, DataModule().module, DomainModule().module, PresentationModule().module, platformModule)
     }
 }

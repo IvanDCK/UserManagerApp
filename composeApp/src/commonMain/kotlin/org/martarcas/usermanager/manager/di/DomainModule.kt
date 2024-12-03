@@ -1,16 +1,14 @@
 package org.martarcas.usermanager.manager.di
 
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
-import org.martarcas.usermanager.manager.domain.use_cases.auth.LoginRequestUseCase
-import org.martarcas.usermanager.manager.domain.use_cases.auth.SignUpRequestUseCase
-import org.martarcas.usermanager.manager.domain.use_cases.user.UpdateRoleUseCase
-import org.martarcas.usermanager.manager.domain.use_cases.user.GetUserByIdUseCase
-import org.martarcas.usermanager.manager.domain.use_cases.user.GetAllUsersUseCase
-import org.martarcas.usermanager.manager.domain.use_cases.user.UpdateUserUseCase
-import org.martarcas.usermanager.manager.domain.use_cases.user.DeleteUserUseCase
+import org.koin.core.annotation.ComponentScan
+import org.koin.core.annotation.Module
+
+@Module
+@ComponentScan("org.martarcas.usermanager.manager.domain")
+class DomainModule
 
 
+/*
 val domainModule = module {
     singleOf(::UpdateRoleUseCase)
     singleOf(::GetUserByIdUseCase)
@@ -21,3 +19,4 @@ val domainModule = module {
     singleOf(::LoginRequestUseCase)
     singleOf(::SignUpRequestUseCase)
 }
+ */

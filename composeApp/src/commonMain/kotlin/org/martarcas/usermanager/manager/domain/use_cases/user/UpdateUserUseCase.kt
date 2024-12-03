@@ -1,4 +1,10 @@
 package org.martarcas.usermanager.manager.domain.use_cases.user
 
-class UpdateUserUseCase {
+import org.koin.core.annotation.Single
+import org.martarcas.usermanager.manager.domain.UserRepository
+
+@Single
+class UpdateUserUseCase(
+    private val userRepository: UserRepository
+)  {
 }

@@ -11,5 +11,3 @@ data object SignUp
 @Serializable
 data object List
 
-@Serializable
-data class UserDetail(val userId: Int)

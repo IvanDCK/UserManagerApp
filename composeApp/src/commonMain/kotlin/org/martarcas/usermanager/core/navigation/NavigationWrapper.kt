@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import org.koin.compose.viewmodel.koinViewModel
 import org.martarcas.usermanager.manager.presentation.list.UserListViewModel
 
@@ -18,11 +17,17 @@ fun NavigationWrapper() {
 
     NavHost(navController = navController, startDestination = Login) {
 
-        composable<Login> {
+        composable<Login>(
+            enterTransition = { slideInHorizontally { initialOffset ->
+            initialOffset
+        } },
+            exitTransition = { slideOutHorizontally { initialOffset ->
+                initialOffset
+            } }
+        ) {
 
 
         }
-
 
         composable<SignUp> {
 
@@ -35,19 +40,6 @@ fun NavigationWrapper() {
 
         }
 
-
-
-        composable<UserDetail>(
-            enterTransition = { slideInHorizontally { initialOffset ->
-                initialOffset
-            } },
-            exitTransition = { slideOutHorizontally { initialOffset ->
-                initialOffset
-            } }
-        ) { backStackEntry ->
-            val id = backStackEntry.toRoute<UserDetail>().userId
-
-        }
 
     }
 }

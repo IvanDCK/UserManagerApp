@@ -4,14 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
-import org.koin.core.annotation.Provided
 import org.martarcas.usermanager.core.domain.onSuccess
+import org.martarcas.usermanager.manager.domain.use_cases.user.DeleteUserUseCase
 import org.martarcas.usermanager.manager.domain.use_cases.user.GetAllUsersUseCase
 
 
 @KoinViewModel
 class UserListViewModel(
-    @Provided private val getAllUsersUseCase: GetAllUsersUseCase
+    private val getAllUsersUseCase: GetAllUsersUseCase,
+    private val deleteUserUseCase: DeleteUserUseCase,
 
 ): ViewModel() {
 
@@ -22,6 +23,9 @@ class UserListViewModel(
                     println(it)
                 }
             }
+
+
+
         }
     }
 }
