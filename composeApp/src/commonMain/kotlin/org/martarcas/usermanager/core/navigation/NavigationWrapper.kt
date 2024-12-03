@@ -11,6 +11,7 @@ import org.martarcas.usermanager.manager.domain.model.Role
 import org.martarcas.usermanager.manager.domain.model.user.User
 import org.martarcas.usermanager.manager.presentation.list.UserListScreenRoot
 import org.martarcas.usermanager.manager.presentation.list.UserListViewModel
+import org.martarcas.usermanager.manager.presentation.signup.SignUpScreen
 
 @Composable
 fun NavigationWrapper() {
@@ -18,7 +19,7 @@ fun NavigationWrapper() {
 
     val listViewModel: UserListViewModel = koinViewModel()
 
-    NavHost(navController = navController, startDestination = List) {
+    NavHost(navController = navController, startDestination = SignUp) {
 
         composable<Login>(
             enterTransition = { slideInHorizontally { initialOffset ->
@@ -33,8 +34,9 @@ fun NavigationWrapper() {
         }
 
         composable<SignUp> {
-
-
+            SignUpScreen {
+                navController.navigate(Login)
+            }
         }
 
 
