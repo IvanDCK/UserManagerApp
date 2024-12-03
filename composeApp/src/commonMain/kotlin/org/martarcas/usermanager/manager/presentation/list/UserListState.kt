@@ -11,6 +11,7 @@ data class UserListState (
     val isChangeRoleDropdownOpen: Boolean = false,
     val selectedUserId: Int? = null,
     val selectedRoles: List<Role> = emptyList(),
+    val isDeleteDialogOpen: Boolean = false,
     val isLoading : Boolean = true,
     val errorMessage: UiText? = null
 )

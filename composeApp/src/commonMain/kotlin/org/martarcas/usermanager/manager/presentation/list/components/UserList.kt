@@ -25,6 +25,7 @@ fun UserList(
     onChangeRoleClick: (Int) -> Unit,
     onChangeRoleApply: (Int, Role) -> Unit,
     onDeleteClick: (Int) -> Unit,
+    onDeleteConfirm: (Int) -> Unit,
     scrollState: LazyListState = rememberLazyListState(),
     modifier: Modifier = Modifier
 ) {
@@ -51,6 +52,17 @@ fun UserList(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
             )
+
+            if (state.isDeleteDialogOpen && state.selectedUserId == user.id) {
+                DeleteUserDialog(
+                    userToDelete = user,
+                    onConfirm = {
+                        onDeleteConfirm(user.id)
+                    },
+                    onDismiss = { onDeleteClick(user.id) }
+                )
+            }
         }
+
     }
 }

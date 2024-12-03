@@ -10,4 +10,5 @@ sealed interface UserListAction {
     data class OnChangeRoleApply(val id: Int, val role: Role): UserListAction
     data class OnUpdateInfoClick(val id: Int): UserListAction
     data class OnDeleteClick(val id: Int): UserListAction
+    data class OnDeleteConfirm(val id: Int): UserListAction
 }

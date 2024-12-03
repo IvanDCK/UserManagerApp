@@ -51,7 +51,7 @@ fun UserListScreenRoot(
             when(action) {
                 is UserListAction.OnUpdateInfoClick -> UserListAction.OnUpdateInfoClick(action.id)
                 is UserListAction.OnChangeRoleApply -> UserListAction.OnChangeRoleApply(action.id, action.role)
-                is UserListAction.OnDeleteClick -> UserListAction.OnDeleteClick(action.id)
+                is UserListAction.OnDeleteConfirm -> UserListAction.OnDeleteConfirm(action.id)
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -148,6 +148,9 @@ fun UserListScreen(
                         users = state.searchResults,
                         loggedUser = loggedUser,
                         state = state,
+                        onDeleteConfirm = {
+                            onAction(UserListAction.OnDeleteConfirm(it))
+                        },
                         onDeleteClick = {
                             onAction(UserListAction.OnDeleteClick(it))
                         },

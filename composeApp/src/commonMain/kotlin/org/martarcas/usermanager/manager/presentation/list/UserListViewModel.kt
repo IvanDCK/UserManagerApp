@@ -167,6 +167,7 @@ class UserListViewModel(
             is UserListAction.OnUpdateInfoClick -> {
 
             }
+
             is UserListAction.OnChangeRoleApply -> {
 
                 changeRole(action.id, action.role)
@@ -179,7 +180,7 @@ class UserListViewModel(
                 }
 
             }
-            is UserListAction.OnDeleteClick -> deleteUser(action.id)
+            is UserListAction.OnDeleteConfirm -> deleteUser(action.id)
             is UserListAction.OnSearchQueryChange -> {
                 _state.update {
                     it.copy(searchQuery = action.query)
@@ -214,6 +215,15 @@ class UserListViewModel(
                 _state.update {
                     it.copy(
                         isChangeRoleDropdownOpen = !it.isChangeRoleDropdownOpen,
+                        selectedUserId = action.id
+                    )
+                }
+            }
+
+            is UserListAction.OnDeleteClick -> {
+                _state.update {
+                    it.copy(
+                        isDeleteDialogOpen = !it.isDeleteDialogOpen,
                         selectedUserId = action.id
                     )
                 }
@@ -256,12 +266,20 @@ class UserListViewModel(
     private fun deleteUser(id: Int) = viewModelScope.launch {
         deleteUserUseCase.invoke(DeleteUserRequest(id))
             .onSuccess {
+                _state.update {
+                    it.copy(
+                        isDeleteDialogOpen = false,
+                        selectedUserId = null
+                    )
+                }
                 getAllUsers()
             }
             .onError { error ->
                 _state.update {
                     it.copy(
-                        errorMessage = error.toUiText()
+                        errorMessage = error.toUiText(),
+                        isDeleteDialogOpen = false,
+                        selectedUserId = null
                     )
                 }
             }
