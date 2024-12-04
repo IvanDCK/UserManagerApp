@@ -25,90 +25,74 @@ class SignUpViewModel(
     private val _uiState = MutableStateFlow(SignupUiState())
     val uiState = _uiState.asStateFlow()
 
+    /**
+     * Function to update the signup screen state
+     * @param update
+     */
+    private fun updateField(update: SignupUiState.() -> SignupUiState) {
+        _uiState.update { it.update() }
+    }
+
+    /**
+     * Function to handle all the signup screen actions
+     * @param action
+     */
     fun onAction(action: SignupActions) {
         when (action) {
-            is SignupActions.OnEmailChange -> {
-                _uiState.update { uiStateValue ->
-                    uiStateValue.copy(email = action.value)
-                }
-            }
-
-            is SignupActions.OnFirstNameChange -> {
-                _uiState.update { uiStateValue ->
-                    uiStateValue.copy(firstName = action.value)
-                }
-            }
-
-            is SignupActions.OnLastNameChange -> {
-                _uiState.update { uiStateValue ->
-                    uiStateValue.copy(lastName = action.value)
-                }
-            }
-
-            is SignupActions.OnPasswordChange -> {
-                _uiState.update { uiStateValue ->
-                    uiStateValue.copy(password = action.value)
-                }
-            }
-
-            is SignupActions.OnPasswordVisibleClick -> {
-                _uiState.update { uiStateValue ->
-                    uiStateValue.copy(isPasswordVisible = !_uiState.value.isPasswordVisible)
-                }
-            }
-
-            is SignupActions.OnSignupButtonClick -> {
-
-                _uiState.update { uiStateValue ->
-                    uiStateValue.copy(isLoadingOnClick = true)
-                }
-
-                val validationResult = validateSignupInputs(
-                    name = _uiState.value.firstName,
-                    surname = _uiState.value.lastName,
-                    email = _uiState.value.email,
-                    password = _uiState.value.password
-                )
-
-                if (validationResult.isValid) {
-                    viewModelScope.launch {
-                        val userModel = SignupUiModel(
-                            firstName = _uiState.value.firstName,
-                            lastName = _uiState.value.lastName,
-                            email = _uiState.value.email,
-                            password = _uiState.value.password
-                        ).toCreateUserRequest()
-
-                        val response = signUpRequestUseCase(userModel)
-
-                        response.onSuccess {
-                            _uiState.update { uiStateValue ->
-                                uiStateValue.copy(shouldNavigateToLogin = true)
-                            }
-                        }.onError { error ->
-                            _uiState.update { uiStateValue ->
-                                uiStateValue.copy(errorMessage = error.toUiText())
-                            }
-                            resetLoadingProgress()
-                        }
-                    }
-                } else {
-                    _uiState.update { uiStateValue ->
-                        uiStateValue.copy(validationErrors = validationResult.errors)
-                    }
-                    resetLoadingProgress()
-                }
-
-            }
-
-            is SignupActions.OnAlreadyHaveAccountClick -> {
-                _uiState.update { uiStateValue ->
-                    uiStateValue.copy(shouldNavigateToLogin = true)
-                }
-            }
+            is SignupActions.OnEmailChange -> updateField { copy(email = action.value) }
+            is SignupActions.OnFirstNameChange -> updateField { copy(firstName = action.value) }
+            is SignupActions.OnLastNameChange -> updateField { copy(lastName = action.value) }
+            is SignupActions.OnPasswordChange -> updateField { copy(password = action.value) }
+            is SignupActions.OnPasswordVisibleClick -> updateField { copy(isPasswordVisible = !isPasswordVisible) }
+            is SignupActions.OnSignupButtonClick -> handleSignup()
+            is SignupActions.OnAlreadyHaveAccountClick -> updateField { copy(shouldNavigateToLogin = true) }
         }
     }
 
+    /**
+     * Function to handle the signup button click
+     */
+    private fun handleSignup() {
+        updateField { copy(isLoadingOnClick = true) }
+
+        val validationResult = validateSignupInputs(
+            name = _uiState.value.firstName,
+            surname = _uiState.value.lastName,
+            email = _uiState.value.email,
+            password = _uiState.value.password
+        )
+
+        if (validationResult.isValid) {
+            viewModelScope.launch {
+                val userModel = SignupUiModel(
+                    firstName = _uiState.value.firstName,
+                    lastName = _uiState.value.lastName,
+                    email = _uiState.value.email,
+                    password = _uiState.value.password
+                ).toCreateUserRequest()
+
+                val response = signUpRequestUseCase(userModel)
+
+                response.onSuccess {
+                    updateField { copy(shouldNavigateToLogin = true) }
+                }.onError { error ->
+                    updateField { copy(errorMessage = error.toUiText()) }
+                    resetLoadingProgress()
+                }
+            }
+        } else {
+            updateField { copy(validationErrors = validationResult.errors) }
+            resetLoadingProgress()
+        }
+    }
+
+    /**
+     * Function to validate the signup inputs
+     * @param name
+     * @param surname
+     * @param email
+     * @param password
+     */
     private fun validateSignupInputs(
         name: String,
         surname: String,
@@ -118,33 +102,28 @@ class SignUpViewModel(
         val errors = mutableListOf<String>()
 
         if (name.isBlank()) errors.add("The name cannot be empty.")
-
         if (surname.isBlank()) errors.add("The surname cannot be empty.")
-
-        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
-        if (email.isBlank() || !email.matches(emailRegex)) {
+        if (!email.matches(Regex("^([A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,})$"))) {
             errors.add("The email is not valid.")
         }
-
-        if (password.isBlank()) {
-            errors.add("The password cannot be empty.")
-        } else if (password.length < 6) {
-            errors.add("The password must have at least 6 characters.")
-        }
+        if (password.isBlank()) errors.add("The password cannot be empty.")
+        if (password.length < 6) errors.add("The password must have at least 6 characters.")
 
         return ValidationResult(errors.isEmpty(), errors)
     }
 
-    fun onNavigatedToLogin(){
-        _uiState.update { uiStateValue ->
-            uiStateValue.copy(shouldNavigateToLogin = false)
-        }
+    /**
+     * Function to navigate to the login screen
+     */
+    fun onNavigatedToLogin() {
+        updateField { copy(shouldNavigateToLogin = false) }
         resetLoadingProgress()
     }
 
-    private fun resetLoadingProgress(){
-        _uiState.update { uiStateValue ->
-            uiStateValue.copy(isLoadingOnClick = false)
-        }
+    /**
+     * Function to reset the loading progress to false
+     */
+    private fun resetLoadingProgress() {
+        updateField { copy(isLoadingOnClick = false) }
     }
 }

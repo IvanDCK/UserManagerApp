@@ -29,127 +29,96 @@ class LoginViewModel(
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
 
+    /**
+     * Function to update the login screen state
+     * @param update
+     */
+    private fun updateState(update: LoginUiState.() -> LoginUiState) {
+        _uiState.update { it.update() }
+    }
+
+    /**
+     * Function to handle all the login screen actions
+     * @param action
+     */
     fun onAction(action: LoginActions) {
         when (action) {
-            is LoginActions.OnEmailChange -> {
-                _uiState.update { uiStateValue ->
-                    uiStateValue.copy(email = action.value)
-                }
-            }
-
-            is LoginActions.OnPasswordChange -> {
-                _uiState.update { uiStateValue ->
-                    uiStateValue.copy(password = action.value)
-                }
-            }
-
-            is LoginActions.OnLoginButtonClick -> {
-                _uiState.update { uiStateValue ->
-                    uiStateValue.copy(isLoadingOnClick = true)
-                }
-
-                val validationResult = validateLoginInputs(
-                    email = _uiState.value.email,
-                    password = _uiState.value.password
-                )
-
-                if (validationResult.isValid) {
-                    viewModelScope.launch {
-                        val model = LoginUiModel(
-                            email = _uiState.value.email,
-                            password = _uiState.value.password
-                        ).toLoginUserRequest()
-
-                        val response = loginRequestUseCase(model)
-
-                        response.onSuccess { userResponse ->
-
-                            if (_uiState.value.rememberMeIsChecked) {
-                                saveRememberMeAndUser(userResponse)
-                            }
-
-                            _uiState.update { uiStateValue ->
-                                uiStateValue.copy(shouldNavigateToList = true)
-                            }
-                        }.onError { error ->
-                            _uiState.update { uiStateValue ->
-                                uiStateValue.copy(errorMessage = error.toUiText())
-                            }
-                            resetLoadingProgress()
-                        }
-                    }
-                } else {
-                    _uiState.update { uiStateValue ->
-                        uiStateValue.copy(validationErrors = validationResult.errors)
-                    }
-                    resetLoadingProgress()
-                }
-
-            }
-
-            is LoginActions.OnNotHaveAccountClick -> {
-                _uiState.update { uiStateValue ->
-                    uiStateValue.copy(shouldNavigateToSignup = true)
-                }
-            }
-
-            is LoginActions.OnPasswordVisibleClick -> {
-                _uiState.update { uiStateValue ->
-                    uiStateValue.copy(isPasswordVisible = !_uiState.value.isPasswordVisible)
-                }
-            }
-
-            is LoginActions.OnRememberMeChange -> {
-                _uiState.update { uiStateValue ->
-                    uiStateValue.copy(rememberMeIsChecked = !_uiState.value.rememberMeIsChecked)
-                }
-            }
+            is LoginActions.OnEmailChange -> updateState { copy(email = action.value) }
+            is LoginActions.OnPasswordChange -> updateState { copy(password = action.value) }
+            is LoginActions.OnPasswordVisibleClick -> updateState { copy(isPasswordVisible = !isPasswordVisible) }
+            is LoginActions.OnRememberMeChange -> updateState { copy(rememberMeIsChecked = !rememberMeIsChecked) }
+            is LoginActions.OnLoginButtonClick -> handleLogin()
+            is LoginActions.OnNotHaveAccountClick -> updateState { copy(shouldNavigateToSignup = true) }
         }
     }
 
-    private fun validateLoginInputs(
-        email: String,
-        password: String
-    ): ValidationResult {
-        val errors = mutableListOf<String>()
+    /**
+     * Function to handle the login button click
+     */
+    private fun handleLogin() {
+        updateState { copy(isLoadingOnClick = true) }
 
-        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
-        if (email.isBlank() || !email.matches(emailRegex)) {
-            errors.add("The email is not valid.")
+        val validationResult = validateLoginInputs(uiState.value.email, uiState.value.password)
+        if (validationResult.isValid) {
+            viewModelScope.launch {
+                val model = LoginUiModel(uiState.value.email, uiState.value.password).toLoginUserRequest()
+                loginRequestUseCase(model).onSuccess { userResponse ->
+                    if (uiState.value.rememberMeIsChecked) saveRememberMeAndUser(userResponse)
+                    updateState { copy(shouldNavigateToList = true) }
+                }.onError { error ->
+                    updateState { copy(errorMessage = error.toUiText()) }
+                    resetLoadingProgress()
+                }
+            }
+        } else {
+            updateState { copy(validationErrors = validationResult.errors) }
+            resetLoadingProgress()
         }
+    }
+
+    /**
+     * Function to validate the login inputs
+     * @param email
+     * @param password
+     */
+    private fun validateLoginInputs(email: String, password: String): ValidationResult {
+        val errors = mutableListOf<String>()
+        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
+
+        if (email.isBlank() || !email.matches(emailRegex)) errors.add("The email is not valid.")
         if (password.isBlank()) errors.add("The password cannot be empty.")
 
         return ValidationResult(errors.isEmpty(), errors)
     }
 
+    /**
+     * Function to reset the loading progress to false
+     */
     private fun resetLoadingProgress() {
-        _uiState.update { uiStateValue ->
-            uiStateValue.copy(isLoadingOnClick = false)
-        }
+        updateState { copy(isLoadingOnClick = false) }
     }
 
+    /**
+     * Function to navigate to the signup screen
+     */
     fun onNavigatedToSignup() {
-        _uiState.update { uiStateValue ->
-            uiStateValue.copy(shouldNavigateToSignup = false)
-        }
+        updateState { copy(shouldNavigateToSignup = false) }
     }
 
+    /**
+     * Function to navigate to the list screen
+     */
     fun onNavigatedToList() {
-        _uiState.update { uiStateValue ->
-            uiStateValue.copy(shouldNavigateToList = false)
-        }
+        updateState { copy(shouldNavigateToList = false) }
     }
 
+    /**
+     * Function to save the remember me and user in the data store
+     */
     private suspend fun saveRememberMeAndUser(userResponse: User) {
         dataStoreUseCases.saveRememberMeAndUserUseCase(
-            true, User(
-                id = userResponse.id,
-                name = userResponse.name,
-                surname = userResponse.surname,
-                email = userResponse.email,
-                password = userResponse.password,
-                role = userResponse.role
-            )
+            rememberMe = true,
+            user = userResponse.copy()
         )
     }
 }

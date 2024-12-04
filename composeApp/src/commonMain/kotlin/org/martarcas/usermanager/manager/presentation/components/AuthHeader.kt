@@ -1,4 +1,4 @@
-package org.martarcas.usermanager.manager.presentation.signup.components
+package org.martarcas.usermanager.manager.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box

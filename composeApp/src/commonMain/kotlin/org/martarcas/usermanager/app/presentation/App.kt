@@ -25,7 +25,6 @@ fun App() {
             startDestination = if (shouldStartFromList) "List" else "Login"
 
             NavigationWrapper(startDestination)
-
         }
     }
 }
