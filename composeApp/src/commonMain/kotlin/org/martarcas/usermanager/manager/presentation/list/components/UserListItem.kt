@@ -33,7 +33,7 @@ import usermanagerapp.composeapp.generated.resources.delete
 
 @Composable
 fun UserListItem(
-    loggedUser: User,
+    loggedUser: User?,
     user: UserPublic,
     isDropdownOpen: Boolean,
     onUpdateInfoClick: () -> Unit,
@@ -79,7 +79,7 @@ fun UserListItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            if (loggedUser.role == Role.CEO || loggedUser.role == Role.PROJECT_MANAGER) {
+            if (loggedUser?.role == Role.CEO || loggedUser?.role == Role.PROJECT_MANAGER) {
                 MultipurposeButton(
                     text = "Change role",
                     onClick = onChangeRoleClick,
@@ -101,7 +101,7 @@ fun UserListItem(
 
             }
 
-            if (loggedUser.id == user.id) {
+            if (loggedUser?.id == user.id) {
                 MultipurposeButton(
                     text = "Update info",
                     onClick = onUpdateInfoClick,
@@ -109,7 +109,7 @@ fun UserListItem(
                 )
             }
 
-            if (loggedUser.role == Role.CEO || loggedUser.role == Role.HUMAN_RESOURCES) {
+            if (loggedUser?.role == Role.CEO || loggedUser?.role == Role.HUMAN_RESOURCES) {
                 MultipurposeButton(
                     text = "Delete",
                     iconTint = Color.Black,

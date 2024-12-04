@@ -40,14 +40,13 @@ import usermanagerapp.composeapp.generated.resources.no_search_results
 
 @Composable
 fun UserListScreenRoot(
-    viewModel: UserListViewModel,
-    loggedUser: User
+    viewModel: UserListViewModel
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
 
     UserListScreen(
-        loggedUser = loggedUser,
+        loggedUser = state.loggedUser,
         state = state,
         sortAscending = state.sortAscending,
         onAction = { action ->
@@ -67,7 +66,7 @@ fun UserListScreenRoot(
 
 @Composable
 fun UserListScreen(
-    loggedUser: User,
+    loggedUser: User?,
     sortAscending: Boolean,
     state: UserListState,
     onAction: (UserListAction) -> Unit,

@@ -21,7 +21,7 @@ import org.martarcas.usermanager.manager.presentation.list.model.UserListState
 
 @Composable
 fun UserList(
-    loggedUser: User,
+    loggedUser: User?,
     users: List<UserPublic>,
     state: UserListState,
     onBottomSheetAction: (UpdateInfoBottomSheetActions) -> Unit,

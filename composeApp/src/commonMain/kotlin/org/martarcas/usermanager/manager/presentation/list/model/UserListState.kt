@@ -2,6 +2,7 @@ package org.martarcas.usermanager.manager.presentation.list.model
 
 import org.martarcas.usermanager.core.presentation.UiText
 import org.martarcas.usermanager.manager.domain.model.Role
+import org.martarcas.usermanager.manager.domain.model.user.User
 import org.martarcas.usermanager.manager.domain.model.user.UserPublic
 
 data class UserListState (
@@ -15,6 +16,7 @@ data class UserListState (
     val isLoading : Boolean = true,
     val errorMessage: UiText? = null,
     val isUpdateBottomSheetOpen: Boolean = false,
+    val loggedUser: User? = null,
     val name: String = "",
     val surname: String = "",
     val email: String = "",

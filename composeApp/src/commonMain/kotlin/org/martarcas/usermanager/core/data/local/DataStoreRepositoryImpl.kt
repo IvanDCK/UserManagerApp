@@ -62,7 +62,7 @@ class DataStoreRepositoryImpl(
                     surname = preferences[USER_LAST_NAME] ?: "",
                     email = preferences[USER_EMAIL] ?: "",
                     password = preferences[USER_PASSWORD] ?: "",
-                    role = Role.valueOf(preferences[USER_ROLE] ?: "")
+                    role = Role.valueOf(preferences[USER_ROLE] ?: "NEW_USER")
                 )
             }
     }

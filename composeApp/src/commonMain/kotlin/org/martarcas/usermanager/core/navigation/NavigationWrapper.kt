@@ -7,8 +7,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.koin.compose.viewmodel.koinViewModel
-import org.martarcas.usermanager.manager.domain.model.Role
-import org.martarcas.usermanager.manager.domain.model.user.User
 import org.martarcas.usermanager.manager.presentation.list.UserListScreenRoot
 import org.martarcas.usermanager.manager.presentation.list.UserListViewModel
 import org.martarcas.usermanager.manager.presentation.login.LoginScreen
@@ -53,15 +51,12 @@ fun NavigationWrapper(startDestination: String) {
             }
         }
 
-
         composable<List> {
             UserListScreenRoot(
-                viewModel = listViewModel,
-                loggedUser = User(1, "Admin", "Admiin", "admin@admin", "12345678", Role.CEO)
+                viewModel = listViewModel
             )
 
         }
-
 
     }
 }

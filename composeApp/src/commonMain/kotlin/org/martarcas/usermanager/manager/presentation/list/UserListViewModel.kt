@@ -15,14 +15,17 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.Provided
 import org.martarcas.usermanager.core.domain.model.onError
 import org.martarcas.usermanager.core.domain.model.onSuccess
+import org.martarcas.usermanager.core.domain.use_cases.datastore.DataStoreUseCases
 import org.martarcas.usermanager.core.presentation.UiText
 import org.martarcas.usermanager.core.presentation.toUiText
 import org.martarcas.usermanager.manager.data.remote.requests.DeleteUserRequest
 import org.martarcas.usermanager.manager.data.remote.requests.UpdateRoleRequest
 import org.martarcas.usermanager.manager.data.remote.requests.UpdateUserRequest
 import org.martarcas.usermanager.manager.domain.model.Role
+import org.martarcas.usermanager.manager.domain.model.user.User
 import org.martarcas.usermanager.manager.domain.model.user.UserPublic
 import org.martarcas.usermanager.manager.domain.use_cases.user.DeleteUserUseCase
 import org.martarcas.usermanager.manager.domain.use_cases.user.GetAllUsersUseCase
@@ -40,6 +43,7 @@ class UserListViewModel(
     private val changeRoleUseCase: UpdateRoleUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
     private val deleteUserUseCase: DeleteUserUseCase,
+    @Provided private val dataStoreUseCases: DataStoreUseCases
 
 ): ViewModel() {
 
@@ -58,7 +62,10 @@ class UserListViewModel(
             _state.value
         )
 
-
+    /**
+     * Observes the search query and filters the users by name and/or surname, if there are roles selected, it also filters by those roles
+     * If the query is empty, it shows all users
+     */
     @OptIn(FlowPreview::class)
     private fun observeSearchQuery() {
         state
@@ -166,7 +173,10 @@ class UserListViewModel(
             }
         }
     }
-
+    /**
+     * Handles all the user list actions
+     * @param action
+     */
     fun onAction(action: UserListAction) {
         when(action) {
             is UserListAction.OnUpdateInfoClick -> {
@@ -174,13 +184,10 @@ class UserListViewModel(
                     it.copy(
                         isUpdateBottomSheetOpen = !it.isUpdateBottomSheetOpen,
                         selectedUserId = if (it.isUpdateBottomSheetOpen) null else action.id,
-                        name = cachedUsers.find { user ->
-                            user.id == action.id
-                        }?.name ?: "",
-                        surname = cachedUsers.find { user ->
-                            user.id == action.id
-                        }?.surname ?: "",
-
+                        name = _state.value.loggedUser?.name ?: "",
+                        surname = _state.value.loggedUser?.surname ?: "",
+                        email = _state.value.loggedUser?.email ?: "",
+                        password = _state.value.loggedUser?.password ?: "",
                     )
                 }
             }
@@ -252,7 +259,10 @@ class UserListViewModel(
         }
     }
 
-
+    /**
+     * Handles the bottom sheet actions that opens when the user clicks on the update info button
+     * @param action
+     */
     fun onBottomSheetAction(action: UpdateInfoBottomSheetActions){
         when(action) {
             is UpdateInfoBottomSheetActions.OnEmailChange -> {
@@ -297,6 +307,9 @@ class UserListViewModel(
 
     }
 
+    /**
+     * Validates the inputs and updates the user info, then updates the datastore preferences and fetches all users
+     */
     private fun updateUser() {
         viewModelScope.launch {
             _state.update {
@@ -332,12 +345,22 @@ class UserListViewModel(
                 )
             )
                 .onSuccess {
+                    val newUserInfo = User(
+                        id = _state.value.selectedUserId!!,
+                        name = _state.value.name,
+                        surname = _state.value.surname,
+                        email = _state.value.email,
+                        password = _state.value.password,
+                        role = _state.value.loggedUser!!.role
+                    )
                     _state.update {
                         it.copy(
                             isUpdateInfoLoading = false,
-                            bottomSheetErrorMessage = null
+                            bottomSheetErrorMessage = null,
+                            loggedUser = newUserInfo,
                         )
                     }
+                    updateSavedUser(newUserInfo)
                     getAllUsers()
                 }
                 .onError { error ->
@@ -348,12 +371,12 @@ class UserListViewModel(
                         )
                     }
                 }
-
-
         }
     }
 
-
+    /**
+     * Fetches all users from the server
+     */
     private fun getAllUsers() {
         viewModelScope.launch {
             _state.update {
@@ -385,6 +408,10 @@ class UserListViewModel(
         }
     }
 
+    /**
+     * Deletes the specified user
+     * @param id
+     */
     private fun deleteUser(id: Int) = viewModelScope.launch {
         deleteUserUseCase.invoke(DeleteUserRequest(id))
             .onSuccess {
@@ -407,6 +434,11 @@ class UserListViewModel(
             }
     }
 
+    /**
+     * Changes the role of the specified user
+     * @param id
+     * @param role
+     */
     private fun changeRole(id: Int, role: Role) = viewModelScope.launch {
         changeRoleUseCase.invoke(UpdateRoleRequest(id, role.name))
             .onSuccess {
@@ -421,6 +453,13 @@ class UserListViewModel(
             }
     }
 
+    /**
+     * Validates the inputs for the update info bottom sheet
+     * @param name
+     * @param surname
+     * @param email
+     * @param password
+     */
     private fun validateUpdateInfoInputs(
         name: String,
         surname: String,
@@ -441,7 +480,34 @@ class UserListViewModel(
         return ValidationResult(errors.isEmpty(), errors)
     }
 
+    /**
+     * Retrieves the logged user from the datastore and updates the state with it
+     */
+    private fun getLoggedUser() {
+        viewModelScope.launch {
+            dataStoreUseCases.readUserUseCase.invoke().collect { user ->
+                _state.update {
+                    it.copy(
+                        loggedUser = user
+                    )
+                }
+            }
+        }
+    }
+
+    /**
+     * Updates the user in the datastore
+     * @param updatedUser
+     */
+    private fun updateSavedUser(updatedUser: User) {
+        viewModelScope.launch {
+            dataStoreUseCases.saveRememberMeAndUserUseCase.invoke(rememberMe = true, user = updatedUser)
+        }
+    }
+
+
     init {
         getAllUsers()
+        getLoggedUser()
     }
 }
