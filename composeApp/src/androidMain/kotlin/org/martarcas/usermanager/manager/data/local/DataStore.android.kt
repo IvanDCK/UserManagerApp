@@ -5,7 +5,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import org.koin.core.annotation.Single
 
-@Single
 actual fun createDataStore(context: Any?): DataStore<Preferences> {
     require(
         value = context is Context,

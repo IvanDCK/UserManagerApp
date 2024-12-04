@@ -15,7 +15,7 @@ import org.martarcas.usermanager.manager.domain.DataStoreRepository
 import org.martarcas.usermanager.manager.domain.model.Role
 import org.martarcas.usermanager.manager.domain.model.user.User
 
-@Single
+
 class DataStoreRepositoryImpl(
     private val dataStore: DataStore<Preferences>
 ): DataStoreRepository {

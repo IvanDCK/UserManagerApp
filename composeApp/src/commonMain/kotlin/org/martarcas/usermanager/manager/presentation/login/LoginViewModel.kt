@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.Provided
 import org.martarcas.usermanager.core.domain.onError
 import org.martarcas.usermanager.core.domain.onSuccess
 import org.martarcas.usermanager.core.presentation.toUiText
@@ -23,7 +24,7 @@ import org.martarcas.usermanager.manager.presentation.signup.model.ValidationRes
 @KoinViewModel
 class LoginViewModel(
     private val loginRequestUseCase: LoginRequestUseCase,
-    private val dataStoreUseCases: DataStoreUseCases
+    @Provided private val dataStoreUseCases: DataStoreUseCases
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())

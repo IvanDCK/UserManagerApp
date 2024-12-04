@@ -8,7 +8,6 @@ import kotlinx.atomicfu.locks.synchronized
 import okio.Path.Companion.toPath
 import org.koin.core.annotation.Single
 
-
 internal const val dataStoreFileName = "settings.preferences_pb"
 
 object AppSettings {

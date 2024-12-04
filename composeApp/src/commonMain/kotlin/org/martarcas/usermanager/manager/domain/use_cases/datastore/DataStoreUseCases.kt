@@ -1,10 +1,9 @@
 package org.martarcas.usermanager.manager.domain.use_cases.datastore
 
-import org.koin.core.annotation.Single
+import org.koin.core.annotation.Provided
 
-@Single
 data class DataStoreUseCases(
-    val saveRememberMeAndUserUseCase: SaveRememberMeAndUserUseCase,
-    val readRememberMeUseCase: ReadRememberMeUseCase,
-    val readUserUseCase: ReadUserUseCase
+   @Provided val saveRememberMeAndUserUseCase: SaveRememberMeAndUserUseCase,
+   @Provided val readRememberMeUseCase: ReadRememberMeUseCase,
+   @Provided val readUserUseCase: ReadUserUseCase
 )

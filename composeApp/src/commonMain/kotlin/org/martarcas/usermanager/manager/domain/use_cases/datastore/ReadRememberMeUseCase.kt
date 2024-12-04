@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import org.koin.core.annotation.Single
 import org.martarcas.usermanager.manager.domain.DataStoreRepository
 
-@Single
+
 class ReadRememberMeUseCase(
     private val dataStoreRepository: DataStoreRepository
 ) {
