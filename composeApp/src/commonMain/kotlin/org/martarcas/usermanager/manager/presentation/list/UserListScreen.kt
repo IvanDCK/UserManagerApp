@@ -32,6 +32,9 @@ import org.martarcas.usermanager.manager.presentation.list.components.ListSearch
 import org.martarcas.usermanager.manager.presentation.list.components.RoleButton
 import org.martarcas.usermanager.manager.presentation.list.components.SortButton
 import org.martarcas.usermanager.manager.presentation.list.components.UserList
+import org.martarcas.usermanager.manager.presentation.list.model.UpdateInfoBottomSheetActions
+import org.martarcas.usermanager.manager.presentation.list.model.UserListAction
+import org.martarcas.usermanager.manager.presentation.list.model.UserListState
 import usermanagerapp.composeapp.generated.resources.Res
 import usermanagerapp.composeapp.generated.resources.no_search_results
 
@@ -55,6 +58,9 @@ fun UserListScreenRoot(
                 else -> Unit
             }
             viewModel.onAction(action)
+        },
+        onBottomSheetAction = { action ->
+            viewModel.onBottomSheetAction(action)
         }
     )
 }
@@ -65,6 +71,7 @@ fun UserListScreen(
     sortAscending: Boolean,
     state: UserListState,
     onAction: (UserListAction) -> Unit,
+    onBottomSheetAction: (UpdateInfoBottomSheetActions) -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -107,7 +114,7 @@ fun UserListScreen(
         ) {
             items(Role.entries.sortedBy { it.importance }){ role ->
                 RoleButton(
-                    text = role.name.replace("_", " ").capitalize(),
+                    text = role.name.replace("_", " "),
                     onClick = {
                         onAction(UserListAction.OnRoleFilterClick(role))
                     },
@@ -147,6 +154,7 @@ fun UserListScreen(
                     UserList(
                         users = state.searchResults,
                         loggedUser = loggedUser,
+                        onBottomSheetAction = onBottomSheetAction,
                         state = state,
                         onDeleteConfirm = {
                             onAction(UserListAction.OnDeleteConfirm(it))
@@ -163,7 +171,7 @@ fun UserListScreen(
                         onUpdateInfoClick = {
                             onAction(UserListAction.OnUpdateInfoClick(it))}
                         ,
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier,
                         scrollState = searchResultsListState
                     )
                 }

@@ -1,4 +1,4 @@
-package org.martarcas.usermanager.manager.presentation.list
+package org.martarcas.usermanager.manager.presentation.list.model
 
 import org.martarcas.usermanager.manager.domain.model.Role
 
