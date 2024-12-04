@@ -21,12 +21,17 @@ import org.martarcas.usermanager.core.presentation.UiText
 import org.martarcas.usermanager.core.presentation.toUiText
 import org.martarcas.usermanager.manager.data.dto.requests.DeleteUserRequest
 import org.martarcas.usermanager.manager.data.dto.requests.UpdateRoleRequest
+import org.martarcas.usermanager.manager.data.dto.requests.UpdateUserRequest
 import org.martarcas.usermanager.manager.domain.model.Role
 import org.martarcas.usermanager.manager.domain.model.user.UserPublic
 import org.martarcas.usermanager.manager.domain.use_cases.user.DeleteUserUseCase
 import org.martarcas.usermanager.manager.domain.use_cases.user.GetAllUsersUseCase
 import org.martarcas.usermanager.manager.domain.use_cases.user.UpdateRoleUseCase
 import org.martarcas.usermanager.manager.domain.use_cases.user.UpdateUserUseCase
+import org.martarcas.usermanager.manager.presentation.list.model.UpdateInfoBottomSheetActions
+import org.martarcas.usermanager.manager.presentation.list.model.UserListAction
+import org.martarcas.usermanager.manager.presentation.list.model.UserListState
+import org.martarcas.usermanager.manager.presentation.signup.model.ValidationResult
 
 
 @KoinViewModel
@@ -165,7 +170,19 @@ class UserListViewModel(
     fun onAction(action: UserListAction) {
         when(action) {
             is UserListAction.OnUpdateInfoClick -> {
+                _state.update {
+                    it.copy(
+                        isUpdateBottomSheetOpen = !it.isUpdateBottomSheetOpen,
+                        selectedUserId = if (it.isUpdateBottomSheetOpen) null else action.id,
+                        name = cachedUsers.find { user ->
+                            user.id == action.id
+                        }?.name ?: "",
+                        surname = cachedUsers.find { user ->
+                            user.id == action.id
+                        }?.surname ?: "",
 
+                    )
+                }
             }
 
             is UserListAction.OnChangeRoleApply -> {
@@ -203,9 +220,13 @@ class UserListViewModel(
                     it.copy(
                         sortAscending = !it.sortAscending,
                         searchResults = if (it.sortAscending) {
-                            it.searchResults.sortedBy { it.role.importance }
+                            it.searchResults.sortedBy { user ->
+                                user.role.importance
+                            }
                         } else {
-                            it.searchResults.sortedByDescending { it.role.importance }
+                            it.searchResults.sortedByDescending { user ->
+                                user.role.importance
+                            }
                         }
                     )
                 }
@@ -228,6 +249,107 @@ class UserListViewModel(
                     )
                 }
             }
+        }
+    }
+
+
+    fun onBottomSheetAction(action: UpdateInfoBottomSheetActions){
+        when(action) {
+            is UpdateInfoBottomSheetActions.OnEmailChange -> {
+                _state.update {
+                    it.copy(
+                        email = action.email
+                    )
+                }
+            }
+            is UpdateInfoBottomSheetActions.OnNameChange -> {
+                _state.update {
+                    it.copy(
+                        name = action.name
+                    )
+                }
+            }
+            is UpdateInfoBottomSheetActions.OnPasswordChange -> {
+                _state.update {
+                    it.copy(
+                        password = action.password
+                    )
+                }
+            }
+            UpdateInfoBottomSheetActions.OnPasswordVisibilityChange -> {
+                _state.update {
+                    it.copy(
+                        isPasswordVisible = !it.isPasswordVisible
+                    )
+                }
+            }
+            is UpdateInfoBottomSheetActions.OnSurnameChange -> {
+                _state.update {
+                    it.copy(
+                        surname = action.surname
+                    )
+                }
+            }
+            UpdateInfoBottomSheetActions.OnUpdateInfoClick -> {
+                updateUser()
+            }
+        }
+
+    }
+
+    private fun updateUser() {
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    isUpdateInfoLoading = true
+                )
+            }
+
+            val validationResult = validateUpdateInfoInputs(
+                name = _state.value.name,
+                surname = _state.value.surname,
+                email = _state.value.email,
+                password = _state.value.password
+            )
+
+            if (validationResult.isValid.not()) {
+                _state.update {
+                    it.copy(
+                        bottomSheetErrorMessage = UiText.DynamicString(validationResult.errors.joinToString("\n")),
+                        isUpdateInfoLoading = false
+                    )
+                }
+                return@launch
+            }
+
+            updateUserUseCase.invoke(
+                UpdateUserRequest(
+                    userId = _state.value.selectedUserId!!,
+                    newName = _state.value.name,
+                    newSurname = _state.value.surname,
+                    newEmail = _state.value.email,
+                    newPassword = _state.value.password
+                )
+            )
+                .onSuccess {
+                    _state.update {
+                        it.copy(
+                            isUpdateInfoLoading = false,
+                            bottomSheetErrorMessage = null
+                        )
+                    }
+                    getAllUsers()
+                }
+                .onError { error ->
+                    _state.update {
+                        it.copy(
+                            bottomSheetErrorMessage = error.toUiText(),
+                            isUpdateInfoLoading = false
+                        )
+                    }
+                }
+
+
         }
     }
 
@@ -297,6 +419,26 @@ class UserListViewModel(
                     )
                 }
             }
+    }
+
+    private fun validateUpdateInfoInputs(
+        name: String,
+        surname: String,
+        email: String,
+        password: String
+    ): ValidationResult {
+        val errors = mutableListOf<String>()
+
+        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
+        if (email.isBlank() || !email.matches(emailRegex)) {
+            errors.add("The email is not valid.")
+        }
+        if (password.isBlank()) errors.add("The password cannot be empty.")
+
+        if (name.isBlank()) errors.add("The name cannot be empty.")
+        if (surname.isBlank()) errors.add("The surname cannot be empty.")
+
+        return ValidationResult(errors.isEmpty(), errors)
     }
 
     init {

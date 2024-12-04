@@ -1,4 +1,4 @@
-package org.martarcas.usermanager.manager.presentation.list
+package org.martarcas.usermanager.manager.presentation.list.model
 
 import org.martarcas.usermanager.core.presentation.UiText
 import org.martarcas.usermanager.manager.domain.model.Role
@@ -13,5 +13,13 @@ data class UserListState (
     val selectedRoles: List<Role> = emptyList(),
     val isDeleteDialogOpen: Boolean = false,
     val isLoading : Boolean = true,
-    val errorMessage: UiText? = null
+    val errorMessage: UiText? = null,
+    val isUpdateBottomSheetOpen: Boolean = false,
+    val name: String = "",
+    val surname: String = "",
+    val email: String = "",
+    val password: String = "",
+    val isPasswordVisible: Boolean = false,
+    val isUpdateInfoLoading: Boolean = false,
+    val bottomSheetErrorMessage: UiText? = null
 )

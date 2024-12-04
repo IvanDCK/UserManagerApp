@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
 import org.martarcas.usermanager.core.presentation.Sunny
-import org.martarcas.usermanager.manager.presentation.list.UserListAction
+import org.martarcas.usermanager.manager.presentation.list.model.UserListAction
 import usermanagerapp.composeapp.generated.resources.Res
 import usermanagerapp.composeapp.generated.resources.sort_ascending
 import usermanagerapp.composeapp.generated.resources.sort_descending
