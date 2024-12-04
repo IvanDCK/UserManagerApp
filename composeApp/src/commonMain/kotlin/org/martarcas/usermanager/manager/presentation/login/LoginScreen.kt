@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -189,6 +190,20 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, uiState: LoginUi
             }
         )
         Spacer(modifier = Modifier.height(30.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(0.9f),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
+            Checkbox(
+                checked = uiState.rememberMeIsChecked,
+                onCheckedChange = {
+                    viewModel.onAction(LoginActions.OnRememberMeChange)
+                }
+            )
+            Text("Remember me")
+        }
         Button(
             modifier = textFieldModifier,
             onClick = {

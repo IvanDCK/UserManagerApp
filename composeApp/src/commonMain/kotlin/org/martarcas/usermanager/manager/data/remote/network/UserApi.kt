@@ -22,7 +22,7 @@ interface UserApi {
 
     suspend fun updateUser(updateUserRequest: UpdateUserRequest): Result<Unit, DataError.Remote>
     suspend fun deleteUser(deleteUserRequest: DeleteUserRequest): Result<Unit, DataError.Remote>
-    suspend fun login(loginRequest: LoginUserRequest): Result<Unit, DataError.Remote>
+    suspend fun login(loginRequest: LoginUserRequest): Result<UserDto, DataError.Remote>
     suspend fun changeRole(updateRoleRequest: UpdateRoleRequest): Result<Unit, DataError.Remote>
 
 }

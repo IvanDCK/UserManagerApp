@@ -10,20 +10,21 @@ import org.koin.android.annotation.KoinViewModel
 import org.martarcas.usermanager.core.domain.onError
 import org.martarcas.usermanager.core.domain.onSuccess
 import org.martarcas.usermanager.core.presentation.toUiText
+import org.martarcas.usermanager.manager.data.dto.UserDto
+import org.martarcas.usermanager.manager.domain.model.user.User
 import org.martarcas.usermanager.manager.domain.use_cases.auth.LoginRequestUseCase
+import org.martarcas.usermanager.manager.domain.use_cases.datastore.DataStoreUseCases
 import org.martarcas.usermanager.manager.presentation.login.model.LoginActions
 import org.martarcas.usermanager.manager.presentation.login.model.LoginUiModel
 import org.martarcas.usermanager.manager.presentation.login.model.LoginUiState
-import org.martarcas.usermanager.manager.presentation.mappers.toCreateUserRequest
 import org.martarcas.usermanager.manager.presentation.mappers.toLoginUserRequest
-import org.martarcas.usermanager.manager.presentation.signup.model.SignupActions
-import org.martarcas.usermanager.manager.presentation.signup.model.SignupUiModel
 import org.martarcas.usermanager.manager.presentation.signup.model.ValidationResult
 
 @KoinViewModel
 class LoginViewModel(
-    private val loginRequestUseCase: LoginRequestUseCase
-): ViewModel() {
+    private val loginRequestUseCase: LoginRequestUseCase,
+    private val dataStoreUseCases: DataStoreUseCases
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
@@ -35,11 +36,13 @@ class LoginViewModel(
                     uiStateValue.copy(email = action.value)
                 }
             }
+
             is LoginActions.OnPasswordChange -> {
                 _uiState.update { uiStateValue ->
                     uiStateValue.copy(password = action.value)
                 }
             }
+
             is LoginActions.OnLoginButtonClick -> {
                 _uiState.update { uiStateValue ->
                     uiStateValue.copy(isLoadingOnClick = true)
@@ -59,7 +62,14 @@ class LoginViewModel(
 
                         val response = loginRequestUseCase(model)
 
-                        response.onSuccess {
+                        response.onSuccess { userResponse ->
+
+                            println("USE RESPONSE: $userResponse")
+
+                            if (_uiState.value.rememberMeIsChecked) {
+                                saveRememberMeAndUser(userResponse)
+                            }
+
                             _uiState.update { uiStateValue ->
                                 uiStateValue.copy(shouldNavigateToList = true)
                             }
@@ -78,14 +88,22 @@ class LoginViewModel(
                 }
 
             }
+
             is LoginActions.OnNotHaveAccountClick -> {
                 _uiState.update { uiStateValue ->
                     uiStateValue.copy(shouldNavigateToSignup = true)
                 }
             }
+
             is LoginActions.OnPasswordVisibleClick -> {
                 _uiState.update { uiStateValue ->
                     uiStateValue.copy(isPasswordVisible = !_uiState.value.isPasswordVisible)
+                }
+            }
+
+            is LoginActions.OnRememberMeChange -> {
+                _uiState.update { uiStateValue ->
+                    uiStateValue.copy(rememberMeIsChecked = !_uiState.value.rememberMeIsChecked)
                 }
             }
         }
@@ -122,6 +140,18 @@ class LoginViewModel(
         _uiState.update { uiStateValue ->
             uiStateValue.copy(shouldNavigateToList = false)
         }
+    }
 
+    private suspend fun saveRememberMeAndUser(userResponse: UserDto) {
+        dataStoreUseCases.saveRememberMeAndUserUseCase(
+            true, User(
+                id = userResponse.id,
+                name = userResponse.name,
+                surname = userResponse.surname,
+                email = userResponse.email,
+                password = userResponse.password,
+                role = userResponse.role
+            )
+        )
     }
 }

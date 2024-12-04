@@ -72,7 +72,7 @@ class UserApiImpl(
         }
     }
 
-    override suspend fun login(loginRequest: LoginUserRequest): Result<Unit, DataError.Remote> {
+    override suspend fun login(loginRequest: LoginUserRequest): Result<UserDto, DataError.Remote> {
         return safeCall {
             httpClient.post("${BASE_URL}/login"){
                 setBody(loginRequest)

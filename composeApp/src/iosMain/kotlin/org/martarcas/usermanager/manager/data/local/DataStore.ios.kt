@@ -2,8 +2,10 @@ package org.martarcas.usermanager.manager.data.local
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import org.koin.core.annotation.Single
 
 @OptIn(ExperimentalForeignApi::class)
+@Single
 actual fun createDataStore(context: Any?): DataStore<Preferences> {
     return AppSettings.getDataStore {
         val documentDirectory: NSURL? = NSFileManager.defaultManager.URLForDirectory(

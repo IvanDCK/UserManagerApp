@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
 import okio.Path.Companion.toPath
+import org.koin.core.annotation.Single
 
 
 internal const val dataStoreFileName = "settings.preferences_pb"

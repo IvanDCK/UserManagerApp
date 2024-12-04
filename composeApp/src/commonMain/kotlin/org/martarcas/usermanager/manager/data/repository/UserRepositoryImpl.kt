@@ -4,6 +4,7 @@ import org.koin.core.annotation.Single
 import org.martarcas.usermanager.core.domain.DataError
 import org.martarcas.usermanager.core.domain.Result
 import org.martarcas.usermanager.core.domain.map
+import org.martarcas.usermanager.manager.data.dto.UserDto
 import org.martarcas.usermanager.manager.data.dto.requests.DeleteUserRequest
 import org.martarcas.usermanager.manager.data.dto.requests.GetUserByIdRequest
 import org.martarcas.usermanager.manager.data.dto.requests.UpdateRoleRequest
@@ -53,7 +54,7 @@ class UserRepositoryImpl(
             return userApi.deleteUser(deleteUserRequest)
         }
 
-    override suspend fun login(loginRequest: LoginUserRequest): Result<Unit, DataError.Remote> {
+    override suspend fun login(loginRequest: LoginUserRequest): Result<UserDto, DataError.Remote> {
         return userApi.login(loginRequest)
     }
 

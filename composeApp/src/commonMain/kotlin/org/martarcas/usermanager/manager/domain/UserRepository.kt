@@ -2,6 +2,7 @@ package org.martarcas.usermanager.manager.domain
 
 import org.martarcas.usermanager.core.domain.Result
 import org.martarcas.usermanager.core.domain.DataError
+import org.martarcas.usermanager.manager.data.dto.UserDto
 import org.martarcas.usermanager.manager.data.dto.requests.DeleteUserRequest
 import org.martarcas.usermanager.manager.data.dto.requests.GetUserByIdRequest
 import org.martarcas.usermanager.manager.data.dto.requests.UpdateRoleRequest
@@ -23,7 +24,7 @@ interface UserRepository {
 
     suspend fun updateUser(updateUserRequest: UpdateUserRequest): Result<Unit, DataError.Remote>
     suspend fun deleteUser(deleteUserRequest: DeleteUserRequest): Result<Unit, DataError.Remote>
-    suspend fun login(loginRequest: LoginUserRequest): Result<Unit, DataError.Remote>
+    suspend fun login(loginRequest: LoginUserRequest): Result<UserDto, DataError.Remote>
     suspend fun changeRole(updateRoleRequest: UpdateRoleRequest): Result<Unit, DataError.Remote>
 
 }

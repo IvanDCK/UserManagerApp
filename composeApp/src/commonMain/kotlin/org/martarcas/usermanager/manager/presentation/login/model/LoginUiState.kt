@@ -10,5 +10,6 @@ data class LoginUiState(
     val shouldNavigateToList: Boolean = false,
     val errorMessage: UiText? = null,
     val validationErrors: List<String> = emptyList(),
-    val isLoadingOnClick: Boolean = false
+    val isLoadingOnClick: Boolean = false,
+    val rememberMeIsChecked: Boolean = false
 )
