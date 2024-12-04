@@ -1,7 +1,7 @@
 package org.martarcas.usermanager.manager.domain.use_cases.user
 
 import org.koin.core.annotation.Single
-import org.martarcas.usermanager.manager.data.dto.requests.UpdateUserRequest
+import org.martarcas.usermanager.manager.data.remote.requests.UpdateUserRequest
 import org.martarcas.usermanager.manager.domain.UserRepository
 
 @Single

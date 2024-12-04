@@ -15,20 +15,27 @@ import org.martarcas.usermanager.manager.presentation.login.LoginScreen
 import org.martarcas.usermanager.manager.presentation.signup.SignUpScreen
 
 @Composable
-fun NavigationWrapper() {
+fun NavigationWrapper(startDestination: String) {
     val navController = rememberNavController()
 
     val listViewModel: UserListViewModel = koinViewModel()
 
-    NavHost(navController = navController, startDestination = SignUp) {
+    NavHost(
+        navController = navController,
+        startDestination = if (startDestination == "List") List else Login
+    ) {
 
         composable<Login>(
-            enterTransition = { slideInHorizontally { initialOffset ->
-            initialOffset
-        } },
-            exitTransition = { slideOutHorizontally { initialOffset ->
-                initialOffset
-            } }
+            enterTransition = {
+                slideInHorizontally { initialOffset ->
+                    initialOffset
+                }
+            },
+            exitTransition = {
+                slideOutHorizontally { initialOffset ->
+                    initialOffset
+                }
+            }
         ) {
             LoginScreen(
                 navigateToSignup = {

@@ -2,6 +2,7 @@ package org.martarcas.usermanager.core.navigation
 
 import kotlinx.serialization.Serializable
 
+
 @Serializable
 data object Login
 

@@ -1,13 +1,12 @@
 package org.martarcas.usermanager.core.presentation
 
-import org.martarcas.usermanager.core.domain.DataError
+import org.martarcas.usermanager.core.domain.model.DataError
 import usermanagerapp.composeapp.generated.resources.error_no_internet
 import usermanagerapp.composeapp.generated.resources.error_request_timeout
 import usermanagerapp.composeapp.generated.resources.error_serialization
 import usermanagerapp.composeapp.generated.resources.error_too_many_requests
 import usermanagerapp.composeapp.generated.resources.error_unknown
 import usermanagerapp.composeapp.generated.resources.Res
-import usermanagerapp.composeapp.generated.resources.badrequest_login
 import usermanagerapp.composeapp.generated.resources.conflict_request
 import usermanagerapp.composeapp.generated.resources.error_disk_full
 

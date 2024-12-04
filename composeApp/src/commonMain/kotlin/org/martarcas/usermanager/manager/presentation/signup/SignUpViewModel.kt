@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
-import org.martarcas.usermanager.core.domain.onError
-import org.martarcas.usermanager.core.domain.onSuccess
+import org.martarcas.usermanager.core.domain.model.onError
+import org.martarcas.usermanager.core.domain.model.onSuccess
 import org.martarcas.usermanager.core.presentation.toUiText
 import org.martarcas.usermanager.manager.domain.use_cases.auth.SignUpRequestUseCase
 import org.martarcas.usermanager.manager.presentation.mappers.toCreateUserRequest

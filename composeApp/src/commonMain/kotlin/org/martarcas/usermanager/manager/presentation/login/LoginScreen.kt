@@ -189,7 +189,7 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, uiState: LoginUi
                 }
             }
         )
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(5.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth(0.9f),
@@ -204,6 +204,7 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, uiState: LoginUi
             )
             Text("Remember me")
         }
+        Spacer(modifier = Modifier.height(5.dp))
         Button(
             modifier = textFieldModifier,
             onClick = {

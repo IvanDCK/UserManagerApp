@@ -8,13 +8,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
-import org.martarcas.usermanager.core.domain.onError
-import org.martarcas.usermanager.core.domain.onSuccess
+import org.martarcas.usermanager.core.domain.model.onError
+import org.martarcas.usermanager.core.domain.model.onSuccess
 import org.martarcas.usermanager.core.presentation.toUiText
-import org.martarcas.usermanager.manager.data.dto.UserDto
 import org.martarcas.usermanager.manager.domain.model.user.User
 import org.martarcas.usermanager.manager.domain.use_cases.auth.LoginRequestUseCase
-import org.martarcas.usermanager.manager.domain.use_cases.datastore.DataStoreUseCases
+import org.martarcas.usermanager.core.domain.use_cases.datastore.DataStoreUseCases
 import org.martarcas.usermanager.manager.presentation.login.model.LoginActions
 import org.martarcas.usermanager.manager.presentation.login.model.LoginUiModel
 import org.martarcas.usermanager.manager.presentation.login.model.LoginUiState
@@ -64,8 +63,6 @@ class LoginViewModel(
                         val response = loginRequestUseCase(model)
 
                         response.onSuccess { userResponse ->
-
-                            println("USE RESPONSE: $userResponse")
 
                             if (_uiState.value.rememberMeIsChecked) {
                                 saveRememberMeAndUser(userResponse)
@@ -143,7 +140,7 @@ class LoginViewModel(
         }
     }
 
-    private suspend fun saveRememberMeAndUser(userResponse: UserDto) {
+    private suspend fun saveRememberMeAndUser(userResponse: User) {
         dataStoreUseCases.saveRememberMeAndUserUseCase(
             true, User(
                 id = userResponse.id,

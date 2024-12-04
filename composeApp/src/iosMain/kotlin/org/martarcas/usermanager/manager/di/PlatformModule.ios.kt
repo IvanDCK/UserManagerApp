@@ -6,7 +6,7 @@ import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.darwin.Darwin
 import org.koin.core.module.Module
 import org.koin.dsl.module
-import org.martarcas.usermanager.manager.data.local.createDataStore
+import org.martarcas.usermanager.core.data.local.model.createDataStore
 
 actual val platformModule: Module
     get() = module {

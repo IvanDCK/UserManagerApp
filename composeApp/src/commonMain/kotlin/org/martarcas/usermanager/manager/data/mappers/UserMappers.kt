@@ -1,7 +1,7 @@
 package org.martarcas.usermanager.manager.data.mappers
 
-import org.martarcas.usermanager.manager.data.dto.UserDto
-import org.martarcas.usermanager.manager.data.dto.UserPublicDto
+import org.martarcas.usermanager.manager.data.remote.dto.UserDto
+import org.martarcas.usermanager.manager.data.remote.dto.UserPublicDto
 import org.martarcas.usermanager.manager.domain.model.user.User
 import org.martarcas.usermanager.manager.domain.model.user.UserPublic
 
