@@ -28,6 +28,7 @@ fun MultipurposeButton(
     textColor: Color = Color.White,
     onClick: () -> Unit,
     contentPadding: PaddingValues = ButtonDefaults.TextButtonWithIconContentPadding,
+    contentDescription: String? = null,
     modifier: Modifier = Modifier
 ) {
     ElevatedButton(
@@ -43,7 +44,7 @@ fun MultipurposeButton(
             startIcon?.let {
                 Icon(
                     painter = it,
-                    contentDescription = null,
+                    contentDescription = contentDescription,
                     tint = iconTint,
                     modifier = Modifier.size(iconSize.dp)
                 )
@@ -63,7 +64,7 @@ fun MultipurposeButton(
             endIcon?.let {
                 Icon(
                     painter = it,
-                    contentDescription = null,
+                    contentDescription = contentDescription,
                     tint = iconTint,
                     modifier = Modifier.size(iconSize.dp)
                 )
