@@ -15,7 +15,9 @@ plugins {
     
     alias(libs.plugins.cocoapods)
 
-    alias(libs.plugins.roborazzi)
+    //alias(libs.plugins.roborazzi)
+
+    //id("dev.mokkery") version "2.5.0"
 
 }
 
@@ -109,11 +111,11 @@ kotlin {
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.uiTest)
 
-            implementation(libs.robolectric)
-            implementation(libs.roborazzi)
-            implementation(libs.roborazzi.compose)
-            implementation(libs.roborazzi.rule)
-            implementation(libs.espresso.core)
+           // implementation(libs.robolectric)
+            //implementation(libs.roborazzi)
+            //implementation(libs.roborazzi.compose)
+            //implementation(libs.roborazzi.rule)
+            //implementation(libs.espresso.core)
 
         }
 

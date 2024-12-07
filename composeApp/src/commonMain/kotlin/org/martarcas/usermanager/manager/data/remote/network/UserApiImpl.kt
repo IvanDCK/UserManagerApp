@@ -20,7 +20,7 @@ import org.martarcas.usermanager.manager.data.remote.requests.UpdateUserRequest
 import org.martarcas.usermanager.manager.data.remote.requests.auth.CreateUserRequest
 import org.martarcas.usermanager.manager.data.remote.requests.auth.LoginUserRequest
 
-private const val BASE_URL = "http://192.168.1.19:8080/user"
+private const val BASE_URL = "http://10.0.2.2:8080/user"
 
 @Single
 class UserApiImpl(
