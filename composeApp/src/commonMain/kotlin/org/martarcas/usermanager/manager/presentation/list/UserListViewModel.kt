@@ -260,12 +260,6 @@ class UserListViewModel(
         }
     }
 
-    fun updateState(update: UserListState.() -> UserListState) {
-        viewModelScope.launch {
-            _state.update { it.update() }
-        }
-    }
-
     /**
      * Handles the bottom sheet actions that opens when the user clicks on the update info button
      * @param action

@@ -154,9 +154,6 @@ project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
         dependsOn("kspCommonMainKotlinMetadata")
     }
 }
-tasks.withType<Test> {
-    systemProperty("isTestMode", "true")
-}
 
 androidComponents {
     beforeVariants { variantBuilder ->
@@ -172,6 +169,7 @@ ksp {
 }
 
 android {
+
     namespace = "org.martarcas.usermanager"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
@@ -182,15 +180,19 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        //testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "org.martarcas.usermanager.manager.core.InstrumentationTestRunner"
 
     }
 
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/LICENSE-notice.md"
+            excludes += "META-INF/LICENSE.md"
         }
     }
+
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
@@ -210,6 +212,11 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.runner)
     debugImplementation(compose.uiTooling)
+    testImplementation(libs.mockk)
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.mockk.agent)
+
 }
 

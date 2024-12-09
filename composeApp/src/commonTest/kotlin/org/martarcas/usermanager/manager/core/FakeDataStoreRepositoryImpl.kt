@@ -1,12 +1,7 @@
 package org.martarcas.usermanager.manager.core
 
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.martarcas.usermanager.core.data.local.DataStoreRepositoryImpl
 import org.martarcas.usermanager.core.domain.DataStoreRepository
 import org.martarcas.usermanager.manager.domain.model.Role
 import org.martarcas.usermanager.manager.domain.model.user.User
