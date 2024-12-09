@@ -107,6 +107,16 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(kotlin("test-annotations-common"))
             implementation(libs.assertk)
+            implementation(libs.junit)
+
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
+            api(libs.koin.core)
+            api(libs.koin.annotations)
+            implementation(libs.koin.test)
+            implementation(libs.koin.test.junit4)
+            implementation(libs.kotlinx.coroutines.test)
+
 
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.uiTest)
@@ -142,6 +152,17 @@ dependencies {
 project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
     if(name != "kspCommonMainKotlinMetadata") {
         dependsOn("kspCommonMainKotlinMetadata")
+    }
+}
+tasks.withType<Test> {
+    systemProperty("isTestMode", "true")
+}
+
+androidComponents {
+    beforeVariants { variantBuilder ->
+        if (variantBuilder.buildType == "debug") {
+            variantBuilder.enabled = true
+        }
     }
 }
 

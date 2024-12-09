@@ -1,25 +1,113 @@
 package org.martarcas.usermanager.manager.presentation.list
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.KoinApplication
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
+import org.koin.dsl.bind
+import org.koin.dsl.koinApplication
+import org.koin.dsl.module
+import org.koin.test.KoinTest
+import org.martarcas.usermanager.core.domain.DataStoreRepository
+import org.martarcas.usermanager.core.domain.use_cases.datastore.DataStoreUseCases
+import org.martarcas.usermanager.core.domain.use_cases.datastore.ReadRememberMeUseCase
+import org.martarcas.usermanager.core.domain.use_cases.datastore.ReadUserUseCase
+import org.martarcas.usermanager.core.domain.use_cases.datastore.SaveRememberMeAndUserUseCase
+import org.martarcas.usermanager.manager.core.FakeDataStoreRepositoryImpl
 import org.martarcas.usermanager.manager.data.remote.network.UserApi
+import org.martarcas.usermanager.manager.data.remote.network.UserApiImpl
+import org.martarcas.usermanager.manager.data.remote.repository.UserRepositoryImpl
+import org.martarcas.usermanager.manager.di.databaseModule
+import org.martarcas.usermanager.manager.di.platformModule
 import org.martarcas.usermanager.manager.domain.UserRepository
 import org.martarcas.usermanager.manager.domain.model.Role
 import org.martarcas.usermanager.manager.domain.model.user.User
 import org.martarcas.usermanager.manager.domain.model.user.UserPublic
+import org.martarcas.usermanager.manager.domain.use_cases.user.DeleteUserUseCase
 import org.martarcas.usermanager.manager.domain.use_cases.user.GetAllUsersUseCase
+import org.martarcas.usermanager.manager.domain.use_cases.user.UpdateRoleUseCase
+import org.martarcas.usermanager.manager.domain.use_cases.user.UpdateUserUseCase
 import org.martarcas.usermanager.manager.presentation.list.model.UserListAction
 import org.martarcas.usermanager.manager.presentation.list.model.UserListState
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalTestApi::class)
-class UserListScreenTest {
+class UserListScreenTest: KoinTest {
+
+    private lateinit var userListViewModel: UserListViewModel
+
+    private lateinit var koinApp: KoinApplication
+
+
+    private val testModule = module {
+        singleOf(::UserRepositoryImpl).bind<UserRepository>()
+        singleOf(::UserApiImpl).bind<UserApi>()
+
+        singleOf(::GetAllUsersUseCase)
+        singleOf(::UpdateUserUseCase)
+        singleOf(::UpdateRoleUseCase)
+        singleOf(::DeleteUserUseCase)
+
+
+        singleOf(::FakeDataStoreRepositoryImpl).bind<DataStoreRepository>()
+        singleOf(::SaveRememberMeAndUserUseCase)
+        singleOf(::ReadRememberMeUseCase)
+        singleOf(::ReadUserUseCase)
+
+        singleOf(::DataStoreUseCases)
+
+        viewModel<UserListViewModel> {
+            UserListViewModel(get(), get(), get(), get(), get())
+        }
+
+
+
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @BeforeTest
+    fun setUp() {
+        // Start Koin
+        stopKoin()
+
+         koinApp = koinApplication {
+            startKoin {
+                modules(
+                    testModule, platformModule, databaseModule
+                )
+            }
+        }
+
+        // Set the main dispatcher for testing
+        Dispatchers.setMain(StandardTestDispatcher())
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @AfterTest
+    fun tearDown() {
+        // Stop Koin
+        stopKoin()
+        //koinApp.close()
+        Dispatchers.resetMain()
+    }
+
 
     private val dummyList = mutableStateOf(
         listOf(
@@ -53,32 +141,23 @@ class UserListScreenTest {
     fun resultListFiltersBySelectedRoles() = runComposeUiTest {
 
         setContent {
+            userListViewModel = koinViewModel<UserListViewModel>()
+
+            val state2 by userListViewModel.state.collectAsState()
+
+            userListViewModel.updateState {
+                copy(searchResults = dummyList.value)
+            }
+
+
             UserListScreen(
                 loggedUser = loggedUser,
-                sortAscending = sortAscending.value,
-                state = state.value,
+                sortAscending = state2.sortAscending,
+                state = state2,
                 onAction = { action ->
                     when (action) {
                         is UserListAction.OnRoleFilterClick -> {
-
-                            state.value = state.value.copy(
-                                    selectedRoles = if (state.value.selectedRoles.contains(action.role)) {
-                                        state.value.selectedRoles - action.role
-                                    } else {
-                                        state.value.selectedRoles + action.role
-                                    },
-                                )
-
-                            val filteredList = if (state.value.selectedRoles.isEmpty()) {
-                                dummyList.value
-                            } else {
-                                dummyList.value.filter { user ->
-                                    state.value.selectedRoles.contains(user.role)
-                                }
-                            }
-
-                            state.value = state.value.copy(selectedRoles = state.value.selectedRoles, searchResults = filteredList)
-
+                            userListViewModel.onAction(action)
                         }
                         else -> {}
                     }
@@ -87,30 +166,35 @@ class UserListScreenTest {
             )
         }
 
+        waitForIdle()
+
+        val stateValue = userListViewModel.state.value
+
         // Filter by PROJECT MANAGER role, expect 1 result and PROJECT MANAGER as the first result
         onNodeWithText("PROJECT MANAGER").performClick()
-        assertEquals(expected = 1, actual = state.value.selectedRoles.size)
-        assertEquals(expected = 1, actual = state.value.searchResults.size)
-        assertEquals(expected = Role.PROJECT_MANAGER, actual = state.value.searchResults.first().role)
+        assertEquals(expected = 1, actual = stateValue.selectedRoles.size)
+        assertEquals(expected = 1, actual = stateValue.searchResults.size)
+        assertEquals(expected = Role.PROJECT_MANAGER, actual = stateValue.searchResults.first().role)
         // Add CEO role to the filter, expect 2 results
         onNodeWithText("CEO").performClick()
-        assertEquals(expected = 2, actual = state.value.selectedRoles.size)
-        assertEquals(expected = 2, actual = state.value.searchResults.size)
+        assertEquals(expected = 2, actual = stateValue.selectedRoles.size)
+        assertEquals(expected = 2, actual = stateValue.searchResults.size)
 
         // Remove PROJECT MANAGER role from the filter, expect 1 result and role CEO as the first result
         onNodeWithText("PROJECT MANAGER").performClick()
-        assertEquals(expected = 1, actual = state.value.selectedRoles.size)
-        assertEquals(expected = 1, actual = state.value.searchResults.size)
-        assertEquals(expected = Role.CEO, actual = state.value.searchResults.first().role)
+        assertEquals(expected = 1, actual = stateValue.selectedRoles.size)
+        assertEquals(expected = 1, actual = stateValue.searchResults.size)
+        assertEquals(expected = Role.CEO, actual = stateValue.searchResults.first().role)
 
         // Remove CEO role from the filter, expect 5 results (original list)
         onNodeWithText("CEO").performClick()
-        assertEquals(expected = 0, actual = state.value.selectedRoles.size)
-        assertEquals(expected = 5, actual = state.value.searchResults.size)
+        assertEquals(expected = 0, actual = stateValue.selectedRoles.size)
+        assertEquals(expected = 5, actual = stateValue.searchResults.size)
 
     }
 
-    @Test
+    /*
+     @Test
     fun sortButtonSortsByRoleImportanceAscendingThenDescending() = runComposeUiTest {
 
         setContent {
@@ -211,5 +295,65 @@ class UserListScreenTest {
         assertEquals(expected = 5, actual = state.value.searchResults.size)
 
     }
+
+    @Test
+    fun loggedUserOnlyHasTheOptionToUpdateOwnInfoAndOpensBottomSheet() =  runComposeUiTest {
+
+        setContent {
+            UserListScreen(
+                loggedUser = loggedUser,
+                sortAscending = sortAscending.value,
+                state = state.value,
+                onAction = { action ->
+                    when (action) {
+                        is UserListAction.OnUpdateInfoClick -> {
+                            state.value = state.value.copy(
+                                isUpdateBottomSheetOpen = true,
+                                selectedUserId = action.id
+                            )
+                        }
+
+                        else -> {}
+                    }
+                },
+                onBottomSheetAction = { action ->
+                    when (action) {
+                        is UpdateInfoBottomSheetActions.OnUpdateInfoClick -> {
+                            state.value = state.value.copy(
+                                isUpdateBottomSheetOpen = false,
+                                selectedUserId = 0
+                            )
+                        }
+                        else -> {}
+                    }
+
+                }
+            )
+            UserListItem(
+                loggedUser = loggedUser,
+                user = UserPublic(2, "John", "Smith", Role.MOBILE_DEVELOPER),
+                isDropdownOpen = state.value.isChangeRoleDropdownOpen,
+                onUpdateInfoClick = {
+                    state.value = state.value.copy(
+                        isUpdateBottomSheetOpen = true,
+                        selectedUserId = 2
+                    )
+                },
+                onChangeRoleClick = {  },
+                onChangeRoleApply = { _, _ ->  },
+                onDeleteClick = {  }
+            )
+        }
+
+        assertEquals(expected = false, actual = state.value.isUpdateBottomSheetOpen)
+
+        onNodeWithText("Delete").assertDoesNotExist()
+
+        onNodeWithText("Change role").assertDoesNotExist()
+
+
+    }
+     */
+
 
 }

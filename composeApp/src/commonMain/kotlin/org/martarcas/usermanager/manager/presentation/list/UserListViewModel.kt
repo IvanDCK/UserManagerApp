@@ -2,6 +2,7 @@ package org.martarcas.usermanager.manager.presentation.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -256,6 +257,12 @@ class UserListViewModel(
                     )
                 }
             }
+        }
+    }
+
+    fun updateState(update: UserListState.() -> UserListState) {
+        viewModelScope.launch {
+            _state.update { it.update() }
         }
     }
 
