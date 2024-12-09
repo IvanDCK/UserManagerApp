@@ -6,8 +6,12 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
+import org.martarcas.usermanager.manager.data.remote.network.UserApi
+import org.martarcas.usermanager.manager.domain.UserRepository
 import org.martarcas.usermanager.manager.domain.model.Role
+import org.martarcas.usermanager.manager.domain.model.user.User
 import org.martarcas.usermanager.manager.domain.model.user.UserPublic
+import org.martarcas.usermanager.manager.domain.use_cases.user.GetAllUsersUseCase
 import org.martarcas.usermanager.manager.presentation.list.model.UserListAction
 import org.martarcas.usermanager.manager.presentation.list.model.UserListState
 import kotlin.test.Test
@@ -27,22 +31,30 @@ class UserListScreenTest {
         )
     )
 
+    private val loggedUser = User(
+        2, "John", "Smith", "logged@user.com", "12345678", Role.MOBILE_DEVELOPER
+    )
+
     private val sortAscending = mutableStateOf(false)
 
+    private val searchQuery = mutableStateOf("")
 
     private val state = mutableStateOf(
         UserListState(
             searchResults = dummyList.value,
-            loggedUser = null,
+            searchQuery = searchQuery.value,
+            loggedUser = loggedUser,
             sortAscending = sortAscending.value
         )
     )
+
+
     @Test
     fun resultListFiltersBySelectedRoles() = runComposeUiTest {
 
         setContent {
             UserListScreen(
-                loggedUser = null,
+                loggedUser = loggedUser,
                 sortAscending = sortAscending.value,
                 state = state.value,
                 onAction = { action ->
@@ -103,7 +115,7 @@ class UserListScreenTest {
 
         setContent {
             UserListScreen(
-                loggedUser = null,
+                loggedUser = loggedUser,
                 sortAscending = sortAscending.value,
                 state = state.value,
                 onAction = { action ->
@@ -136,5 +148,68 @@ class UserListScreenTest {
 
     }
 
+    @Test
+    fun searchResultsChangesWhenItsSearchedByNameOrSurnameAndResetsWhenQueryIsEmpty() = runComposeUiTest {
+
+        setContent {
+            UserListScreen(
+                loggedUser = loggedUser,
+                sortAscending = sortAscending.value,
+                state = state.value,
+                onAction = { action ->
+                    when (action) {
+                        is UserListAction.OnSearchQueryChange -> {
+                            searchQuery.value = action.query
+                            val sortedList = if (action.query.isEmpty()) {
+                                dummyList.value
+                            } else {
+                                dummyList.value.filter { it.name.contains(action.query, ignoreCase = true) || it.surname.contains(action.query, ignoreCase = true) }
+                            }
+                            dummyList.value = sortedList
+                            state.value = state.value.copy(searchResults = dummyList.value, searchQuery = searchQuery.value)
+                        }
+                        else -> {}
+                    }
+                },
+                onBottomSheetAction = {}
+            )
+        }
+
+        val originalList = dummyList.value
+
+        assertEquals(expected = 5, actual = state.value.searchResults.size)
+
+        searchQuery.value = "Smith"
+
+        val sortedList = if (searchQuery.value.isEmpty()) {
+            originalList
+        } else {
+            originalList.filter {
+                it.name.contains(searchQuery.value, ignoreCase = true) ||
+                    it.surname.contains(searchQuery.value, ignoreCase = true)
+            }
+        }
+
+        dummyList.value = sortedList
+        state.value = state.value.copy(searchResults = dummyList.value, searchQuery = searchQuery.value)
+
+        assertEquals(expected = 2, actual = state.value.searchResults.size)
+
+        searchQuery.value = ""
+        val sortedList2 = if (searchQuery.value.isEmpty()) {
+            originalList
+        } else {
+            originalList.filter {
+                it.name.contains(searchQuery.value, ignoreCase = true) ||
+                        it.surname.contains(searchQuery.value, ignoreCase = true)
+            }
+        }
+        dummyList.value = sortedList2
+
+        state.value = state.value.copy(searchResults = dummyList.value, searchQuery = searchQuery.value)
+
+        assertEquals(expected = 5, actual = state.value.searchResults.size)
+
+    }
 
 }
