@@ -181,7 +181,7 @@ android {
         versionName = "1.0"
 
         //testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        testInstrumentationRunner = "org.martarcas.usermanager.manager.core.InstrumentationTestRunner"
+        testInstrumentationRunner = "org.martarcas.usermanager.InstrumentationTestRunner"
 
     }
 

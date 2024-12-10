@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:name=".manager.core.TestApplication"
+        android:name=".TestApplication"
         android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:supportsRtl="true"

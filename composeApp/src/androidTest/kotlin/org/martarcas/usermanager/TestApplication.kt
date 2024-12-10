@@ -1,4 +1,4 @@
-package org.martarcas.usermanager.manager.core
+package org.martarcas.usermanager
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
@@ -16,6 +16,7 @@ import org.martarcas.usermanager.manager.di.platformModule
 class TestApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+
         startKoin {
             androidContext(ApplicationProvider.getApplicationContext())
             //modules(testModule, platformModule, databaseModule, datastoreModule)
@@ -29,5 +30,6 @@ class TestApplication : Application() {
                 AppModule().module
             )
         }
+
     }
 }

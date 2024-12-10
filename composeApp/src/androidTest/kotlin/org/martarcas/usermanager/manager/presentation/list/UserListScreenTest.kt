@@ -8,6 +8,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockkClass
@@ -17,29 +18,39 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.junit.Before
 import org.junit.Rule
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.koin.ksp.generated.module
 import org.koin.test.KoinTest
 import org.koin.test.get
 import org.koin.test.mock.MockProviderRule
 import org.koin.test.mock.declareMock
 import org.martarcas.usermanager.MainActivity
+import org.martarcas.usermanager.TestApplication
+import org.martarcas.usermanager.app.di.AppModule
 import org.martarcas.usermanager.app.presentation.AppViewModel
 import org.martarcas.usermanager.core.di.datastoreModule
 import org.martarcas.usermanager.core.domain.model.Result
 import org.martarcas.usermanager.core.domain.use_cases.datastore.DataStoreUseCases
+import org.martarcas.usermanager.core.domain.use_cases.datastore.ReadRememberMeUseCase
 import org.martarcas.usermanager.core.domain.use_cases.datastore.ReadUserUseCase
+import org.martarcas.usermanager.core.domain.use_cases.datastore.SaveRememberMeAndUserUseCase
 import org.martarcas.usermanager.manager.core.KoinTestRule
 import org.martarcas.usermanager.manager.data.remote.network.UserApi
 import org.martarcas.usermanager.manager.data.remote.network.UserApiImpl
 import org.martarcas.usermanager.manager.data.remote.repository.UserRepositoryImpl
+import org.martarcas.usermanager.manager.di.DataModule
+import org.martarcas.usermanager.manager.di.DomainModule
+import org.martarcas.usermanager.manager.di.PresentationModule
 import org.martarcas.usermanager.manager.di.databaseModule
 import org.martarcas.usermanager.manager.di.platformModule
 import org.martarcas.usermanager.manager.domain.UserRepository
@@ -74,19 +85,29 @@ class UserListScreenTest: KoinTest {
     )
 
     private lateinit var userListViewModel: UserListViewModel
+    private lateinit var appViewModel: AppViewModel
 
     @MockK
     lateinit var getAllUsersUseCase: GetAllUsersUseCase
 
     @MockK
+    lateinit var updateUserUseCase: UpdateUserUseCase
+
+    @MockK
     lateinit var readLoggedUserUseCase: ReadUserUseCase
+
+    @MockK
+    lateinit var readRememberMeUseCase: ReadRememberMeUseCase
+
+    @MockK
+    lateinit var saveRememberMeAndUserUseCase: SaveRememberMeAndUserUseCase
 
     @MockK
     lateinit var dataStoreUseCases: DataStoreUseCases
 
     private lateinit var testDispatcher: TestDispatcher
 
-    private val testModule = module {
+     val testModule = module {
         singleOf(::UserRepositoryImpl).bind<UserRepository>()
         singleOf(::UserApiImpl).bind<UserApi>()
 
@@ -136,6 +157,7 @@ class UserListScreenTest: KoinTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
+
     @OptIn(ExperimentalCoroutinesApi::class)
     @BeforeTest
     fun setUp() {
@@ -143,14 +165,27 @@ class UserListScreenTest: KoinTest {
         testDispatcher = StandardTestDispatcher()
         Dispatchers.setMain(testDispatcher)
 
-        userListViewModel = get<UserListViewModel>()
-
         readLoggedUserUseCase = declareMock<ReadUserUseCase>()
+        readRememberMeUseCase = declareMock<ReadRememberMeUseCase>()
         dataStoreUseCases = declareMock<DataStoreUseCases>()
+        saveRememberMeAndUserUseCase = declareMock<SaveRememberMeAndUserUseCase>()
         getAllUsersUseCase = declareMock<GetAllUsersUseCase>()
+        updateUserUseCase = declareMock<UpdateUserUseCase>()
 
         coEvery { dataStoreUseCases.readUserUseCase.invoke() } returns flow { emit(loggedUser) }
+        coEvery { dataStoreUseCases.readRememberMeUseCase.invoke() } returns flow { emit(true) }
+        coEvery { dataStoreUseCases.saveRememberMeAndUserUseCase.invoke(true, loggedUser) } returns Unit
         coEvery { getAllUsersUseCase.invoke() } returns Result.Success(dummyList.value)
+
+
+        appViewModel = get()
+
+        userListViewModel = get()
+        println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+        println("AppViewModel: $appViewModel")
+        println("UserListViewModel: $userListViewModel")
+
+
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -167,9 +202,10 @@ class UserListScreenTest: KoinTest {
     fun validateStateFlowUpdates() = runTest {
 
         userListViewModel.onAction(UserListAction.OnRoleFilterClick(Role.PROJECT_MANAGER))
-        //advanceUntilIdle()
+        advanceUntilIdle()
         runCurrent()
         val updatedState = userListViewModel.state.value
+        println("updatedState: $updatedState, size roles: ${updatedState.selectedRoles.size}")
         assertEquals(1, updatedState.selectedRoles.size)
         assertEquals(Role.PROJECT_MANAGER, updatedState.searchResults.first().role)
     }
@@ -177,7 +213,7 @@ class UserListScreenTest: KoinTest {
     @Test
     fun resultListFiltersBySelectedRoles() = runComposeUiTest {
        setContent {
-           val state2 by userListViewModel.state.collectAsState()
+           val state2 by userListViewModel.state.collectAsStateWithLifecycle()
             UserListScreen(
                 loggedUser = loggedUser,
                 sortAscending = state2.sortAscending,

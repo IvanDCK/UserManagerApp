@@ -1,4 +1,4 @@
-package org.martarcas.usermanager.manager.core
+package org.martarcas.usermanager
 
 import android.app.Application
 import android.content.Context
