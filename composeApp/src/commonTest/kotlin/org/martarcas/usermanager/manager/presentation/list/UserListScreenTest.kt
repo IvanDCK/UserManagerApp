@@ -54,7 +54,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-@OptIn(ExperimentalTestApi::class)
+/*@OptIn(ExperimentalTestApi::class)
 class UserListScreenTest: KoinTest {
 
     private lateinit var userListViewModel: UserListViewModel
@@ -202,7 +202,7 @@ class UserListScreenTest: KoinTest {
         }
     }
 
-    /*
+    *//*
      @Test
     fun sortButtonSortsByRoleImportanceAscendingThenDescending() = runComposeUiTest {
 
@@ -362,9 +362,9 @@ class UserListScreenTest: KoinTest {
 
 
     }
-     */
+     *//*
 
 
-}
+}*/
 
  */

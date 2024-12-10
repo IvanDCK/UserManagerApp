@@ -1,5 +1,5 @@
 [versions]
-agp = "8.5.2"
+agp = "8.6.0"
 android-compileSdk = "34"
 android-minSdk = "24"
 android-targetSdk = "34"
@@ -34,6 +34,7 @@ espresso-core = "3.5.0"
 kotlinx-coroutines-test = "1.9.0"
 espressoIdlingResource = "3.6.1"
 runner = "1.6.2"
+test-mockk = "1.13.12"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

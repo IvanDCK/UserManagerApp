@@ -81,7 +81,7 @@ class LoginViewModel(
      * @param email
      * @param password
      */
-    private fun validateLoginInputs(email: String, password: String): ValidationResult {
+    fun validateLoginInputs(email: String, password: String): ValidationResult {
         val errors = mutableListOf<String>()
         val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
 

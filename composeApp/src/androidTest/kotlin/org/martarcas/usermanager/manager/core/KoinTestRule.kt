@@ -10,6 +10,7 @@ import org.koin.core.context.GlobalContext.unloadKoinModules
 import org.koin.core.context.loadKoinModules
 import org.koin.core.module.Module
 
+
 class KoinTestRule(
     private val modules: List<Module>
 ) : TestWatcher() {

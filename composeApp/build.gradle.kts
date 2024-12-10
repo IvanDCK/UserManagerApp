@@ -114,13 +114,14 @@ kotlin {
             api(libs.koin.core)
             api(libs.koin.annotations)
             implementation(libs.koin.test)
-            implementation(libs.koin.test.junit4)
             implementation(libs.kotlinx.coroutines.test)
 
 
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.uiTest)
 
+
+            // Doesn't work
            // implementation(libs.robolectric)
             //implementation(libs.roborazzi)
             //implementation(libs.roborazzi.compose)
