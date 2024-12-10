@@ -28,4 +28,5 @@ class KoinTestRule(
     override fun finished(description: Description) {
         unloadKoinModules(modules)
     }
+
 }

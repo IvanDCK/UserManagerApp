@@ -11,6 +11,7 @@ import androidx.compose.ui.test.runComposeUiTest
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.mockkClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -57,11 +58,15 @@ import org.martarcas.usermanager.manager.domain.UserRepository
 import org.martarcas.usermanager.manager.domain.model.Role
 import org.martarcas.usermanager.manager.domain.model.user.User
 import org.martarcas.usermanager.manager.domain.model.user.UserPublic
+import org.martarcas.usermanager.manager.domain.use_cases.auth.LoginRequestUseCase
+import org.martarcas.usermanager.manager.domain.use_cases.auth.SignUpRequestUseCase
 import org.martarcas.usermanager.manager.domain.use_cases.user.DeleteUserUseCase
 import org.martarcas.usermanager.manager.domain.use_cases.user.GetAllUsersUseCase
 import org.martarcas.usermanager.manager.domain.use_cases.user.UpdateRoleUseCase
 import org.martarcas.usermanager.manager.domain.use_cases.user.UpdateUserUseCase
 import org.martarcas.usermanager.manager.presentation.list.model.UserListAction
+import org.martarcas.usermanager.manager.presentation.login.LoginViewModel
+import org.martarcas.usermanager.manager.presentation.signup.SignUpViewModel
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -86,7 +91,8 @@ class UserListScreenTest: KoinTest {
 
     private lateinit var userListViewModel: UserListViewModel
     private lateinit var appViewModel: AppViewModel
-
+    private lateinit var loginViewModel: LoginViewModel
+    private lateinit var signUpViewModel: SignUpViewModel
     @MockK
     lateinit var getAllUsersUseCase: GetAllUsersUseCase
 
@@ -107,48 +113,6 @@ class UserListScreenTest: KoinTest {
 
     private lateinit var testDispatcher: TestDispatcher
 
-     val testModule = module {
-        singleOf(::UserRepositoryImpl).bind<UserRepository>()
-        singleOf(::UserApiImpl).bind<UserApi>()
-
-        singleOf(::GetAllUsersUseCase)
-        singleOf(::UpdateUserUseCase)
-        singleOf(::UpdateRoleUseCase)
-        singleOf(::DeleteUserUseCase)
-
-        singleOf(::DataStoreUseCases)
-
-        viewModel<UserListViewModel> {
-            UserListViewModel(
-                getAllUsersUseCase = get(),
-                changeRoleUseCase = get(),
-                updateUserUseCase = get(),
-                deleteUserUseCase = get(),
-                dataStoreUseCases = get()
-            )
-        }
-        viewModel<AppViewModel> {
-            AppViewModel(
-                dataStoreUseCases = get()
-            )
-        }
-
-    }
-
-    @get:Rule
-    val koinTestRule = KoinTestRule(
-        modules = listOf(
-            databaseModule,
-            platformModule,
-            datastoreModule,
-            //DataModule().module,
-            //DomainModule().module,
-            //PresentationModule().module,
-            //AppModule().module,
-            testModule
-        )
-    )
-
     @get:Rule
     val mockProvider = MockProviderRule.create { clazz ->
         mockkClass(clazz)
@@ -165,27 +129,27 @@ class UserListScreenTest: KoinTest {
         testDispatcher = StandardTestDispatcher()
         Dispatchers.setMain(testDispatcher)
 
-        readLoggedUserUseCase = declareMock<ReadUserUseCase>()
-        readRememberMeUseCase = declareMock<ReadRememberMeUseCase>()
-        dataStoreUseCases = declareMock<DataStoreUseCases>()
-        saveRememberMeAndUserUseCase = declareMock<SaveRememberMeAndUserUseCase>()
-        getAllUsersUseCase = declareMock<GetAllUsersUseCase>()
-        updateUserUseCase = declareMock<UpdateUserUseCase>()
+        readLoggedUserUseCase = mockk()
+        dataStoreUseCases = mockk()
+        saveRememberMeAndUserUseCase = mockk()
+        getAllUsersUseCase = mockk()
+        updateUserUseCase = mockk()
+        readRememberMeUseCase = mockk()
+       //readRememberMeUseCase = declareMock<ReadRememberMeUseCase>()
+       //dataStoreUseCases = declareMock<DataStoreUseCases>()
+       //saveRememberMeAndUserUseCase = declareMock<SaveRememberMeAndUserUseCase>()
+       //getAllUsersUseCase = declareMock<GetAllUsersUseCase>()
+       //updateUserUseCase = declareMock<UpdateUserUseCase>()
 
         coEvery { dataStoreUseCases.readUserUseCase.invoke() } returns flow { emit(loggedUser) }
         coEvery { dataStoreUseCases.readRememberMeUseCase.invoke() } returns flow { emit(true) }
         coEvery { dataStoreUseCases.saveRememberMeAndUserUseCase.invoke(true, loggedUser) } returns Unit
         coEvery { getAllUsersUseCase.invoke() } returns Result.Success(dummyList.value)
 
-
         appViewModel = get()
-
+        loginViewModel = get()
+        signUpViewModel = get()
         userListViewModel = get()
-        println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-        println("AppViewModel: $appViewModel")
-        println("UserListViewModel: $userListViewModel")
-
-
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

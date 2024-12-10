@@ -4,12 +4,8 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:name=".TestApplication"
-        android:usesCleartextTraffic="true"
-        android:allowBackup="true"
-        android:supportsRtl="true"
-        android:theme="@android:style/Theme.Material.Light.NoActionBar">
-
+        android:name=".TestApplication">
     </application>
 
 </manifest>
+
