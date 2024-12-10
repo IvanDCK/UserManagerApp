@@ -1,21 +1,12 @@
 package org.martarcas.usermanager
 
 import android.app.Application
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.platform.app.InstrumentationRegistry
 import org.koin.android.ext.koin.androidContext
-import org.koin.core.context.GlobalContext
 import org.koin.core.context.GlobalContext.getKoinApplicationOrNull
 import org.koin.core.context.startKoin
-import org.koin.ksp.generated.module
-import org.martarcas.usermanager.app.di.AppModule
 import org.martarcas.usermanager.core.di.datastoreModule
-import org.martarcas.usermanager.manager.di.DataModule
-import org.martarcas.usermanager.manager.di.DomainModule
-import org.martarcas.usermanager.manager.di.PresentationModule
 import org.martarcas.usermanager.manager.di.databaseModule
 import org.martarcas.usermanager.manager.di.platformModule
-
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.bind

@@ -1,15 +1,14 @@
 package org.martarcas.usermanager.manager.presentation.list
 
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.runComposeUiTest
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.mockkClass
@@ -24,48 +23,27 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.junit.Before
+import org.junit.Assert.assertNotEquals
 import org.junit.Rule
-import org.koin.core.module.dsl.singleOf
-import org.koin.core.module.dsl.viewModel
-import org.koin.dsl.bind
-import org.koin.dsl.module
-import org.koin.ksp.generated.module
 import org.koin.test.KoinTest
 import org.koin.test.get
 import org.koin.test.mock.MockProviderRule
-import org.koin.test.mock.declareMock
 import org.martarcas.usermanager.MainActivity
-import org.martarcas.usermanager.TestApplication
-import org.martarcas.usermanager.app.di.AppModule
 import org.martarcas.usermanager.app.presentation.AppViewModel
-import org.martarcas.usermanager.core.di.datastoreModule
 import org.martarcas.usermanager.core.domain.model.Result
 import org.martarcas.usermanager.core.domain.use_cases.datastore.DataStoreUseCases
 import org.martarcas.usermanager.core.domain.use_cases.datastore.ReadRememberMeUseCase
 import org.martarcas.usermanager.core.domain.use_cases.datastore.ReadUserUseCase
 import org.martarcas.usermanager.core.domain.use_cases.datastore.SaveRememberMeAndUserUseCase
-import org.martarcas.usermanager.manager.core.KoinTestRule
-import org.martarcas.usermanager.manager.data.remote.network.UserApi
-import org.martarcas.usermanager.manager.data.remote.network.UserApiImpl
-import org.martarcas.usermanager.manager.data.remote.repository.UserRepositoryImpl
-import org.martarcas.usermanager.manager.di.DataModule
-import org.martarcas.usermanager.manager.di.DomainModule
-import org.martarcas.usermanager.manager.di.PresentationModule
-import org.martarcas.usermanager.manager.di.databaseModule
-import org.martarcas.usermanager.manager.di.platformModule
-import org.martarcas.usermanager.manager.domain.UserRepository
 import org.martarcas.usermanager.manager.domain.model.Role
 import org.martarcas.usermanager.manager.domain.model.user.User
 import org.martarcas.usermanager.manager.domain.model.user.UserPublic
 import org.martarcas.usermanager.manager.domain.use_cases.auth.LoginRequestUseCase
-import org.martarcas.usermanager.manager.domain.use_cases.auth.SignUpRequestUseCase
-import org.martarcas.usermanager.manager.domain.use_cases.user.DeleteUserUseCase
 import org.martarcas.usermanager.manager.domain.use_cases.user.GetAllUsersUseCase
-import org.martarcas.usermanager.manager.domain.use_cases.user.UpdateRoleUseCase
 import org.martarcas.usermanager.manager.domain.use_cases.user.UpdateUserUseCase
 import org.martarcas.usermanager.manager.presentation.list.model.UserListAction
 import org.martarcas.usermanager.manager.presentation.login.LoginViewModel
+import org.martarcas.usermanager.manager.presentation.login.model.LoginActions
 import org.martarcas.usermanager.manager.presentation.signup.SignUpViewModel
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -111,6 +89,9 @@ class UserListScreenTest: KoinTest {
     @MockK
     lateinit var dataStoreUseCases: DataStoreUseCases
 
+    @MockK
+    lateinit var loginRequestUseCase: LoginRequestUseCase
+
     private lateinit var testDispatcher: TestDispatcher
 
     @get:Rule
@@ -120,7 +101,6 @@ class UserListScreenTest: KoinTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
-
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @BeforeTest
@@ -135,14 +115,11 @@ class UserListScreenTest: KoinTest {
         getAllUsersUseCase = mockk()
         updateUserUseCase = mockk()
         readRememberMeUseCase = mockk()
-       //readRememberMeUseCase = declareMock<ReadRememberMeUseCase>()
-       //dataStoreUseCases = declareMock<DataStoreUseCases>()
-       //saveRememberMeAndUserUseCase = declareMock<SaveRememberMeAndUserUseCase>()
-       //getAllUsersUseCase = declareMock<GetAllUsersUseCase>()
-       //updateUserUseCase = declareMock<UpdateUserUseCase>()
+        loginRequestUseCase = mockk()
 
+        coEvery { loginRequestUseCase.invoke(any()) } returns Result.Success(loggedUser)
         coEvery { dataStoreUseCases.readUserUseCase.invoke() } returns flow { emit(loggedUser) }
-        coEvery { dataStoreUseCases.readRememberMeUseCase.invoke() } returns flow { emit(true) }
+        every { dataStoreUseCases.readRememberMeUseCase.invoke() } returns flow { emit(true) }
         coEvery { dataStoreUseCases.saveRememberMeAndUserUseCase.invoke(true, loggedUser) } returns Unit
         coEvery { getAllUsersUseCase.invoke() } returns Result.Success(dummyList.value)
 
@@ -150,264 +127,165 @@ class UserListScreenTest: KoinTest {
         loginViewModel = get()
         signUpViewModel = get()
         userListViewModel = get()
+
+        loginViewModel.onAction(LoginActions.OnEmailChange("logged@user.com"))
+        loginViewModel.onAction(LoginActions.OnPasswordChange("12345678"))
+        loginViewModel.onAction(LoginActions.OnLoginButtonClick)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @AfterTest
     fun tearDown() {
-        //stopKoin()
-        //koinApp.close()
         Dispatchers.resetMain()
         testDispatcher.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun validateStateFlowUpdates() = runTest {
+    fun validateStateFlowUpdates() = runTest(testDispatcher) {
 
         userListViewModel.onAction(UserListAction.OnRoleFilterClick(Role.PROJECT_MANAGER))
+
         advanceUntilIdle()
+        testDispatcher.scheduler.advanceUntilIdle()
         runCurrent()
+
         val updatedState = userListViewModel.state.value
         println("updatedState: $updatedState, size roles: ${updatedState.selectedRoles.size}")
         assertEquals(1, updatedState.selectedRoles.size)
         assertEquals(Role.PROJECT_MANAGER, updatedState.searchResults.first().role)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun resultListFiltersBySelectedRoles() = runComposeUiTest {
-       setContent {
-           val state2 by userListViewModel.state.collectAsStateWithLifecycle()
-            UserListScreen(
-                loggedUser = loggedUser,
-                sortAscending = state2.sortAscending,
-                state = state2,
-                onAction = { action ->
-                    when (action) {
-                        is UserListAction.OnRoleFilterClick -> {
-                            userListViewModel.onAction(action)
-                        }
-                        else -> {}
-                    }
-                },
-                onBottomSheetAction = {}
-            )
-        }
-
-        testDispatcher.scheduler.advanceUntilIdle()
-
+    fun resultListFiltersBySelectedRoles() = runTest(testDispatcher) {
 
         val stateValue = userListViewModel.state.value
 
-        // Filter by PROJECT MANAGER role, expect 1 result and PROJECT MANAGER as the first result
-        onNodeWithText("PROJECT MANAGER").performClick()
-        assertEquals(expected = 1, actual = stateValue.selectedRoles.size)
-        assertEquals(expected = 1, actual = stateValue.searchResults.size)
-        assertEquals(expected = Role.PROJECT_MANAGER, actual = stateValue.searchResults.first().role)
-        // Add CEO role to the filter, expect 2 results
-        onNodeWithText("CEO").performClick()
-        assertEquals(expected = 2, actual = stateValue.selectedRoles.size)
+        composeTestRule.runOnIdle {
+            // Filter by PROJECT MANAGER role, expect 1 result and PROJECT MANAGER as the first result
+            composeTestRule.onNodeWithText("PROJECT MANAGER").performClick()
+
+            advanceUntilIdle()
+            testDispatcher.scheduler.advanceUntilIdle()
+            runCurrent()
+
+            assertEquals(expected = 1, actual = stateValue.selectedRoles.size)
+            assertEquals(expected = 1, actual = stateValue.searchResults.size)
+            assertEquals(expected = Role.PROJECT_MANAGER, actual = stateValue.searchResults.first().role)
+            // Add CEO role to the filter, expect 2 results
+            composeTestRule.onNodeWithText("CEO").performClick()
+
+            advanceUntilIdle()
+            testDispatcher.scheduler.advanceUntilIdle()
+            runCurrent()
+
+            assertEquals(expected = 2, actual = stateValue.selectedRoles.size)
+            assertEquals(expected = 2, actual = stateValue.searchResults.size)
+
+            // Remove PROJECT MANAGER role from the filter, expect 1 result and role CEO as the first result
+            composeTestRule.onNodeWithText("PROJECT MANAGER").performClick()
+
+            advanceUntilIdle()
+            testDispatcher.scheduler.advanceUntilIdle()
+            runCurrent()
+
+            assertEquals(expected = 1, actual = stateValue.selectedRoles.size)
+            assertEquals(expected = 1, actual = stateValue.searchResults.size)
+            assertEquals(expected = Role.CEO, actual = stateValue.searchResults.first().role)
+
+            // Remove CEO role from the filter, expect 5 results (original list)
+            composeTestRule.onNodeWithText("CEO").performClick()
+            advanceUntilIdle()
+            testDispatcher.scheduler.advanceUntilIdle()
+            runCurrent()
+
+            assertEquals(expected = 0, actual = stateValue.selectedRoles.size)
+            assertEquals(expected = 5, actual = stateValue.searchResults.size)
+        }
+
+
+
+    }
+
+
+     @OptIn(ExperimentalCoroutinesApi::class)
+     @Test
+    fun sortButtonSortsByRoleImportanceAscendingThenDescending() = runTest(testDispatcher) {
+
+         val stateValue = userListViewModel.state.value
+
+
+         composeTestRule.runOnIdle {
+             composeTestRule.onNodeWithContentDescription("Sort button icon").assertExists()
+
+             advanceUntilIdle()
+             testDispatcher.scheduler.advanceUntilIdle()
+             runCurrent()
+
+             assertNotEquals(stateValue.searchResults.first().role, Role.CEO)
+
+             composeTestRule.onNodeWithContentDescription("Sort button icon").performClick()
+
+             advanceUntilIdle()
+             testDispatcher.scheduler.advanceUntilIdle()
+             runCurrent()
+
+             assertEquals(expected = Role.CEO, actual = stateValue.searchResults.first().role)
+
+             composeTestRule.onNodeWithContentDescription("Sort button icon").performClick()
+
+             advanceUntilIdle()
+             testDispatcher.scheduler.advanceUntilIdle()
+             runCurrent()
+
+             assertEquals(expected = Role.NEW_USER, actual = stateValue.searchResults.first().role)
+
+         }
+
+    }
+
+    @Test
+    fun searchResultsChangesWhenItsSearchedByNameOrSurnameAndResetsWhenQueryIsEmpty() = runTest(testDispatcher) {
+
+        val stateValue = userListViewModel.state.value
+
+        //assertEquals(expected = 5, actual = stateValue.searchResults.size)
+
+        userListViewModel.onAction(UserListAction.OnSearchQueryChange("Smith"))
+
         assertEquals(expected = 2, actual = stateValue.searchResults.size)
 
-        // Remove PROJECT MANAGER role from the filter, expect 1 result and role CEO as the first result
-        onNodeWithText("PROJECT MANAGER").performClick()
-        assertEquals(expected = 1, actual = stateValue.selectedRoles.size)
-        assertEquals(expected = 1, actual = stateValue.searchResults.size)
-        assertEquals(expected = Role.CEO, actual = stateValue.searchResults.first().role)
+        userListViewModel.onAction(UserListAction.OnSearchQueryChange(""))
 
-        // Remove CEO role from the filter, expect 5 results (original list)
-        onNodeWithText("CEO").performClick()
-        assertEquals(expected = 0, actual = stateValue.selectedRoles.size)
         assertEquals(expected = 5, actual = stateValue.searchResults.size)
-    }
-
-
-    /*
-
-
-    private val testModule = module {
-        singleOf(::UserRepositoryImpl).bind<UserRepository>()
-        singleOf(::UserApiImpl).bind<UserApi>()
-
-        singleOf(::GetAllUsersUseCase)
-        singleOf(::UpdateUserUseCase)
-        singleOf(::UpdateRoleUseCase)
-        singleOf(::DeleteUserUseCase)
-
-        singleOf(::DataStoreUseCases)
-
-        viewModel<UserListViewModel> {
-            UserListViewModel(
-                getAllUsersUseCase = get(),
-                changeRoleUseCase = get(),
-                updateUserUseCase = get(),
-                deleteUserUseCase = get(),
-                dataStoreUseCases = get()
-            )
-        }
 
     }
 
-
-     @Test
-    fun sortButtonSortsByRoleImportanceAscendingThenDescending() = runComposeUiTest {
-
-        setContent {
-            UserListScreen(
-                loggedUser = loggedUser,
-                sortAscending = sortAscending.value,
-                state = state.value,
-                onAction = { action ->
-                    when (action) {
-                        is UserListAction.OnSortIconClick -> {
-                            sortAscending.value = !sortAscending.value
-                            val sortedList = if (sortAscending.value) {
-                                dummyList.value.sortedBy { it.role.importance }
-                            } else {
-                                dummyList.value.sortedByDescending { it.role.importance }
-                            }
-                            dummyList.value = sortedList
-                            state.value = state.value.copy(searchResults = dummyList.value, sortAscending = sortAscending.value)
-                        }
-                        else -> {}
-                    }
-                },
-                onBottomSheetAction = {}
-            )
-        }
-
-        onNodeWithContentDescription("Sort button icon").assertExists()
-        assertNotEquals(state.value.searchResults.first().role, Role.CEO)
-
-        onNodeWithContentDescription("Sort button icon").performClick()
-        assertEquals(expected = Role.CEO, actual = state.value.searchResults.first().role)
-
-        onNodeWithContentDescription("Sort button icon").performClick()
-        assertEquals(expected = Role.NEW_USER, actual = state.value.searchResults.first().role)
-
-    }
-
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun searchResultsChangesWhenItsSearchedByNameOrSurnameAndResetsWhenQueryIsEmpty() = runComposeUiTest {
+    fun loggedUserOnlyHasTheOptionToUpdateOwnInfoAndOpensBottomSheet() = runTest(testDispatcher) {
 
-        setContent {
-            UserListScreen(
-                loggedUser = loggedUser,
-                sortAscending = sortAscending.value,
-                state = state.value,
-                onAction = { action ->
-                    when (action) {
-                        is UserListAction.OnSearchQueryChange -> {
-                            searchQuery.value = action.query
-                            val sortedList = if (action.query.isEmpty()) {
-                                dummyList.value
-                            } else {
-                                dummyList.value.filter { it.name.contains(action.query, ignoreCase = true) || it.surname.contains(action.query, ignoreCase = true) }
-                            }
-                            dummyList.value = sortedList
-                            state.value = state.value.copy(searchResults = dummyList.value, searchQuery = searchQuery.value)
-                        }
-                        else -> {}
-                    }
-                },
-                onBottomSheetAction = {}
-            )
+        val stateValue = userListViewModel.state.value
+
+        assertEquals(expected = false, actual = stateValue.isUpdateBottomSheetOpen)
+
+        composeTestRule.runOnIdle {
+            composeTestRule.onNodeWithText("Delete").assertDoesNotExist()
+            advanceUntilIdle()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            runCurrent()
+
+            composeTestRule.onNodeWithText("Change role").assertDoesNotExist()
+            advanceUntilIdle()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            runCurrent()
         }
 
-        val originalList = dummyList.value
-
-        assertEquals(expected = 5, actual = state.value.searchResults.size)
-
-        searchQuery.value = "Smith"
-
-        val sortedList = if (searchQuery.value.isEmpty()) {
-            originalList
-        } else {
-            originalList.filter {
-                it.name.contains(searchQuery.value, ignoreCase = true) ||
-                    it.surname.contains(searchQuery.value, ignoreCase = true)
-            }
-        }
-
-        dummyList.value = sortedList
-        state.value = state.value.copy(searchResults = dummyList.value, searchQuery = searchQuery.value)
-
-        assertEquals(expected = 2, actual = state.value.searchResults.size)
-
-        searchQuery.value = ""
-        val sortedList2 = if (searchQuery.value.isEmpty()) {
-            originalList
-        } else {
-            originalList.filter {
-                it.name.contains(searchQuery.value, ignoreCase = true) ||
-                        it.surname.contains(searchQuery.value, ignoreCase = true)
-            }
-        }
-        dummyList.value = sortedList2
-
-        state.value = state.value.copy(searchResults = dummyList.value, searchQuery = searchQuery.value)
-
-        assertEquals(expected = 5, actual = state.value.searchResults.size)
-
-    }
-
-    @Test
-    fun loggedUserOnlyHasTheOptionToUpdateOwnInfoAndOpensBottomSheet() =  runComposeUiTest {
-
-        setContent {
-            UserListScreen(
-                loggedUser = loggedUser,
-                sortAscending = sortAscending.value,
-                state = state.value,
-                onAction = { action ->
-                    when (action) {
-                        is UserListAction.OnUpdateInfoClick -> {
-                            state.value = state.value.copy(
-                                isUpdateBottomSheetOpen = true,
-                                selectedUserId = action.id
-                            )
-                        }
-
-                        else -> {}
-                    }
-                },
-                onBottomSheetAction = { action ->
-                    when (action) {
-                        is UpdateInfoBottomSheetActions.OnUpdateInfoClick -> {
-                            state.value = state.value.copy(
-                                isUpdateBottomSheetOpen = false,
-                                selectedUserId = 0
-                            )
-                        }
-                        else -> {}
-                    }
-
-                }
-            )
-            UserListItem(
-                loggedUser = loggedUser,
-                user = UserPublic(2, "John", "Smith", Role.MOBILE_DEVELOPER),
-                isDropdownOpen = state.value.isChangeRoleDropdownOpen,
-                onUpdateInfoClick = {
-                    state.value = state.value.copy(
-                        isUpdateBottomSheetOpen = true,
-                        selectedUserId = 2
-                    )
-                },
-                onChangeRoleClick = {  },
-                onChangeRoleApply = { _, _ ->  },
-                onDeleteClick = {  }
-            )
-        }
-
-        assertEquals(expected = false, actual = state.value.isUpdateBottomSheetOpen)
-
-        onNodeWithText("Delete").assertDoesNotExist()
-
-        onNodeWithText("Change role").assertDoesNotExist()
 
 
     }
-     */
 
 }
