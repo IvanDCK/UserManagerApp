@@ -17,7 +17,6 @@ plugins {
 
     //alias(libs.plugins.roborazzi)
 
-    //id("dev.mokkery") version "2.5.0"
 
 }
 
@@ -36,6 +35,7 @@ kotlin {
                 implementation(libs.core.ktx)
                 implementation(libs.compose.ui.test.junit4.android)
                 debugImplementation(libs.compose.ui.test.manifest)
+                implementation(libs.kotlinx.coroutines.test)
             }
         }
     }
@@ -218,6 +218,6 @@ dependencies {
     testImplementation(libs.mockk)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.mockk.agent)
-
+    testImplementation(libs.kotlinx.coroutines.test)
 }
 

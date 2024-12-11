@@ -1,12 +1,9 @@
 package org.martarcas.usermanager.manager.presentation.login
 
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
@@ -21,7 +18,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.Rule
 import org.koin.test.KoinTest
-import org.koin.test.get
 import org.martarcas.usermanager.app.presentation.AppViewModel
 import org.martarcas.usermanager.core.domain.use_cases.datastore.DataStoreUseCases
 import org.martarcas.usermanager.core.domain.use_cases.datastore.ReadRememberMeUseCase
@@ -85,8 +81,14 @@ class LoginViewModelTest : KoinTest {
         every { dataStoreUseCases.readRememberMeUseCase.invoke() } returns flow { emit(false) }
         //coEvery { dataStoreUseCases.saveRememberMeAndUserUseCase.invoke(false, loggedUser) } returns Unit
 
-        appViewModel = get()
-        loginViewModel = get()
+        appViewModel = AppViewModel(
+            dataStoreUseCases = dataStoreUseCases
+        )
+
+        loginViewModel = LoginViewModel(
+            loginRequestUseCase = loginRequestUseCase,
+            dataStoreUseCases = dataStoreUseCases
+        )
 
         //loginViewModel.onAction(LoginActions.OnEmailChange("logged@user.com"))
         //loginViewModel.onAction(LoginActions.OnPasswordChange("12345678"))
@@ -100,7 +102,7 @@ class LoginViewModelTest : KoinTest {
         testDispatcher.cancel()
     }
 
-/*    @Test
+   @Test
     fun checkIfPasswordIsVisibleWhenPasswordVisibilityIconIsClicked() = scope.runTest {
 
         composeTestRule.mainClock.autoAdvance = false
@@ -142,7 +144,7 @@ class LoginViewModelTest : KoinTest {
 
         println("Second click -> " + loginViewModel.uiState.value.isPasswordVisible)
         assertEquals(expected = false, actual = loginViewModel.uiState.value.isPasswordVisible)
-    }*/
+    }
 
     @Test
     fun checkIfPasswordIsVisibleWhenPasswordVisibilityIconIsClickedV2() = scope.runTest {
@@ -159,18 +161,15 @@ class LoginViewModelTest : KoinTest {
         composeTestRule.waitForIdle()
 
         assertEquals(expected = false, actual = loginViewModel.uiState.value.isPasswordVisible)
-        println("Starting value -> ${loginViewModel.uiState.value.isPasswordVisible}")
         loginViewModel.onAction(LoginActions.OnPasswordVisibleClick)
 
         composeTestRule.waitForIdle()
 
         assertEquals(expected = true, actual = loginViewModel.uiState.value.isPasswordVisible)
-        println("First click -> ${loginViewModel.uiState.value.isPasswordVisible}")
         loginViewModel.onAction(LoginActions.OnPasswordVisibleClick)
 
         composeTestRule.waitForIdle()
 
         assertEquals(expected = false, actual = loginViewModel.uiState.value.isPasswordVisible)
-        println("Second click -> ${loginViewModel.uiState.value.isPasswordVisible}")
     }
 }
