@@ -86,19 +86,29 @@ fun UserListItem(
                     modifier = Modifier.padding(horizontal = 4.dp),
                     endIcon = if (!isDropdownOpen ) painterResource(Res.drawable.arrow_down) else painterResource(Res.drawable.arrow_up)
                 )
-
                 DropdownMenu(
                     expanded = isDropdownOpen,
                     onDismissRequest = onChangeRoleClick
                     ) {
-                    Role.entries.forEach { role ->
-                        DropdownMenuItem(
-                            text = { Text(role.name.replace("_", " ")) },
-                            onClick = {
-                                onChangeRoleApply(user.id, role) })
+                    if (loggedUser.role == Role.PROJECT_MANAGER){
+                        val rolesToExclude = listOf(Role.CEO, Role.PROJECT_MANAGER, Role.HUMAN_RESOURCES, Role.NEW_USER)
+                        Role.entries.filter {
+                            rolesToExclude.contains(it).not()
+                        }.forEach { role ->
+                            DropdownMenuItem(
+                                text = { Text(role.name.replace("_", " ")) },
+                                onClick = {
+                                    onChangeRoleApply(user.id, role) })
+                        }
+                    } else {
+                        Role.entries.forEach { role ->
+                            DropdownMenuItem(
+                                text = { Text(role.name.replace("_", " ")) },
+                                onClick = {
+                                    onChangeRoleApply(user.id, role) })
+                        }
                     }
                 }
-
             }
 
             if (loggedUser?.id == user.id) {
@@ -122,6 +132,5 @@ fun UserListItem(
             }
 
         }
-
     }
 }

@@ -3,6 +3,7 @@ package org.martarcas.usermanager.manager.presentation.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.debounce
@@ -36,7 +37,6 @@ import org.martarcas.usermanager.manager.presentation.list.model.UserListAction
 import org.martarcas.usermanager.manager.presentation.list.model.UserListState
 import org.martarcas.usermanager.manager.presentation.signup.model.ValidationResult
 
-
 @KoinViewModel
 class UserListViewModel(
     private val getAllUsersUseCase: GetAllUsersUseCase,
@@ -45,7 +45,6 @@ class UserListViewModel(
     private val deleteUserUseCase: DeleteUserUseCase,
     @Provided private val dataStoreUseCases: DataStoreUseCases,
     private val isTestEnvironment: Boolean = false
-
 ) : ViewModel() {
 
     private var cachedUsers = emptyList<UserPublic>()
@@ -53,7 +52,10 @@ class UserListViewModel(
     private val _state = MutableStateFlow(UserListState())
     val state = _state
         .onStart {
-            if(cachedUsers.isEmpty() || isTestEnvironment) {
+            if(cachedUsers.isEmpty()) {
+                observeSearchQuery()
+            }
+            if(isTestEnvironment) {
                 observeSearchQuery()
             }
         }
@@ -399,6 +401,7 @@ class UserListViewModel(
             }
             getAllUsersUseCase.invoke()
                 .onSuccess { users ->
+                    delay(1000)
                     cachedUsers = users
                     _state.update {
                         it.copy(
@@ -406,9 +409,6 @@ class UserListViewModel(
                             errorMessage = null,
                             isLoading = false
                         )
-                    }
-                    users.forEach {
-                        println(it)
                     }
                 }
                 .onError { error ->
