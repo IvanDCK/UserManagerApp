@@ -28,6 +28,7 @@ fun SortButton(
             contentPadding = PaddingValues(vertical = 10.dp, horizontal = 4.dp),
             iconTint = Color.Black,
             buttonColor = Sunny,
+            contentDescription = "Sort button icon"
         )
     } else {
         MultipurposeButton(
@@ -39,6 +40,7 @@ fun SortButton(
             contentPadding = PaddingValues(vertical = 10.dp, horizontal = 4.dp),
             iconTint = Color.Black,
             buttonColor = Sunny,
+            contentDescription = "Sort button icon"
         )
     }
 }

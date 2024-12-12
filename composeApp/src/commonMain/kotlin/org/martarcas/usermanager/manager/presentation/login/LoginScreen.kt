@@ -94,14 +94,16 @@ fun LoginScreen(
             modifier = Modifier.fillMaxSize().padding(innerPadding).verticalScroll(
                 rememberScrollState()
             ),
-            viewModel = loginViewModel,
+            onAction = {
+                loginViewModel.onAction(it)
+            },
             uiState = uiState
         )
     }
 }
 
 @Composable
-fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, uiState: LoginUiState) {
+fun LoginContent(modifier: Modifier, onAction: (LoginActions) -> Unit, uiState: LoginUiState) {
     val textFieldModifier = Modifier
         .fillMaxWidth(0.9f)
         .height(70.dp)
@@ -126,7 +128,7 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, uiState: LoginUi
             modifier = textFieldModifier,
             value = uiState.email,
             onValueChange = {
-                viewModel.onAction(LoginActions.OnEmailChange(it))
+                onAction(LoginActions.OnEmailChange(it))
             },
             label = "Email"
         )
@@ -137,12 +139,12 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, uiState: LoginUi
             modifier = textFieldModifier,
             value = uiState.password,
             onValueChange = {
-                viewModel.onAction(LoginActions.OnPasswordChange(it))
+                onAction(LoginActions.OnPasswordChange(it))
             },
             label = "Password",
             visualTransformation = if (uiState.isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
-                IconButton(onClick = { viewModel.onAction(LoginActions.OnPasswordVisibleClick) }) {
+                IconButton(onClick = { onAction(LoginActions.OnPasswordVisibleClick) }) {
                     Icon(
                         painter = painterResource(passwordVisibilityIcon),
                         contentDescription = "Toggle password visibility",
@@ -154,14 +156,14 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, uiState: LoginUi
 
         Spacer(modifier = Modifier.height(5.dp))
 
-        RememberMeCheckBox(uiState, viewModel)
+        RememberMeCheckBox(uiState, onAction)
 
         Spacer(modifier = Modifier.height(5.dp))
 
         AuthButton(
             isLoading = uiState.isLoadingOnClick,
             onClick = {
-                viewModel.onAction(LoginActions.OnLoginButtonClick)
+                onAction(LoginActions.OnLoginButtonClick)
             },
             buttonText = "Log in"
         )
@@ -173,7 +175,7 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, uiState: LoginUi
 }
 
 @Composable
-fun RememberMeCheckBox(uiState: LoginUiState, viewModel: LoginViewModel) {
+fun RememberMeCheckBox(uiState: LoginUiState, onAction: (LoginActions) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth(0.9f),
@@ -183,7 +185,7 @@ fun RememberMeCheckBox(uiState: LoginUiState, viewModel: LoginViewModel) {
         Checkbox(
             checked = uiState.rememberMeIsChecked,
             onCheckedChange = {
-                viewModel.onAction(LoginActions.OnRememberMeChange)
+                onAction(LoginActions.OnRememberMeChange)
             }
         )
         Text("Remember me")

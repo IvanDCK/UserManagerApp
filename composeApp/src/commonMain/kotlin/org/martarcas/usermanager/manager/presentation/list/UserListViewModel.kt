@@ -43,7 +43,8 @@ class UserListViewModel(
     private val changeRoleUseCase: UpdateRoleUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
     private val deleteUserUseCase: DeleteUserUseCase,
-    @Provided private val dataStoreUseCases: DataStoreUseCases
+    @Provided private val dataStoreUseCases: DataStoreUseCases,
+    private val isTestEnvironment: Boolean = false
 
 ) : ViewModel() {
 
@@ -52,7 +53,7 @@ class UserListViewModel(
     private val _state = MutableStateFlow(UserListState())
     val state = _state
         .onStart {
-            if (cachedUsers.isEmpty()) {
+            if(cachedUsers.isEmpty() || isTestEnvironment) {
                 observeSearchQuery()
             }
         }
@@ -112,20 +113,17 @@ class UserListViewModel(
             _state.value.selectedRoles.contains(user.role)
         }
 
-        val listToSearch = if (_state.value.selectedRoles.isEmpty()) {
+        val listToSearch = if (_state.value.selectedRoles.isEmpty()){
             cachedUsers
         } else {
             filteredUsersByRole
         }
 
         val filteredUsers = listToSearch.filter {
-            it.name.contains(query, ignoreCase = true) || it.surname.contains(
-                query,
-                ignoreCase = true
-            )
+            it.name.contains(query, ignoreCase = true) || it.surname.contains(query, ignoreCase = true)
         }
 
-        if (filteredUsers.isEmpty()) {
+        if (filteredUsers.isEmpty()){
             _state.update {
                 it.copy(
                     searchResults = emptyList(),
@@ -151,7 +149,7 @@ class UserListViewModel(
             _state.value.selectedRoles.contains(user.role)
         }
 
-        if (filteredUsers.isEmpty()) {
+        if (filteredUsers.isEmpty()){
             _state.update {
                 it.copy(
                     searchResults = emptyList(),
@@ -167,7 +165,7 @@ class UserListViewModel(
             }
         }
 
-        if (_state.value.selectedRoles.isEmpty()) {
+        if (_state.value.selectedRoles.isEmpty()){
             _state.update {
                 it.copy(
                     searchResults = cachedUsers,
@@ -176,13 +174,12 @@ class UserListViewModel(
             }
         }
     }
-
     /**
      * Handles all the user list actions
      * @param action
      */
     fun onAction(action: UserListAction) {
-        when (action) {
+        when(action) {
             is UserListAction.OnUpdateInfoClick -> {
                 _state.update {
                     it.copy(
@@ -208,14 +205,12 @@ class UserListViewModel(
                 }
 
             }
-
             is UserListAction.OnDeleteConfirm -> deleteUser(action.id)
             is UserListAction.OnSearchQueryChange -> {
                 _state.update {
                     it.copy(searchQuery = action.query)
                 }
             }
-
             is UserListAction.OnRoleFilterClick -> {
                 _state.update {
                     it.copy(
@@ -228,7 +223,6 @@ class UserListViewModel(
                 }
                 filterUsersByRole()
             }
-
             UserListAction.OnSortIconClick -> {
                 _state.update {
                     it.copy(
@@ -284,8 +278,8 @@ class UserListViewModel(
      * Handles the bottom sheet actions that opens when the user clicks on the update info button
      * @param action
      */
-    fun onBottomSheetAction(action: UpdateInfoBottomSheetActions) {
-        when (action) {
+    fun onBottomSheetAction(action: UpdateInfoBottomSheetActions){
+        when(action) {
             is UpdateInfoBottomSheetActions.OnEmailChange -> {
                 _state.update {
                     it.copy(
@@ -293,7 +287,6 @@ class UserListViewModel(
                     )
                 }
             }
-
             is UpdateInfoBottomSheetActions.OnNameChange -> {
                 _state.update {
                     it.copy(
@@ -301,7 +294,6 @@ class UserListViewModel(
                     )
                 }
             }
-
             is UpdateInfoBottomSheetActions.OnPasswordChange -> {
                 _state.update {
                     it.copy(
@@ -309,7 +301,6 @@ class UserListViewModel(
                     )
                 }
             }
-
             UpdateInfoBottomSheetActions.OnPasswordVisibilityChange -> {
                 _state.update {
                     it.copy(
@@ -317,7 +308,6 @@ class UserListViewModel(
                     )
                 }
             }
-
             is UpdateInfoBottomSheetActions.OnSurnameChange -> {
                 _state.update {
                     it.copy(
@@ -325,7 +315,6 @@ class UserListViewModel(
                     )
                 }
             }
-
             UpdateInfoBottomSheetActions.OnUpdateInfoClick -> {
                 updateUser()
             }
@@ -354,11 +343,7 @@ class UserListViewModel(
             if (validationResult.isValid.not()) {
                 _state.update {
                     it.copy(
-                        bottomSheetErrorMessage = UiText.DynamicString(
-                            validationResult.errors.joinToString(
-                                "\n"
-                            )
-                        ),
+                        bottomSheetErrorMessage = UiText.DynamicString(validationResult.errors.joinToString("\n")),
                         isUpdateInfoLoading = false
                     )
                 }

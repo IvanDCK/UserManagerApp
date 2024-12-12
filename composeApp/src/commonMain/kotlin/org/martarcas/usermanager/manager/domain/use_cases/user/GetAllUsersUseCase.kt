@@ -5,7 +5,7 @@ import org.martarcas.usermanager.manager.domain.UserRepository
 
 
 @Single
-class GetAllUsersUseCase(
+open class GetAllUsersUseCase(
     private val userRepository: UserRepository
 ) {
     suspend fun invoke() = userRepository.getAllUsers()

@@ -24,5 +24,6 @@ fun LogoutButton(onAction: (UserListAction) -> Unit, navigateToLogin: () -> Unit
         contentPadding = PaddingValues(vertical = 10.dp, horizontal = 4.dp),
         iconTint = Color.Black,
         buttonColor = Sunny,
+        contentDescription = "logout_button"
     )
 }
