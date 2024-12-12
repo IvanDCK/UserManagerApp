@@ -23,7 +23,7 @@ fun AuthButton(isLoading: Boolean, onClick: () -> Unit, buttonText: String) {
         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
     ) {
         if (isLoading) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(color = Color.White)
         } else {
             Text(buttonText, color = Color.White, fontSize = 20.sp)
         }

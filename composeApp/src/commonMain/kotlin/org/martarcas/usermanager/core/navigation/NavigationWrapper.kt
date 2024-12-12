@@ -40,14 +40,19 @@ fun NavigationWrapper(shouldStartFromList: Boolean) {
                     navController.navigate(SignUp)
                 },
                 navigateToList = {
-                    navController.navigate(List)
+                    navController.navigate(List) {
+                        popUpTo<SignUp> { inclusive = true }
+                    }
+
                 }
             )
         }
 
         composable<SignUp> {
             SignUpScreen {
-                navController.navigate(Login)
+                navController.navigate(Login) {
+                    popUpTo<Login> { inclusive = true }
+                }
             }
         }
 
