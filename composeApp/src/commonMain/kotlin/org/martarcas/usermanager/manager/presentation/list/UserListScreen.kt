@@ -29,6 +29,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.martarcas.usermanager.manager.domain.model.Role
 import org.martarcas.usermanager.manager.domain.model.user.User
 import org.martarcas.usermanager.manager.presentation.list.components.ListSearchBar
+import org.martarcas.usermanager.manager.presentation.list.components.LogoutButton
 import org.martarcas.usermanager.manager.presentation.list.components.RoleButton
 import org.martarcas.usermanager.manager.presentation.list.components.SortButton
 import org.martarcas.usermanager.manager.presentation.list.components.UserList
@@ -40,7 +41,8 @@ import usermanagerapp.composeapp.generated.resources.no_search_results
 
 @Composable
 fun UserListScreenRoot(
-    viewModel: UserListViewModel
+    viewModel: UserListViewModel,
+    navigateToLogin: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -60,7 +62,8 @@ fun UserListScreenRoot(
         },
         onBottomSheetAction = { action ->
             viewModel.onBottomSheetAction(action)
-        }
+        },
+        navigateToLogin = navigateToLogin
     )
 }
 
@@ -70,7 +73,8 @@ fun UserListScreen(
     sortAscending: Boolean,
     state: UserListState,
     onAction: (UserListAction) -> Unit,
-    onBottomSheetAction: (UpdateInfoBottomSheetActions) -> Unit
+    onBottomSheetAction: (UpdateInfoBottomSheetActions) -> Unit,
+    navigateToLogin: () -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -103,9 +107,8 @@ fun UserListScreen(
                 modifier = Modifier.fillMaxWidth().weight(2f)
                     .padding(horizontal = 8.dp, vertical = 8.dp)
             )
-
             SortButton(sortAscending, onAction)
-
+            LogoutButton(onAction, navigateToLogin)
         }
 
         LazyRow(

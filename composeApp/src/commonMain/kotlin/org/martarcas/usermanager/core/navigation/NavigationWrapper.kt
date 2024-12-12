@@ -53,7 +53,10 @@ fun NavigationWrapper(startDestination: String) {
 
         composable<List> {
             UserListScreenRoot(
-                viewModel = listViewModel
+                viewModel = listViewModel,
+                navigateToLogin = {
+                    navController.navigate(Login)
+                }
             )
 
         }
