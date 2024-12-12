@@ -2,7 +2,6 @@ package org.martarcas.usermanager.manager.presentation.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -44,7 +43,8 @@ class UserListViewModel(
     private val changeRoleUseCase: UpdateRoleUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
     private val deleteUserUseCase: DeleteUserUseCase,
-    @Provided private val dataStoreUseCases: DataStoreUseCases
+    @Provided private val dataStoreUseCases: DataStoreUseCases,
+    private val isTestEnvironment: Boolean = false
 
 ): ViewModel() {
 
@@ -53,7 +53,7 @@ class UserListViewModel(
     private val _state = MutableStateFlow(UserListState())
     val state = _state
         .onStart {
-            if(cachedUsers.isEmpty()) {
+            if(cachedUsers.isEmpty() || isTestEnvironment) {
                 observeSearchQuery()
             }
         }

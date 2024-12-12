@@ -1,7 +1,10 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
+import org.jetbrains.kotlin.gradle.report.TaskExecutionState
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
@@ -208,6 +211,15 @@ android {
         unitTests {
             isIncludeAndroidResources = true
         }
+        unitTests.all { test ->
+            test.testLogging {
+                events.addAll(listOf(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED))
+                showCauses = true
+                showExceptions = true
+                exceptionFormat = TestExceptionFormat.FULL
+            }
+        }
+        animationsDisabled = true
     }
 
 }

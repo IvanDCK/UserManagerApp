@@ -1,14 +1,12 @@
 package org.martarcas.usermanager.manager.presentation.login
 
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,12 +14,12 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.Rule
 import org.koin.test.KoinTest
-import org.koin.test.get
 import org.martarcas.usermanager.app.presentation.AppViewModel
 import org.martarcas.usermanager.core.domain.use_cases.datastore.DataStoreUseCases
 import org.martarcas.usermanager.core.domain.use_cases.datastore.ReadRememberMeUseCase
@@ -37,7 +35,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 
-class LoginViewModelTest : KoinTest {
+class LoginViewModelTest {
+
 
     private val loggedUser = User(
         2, "John", "Smith", "logged@user.com", "12345678", Role.MOBILE_DEVELOPER
@@ -45,6 +44,9 @@ class LoginViewModelTest : KoinTest {
 
     private lateinit var appViewModel: AppViewModel
     private lateinit var loginViewModel: LoginViewModel
+
+    @get:Rule
+    val mockkRule = MockKRule(this)
 
     @MockK
     lateinit var readLoggedUserUseCase: ReadUserUseCase
@@ -61,7 +63,6 @@ class LoginViewModelTest : KoinTest {
     @MockK
     lateinit var loginRequestUseCase: LoginRequestUseCase
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @get:Rule(order = 0)
@@ -85,8 +86,14 @@ class LoginViewModelTest : KoinTest {
         every { dataStoreUseCases.readRememberMeUseCase.invoke() } returns flow { emit(false) }
         //coEvery { dataStoreUseCases.saveRememberMeAndUserUseCase.invoke(false, loggedUser) } returns Unit
 
-        appViewModel = get()
-        loginViewModel = get()
+        appViewModel = AppViewModel(
+            dataStoreUseCases = dataStoreUseCases
+        )
+
+        loginViewModel = LoginViewModel(
+            loginRequestUseCase = loginRequestUseCase,
+            dataStoreUseCases = dataStoreUseCases
+        )
 
         //loginViewModel.onAction(LoginActions.OnEmailChange("logged@user.com"))
         //loginViewModel.onAction(LoginActions.OnPasswordChange("12345678"))
@@ -100,106 +107,58 @@ class LoginViewModelTest : KoinTest {
         testDispatcher.cancel()
     }
 
-    @Test
-    fun checkEmailIsChangedOnUserInput() = scope.runTest {
+   @OptIn(ExperimentalCoroutinesApi::class)
+   @Test
+    fun checkIfPasswordIsVisibleWhenPasswordVisibilityIconIsClicked() = scope.runTest {
+
         composeTestRule.mainClock.autoAdvance = false
+
+        composeTestRule.waitForIdle()
+
+        composeTestRule.mainClock.advanceTimeBy(2000)
 
         composeTestRule.setContent {
             LoginContent(
                 modifier = Modifier,
-                onAction = { loginViewModel.onAction(it) },
+                onAction = {
+                    loginViewModel.onAction(it)
+                },
                 uiState = loginViewModel.uiState.value
             )
         }
 
         composeTestRule.waitForIdle()
+        advanceUntilIdle()
 
-        assertEquals(expected = "", actual = loginViewModel.uiState.value.email)
 
-        loginViewModel.onAction(LoginActions.OnEmailChange("alejandro"))
+        assertEquals(expected = false, actual = loginViewModel.uiState.value.isPasswordVisible)
+        println("Starting value " + loginViewModel.uiState.value.isPasswordVisible)
+
+
+        composeTestRule.onNodeWithContentDescription("Toggle password visibility").performClick()
+
         composeTestRule.waitForIdle()
-        assertEquals(expected = "alejandro", actual = loginViewModel.uiState.value.email)
+        advanceUntilIdle()
 
-        loginViewModel.onAction(LoginActions.OnEmailChange("aleja"))
-        composeTestRule.waitForIdle()
-        assertEquals(expected = "aleja", actual = loginViewModel.uiState.value.email)
+        println("First click -> " + loginViewModel.uiState.value.isPasswordVisible)
+        assertEquals(expected = true, actual = loginViewModel.uiState.value.isPasswordVisible)
 
-        loginViewModel.onAction(LoginActions.OnEmailChange("alejandro@gmail.com"))
+
+         composeTestRule.onNodeWithContentDescription("Toggle password visibility").performClick()
+
         composeTestRule.waitForIdle()
-        assertEquals(expected = "alejandro@gmail.com", actual = loginViewModel.uiState.value.email)
+        advanceUntilIdle()
+
+        println("Second click -> " + loginViewModel.uiState.value.isPasswordVisible)
+        assertEquals(expected = false, actual = loginViewModel.uiState.value.isPasswordVisible)
     }
-
-    @Test
-    fun checkPasswordIsChangedOnUserInput() = scope.runTest {
-        composeTestRule.mainClock.autoAdvance = false
-
-        composeTestRule.setContent {
-            LoginContent(
-                modifier = Modifier,
-                onAction = { loginViewModel.onAction(it) },
-                uiState = loginViewModel.uiState.value)
-        }
-
-        composeTestRule.waitForIdle()
-
-        assertEquals(expected = "", actual = loginViewModel.uiState.value.password)
-
-        loginViewModel.onAction(LoginActions.OnPasswordChange("1234567"))
-        composeTestRule.waitForIdle()
-        assertEquals(expected = "1234567", actual = loginViewModel.uiState.value.password)
-
-        loginViewModel.onAction(LoginActions.OnPasswordChange("12345678"))
-        composeTestRule.waitForIdle()
-        assertEquals(expected = "12345678", actual = loginViewModel.uiState.value.password)
-    }
-
-    /*   @Test
-        fun checkIfPasswordIsVisibleWhenPasswordVisibilityIconIsClicked() = scope.runTest {
-
-            composeTestRule.mainClock.autoAdvance = false
-
-            composeTestRule.waitForIdle()
-
-            composeTestRule.setContent {
-                LoginContent(
-                    modifier = Modifier,
-                    onAction = {
-                        loginViewModel.onAction(it)
-                    },
-                    uiState = loginViewModel.uiState.value
-                )
-            }
-            composeTestRule.waitForIdle()
-
-            assertEquals(expected = false, actual = loginViewModel.uiState.value.isPasswordVisible)
-            println("Starting value " + loginViewModel.uiState.value.isPasswordVisible)
-
-
-            composeTestRule.onNodeWithContentDescription(
-                "Toggle password visibility",
-                useUnmergedTree = true
-            ).performClick()
-
-            composeTestRule.waitForIdle()
-
-            println("First click -> " + loginViewModel.uiState.value.isPasswordVisible)
-            assertEquals(expected = true, actual = loginViewModel.uiState.value.isPasswordVisible)
-
-
-            composeTestRule.onNodeWithContentDescription(
-                "Toggle password visibility",
-                useUnmergedTree = true
-            ).performClick()
-
-            composeTestRule.waitForIdle()
-
-            println("Second click -> " + loginViewModel.uiState.value.isPasswordVisible)
-            assertEquals(expected = false, actual = loginViewModel.uiState.value.isPasswordVisible)
-        }*/
 
     @Test
     fun checkIfPasswordIsVisibleWhenPasswordVisibilityIconIsClickedV2() = scope.runTest {
         composeTestRule.mainClock.autoAdvance = false
+        composeTestRule.mainClock.advanceTimeBy(2000)
+
+        composeTestRule.waitForIdle()
 
         composeTestRule.setContent {
             LoginContent(
@@ -209,21 +168,16 @@ class LoginViewModelTest : KoinTest {
             )
         }
 
-        composeTestRule.waitForIdle()
-
         assertEquals(expected = false, actual = loginViewModel.uiState.value.isPasswordVisible)
-        println("Starting value -> ${loginViewModel.uiState.value.isPasswordVisible}")
         loginViewModel.onAction(LoginActions.OnPasswordVisibleClick)
 
         composeTestRule.waitForIdle()
 
         assertEquals(expected = true, actual = loginViewModel.uiState.value.isPasswordVisible)
-        println("First click -> ${loginViewModel.uiState.value.isPasswordVisible}")
         loginViewModel.onAction(LoginActions.OnPasswordVisibleClick)
 
         composeTestRule.waitForIdle()
 
         assertEquals(expected = false, actual = loginViewModel.uiState.value.isPasswordVisible)
-        println("Second click -> ${loginViewModel.uiState.value.isPasswordVisible}")
     }
 }

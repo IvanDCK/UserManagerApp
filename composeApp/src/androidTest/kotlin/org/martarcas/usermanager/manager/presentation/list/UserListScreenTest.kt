@@ -2,11 +2,14 @@ package org.martarcas.usermanager.manager.presentation.list
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToIndex
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.every
@@ -22,6 +25,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -44,7 +48,6 @@ import org.martarcas.usermanager.manager.domain.use_cases.user.UpdateUserUseCase
 import org.martarcas.usermanager.manager.presentation.list.model.UserListAction
 import org.martarcas.usermanager.manager.presentation.login.LoginViewModel
 import org.martarcas.usermanager.manager.presentation.login.model.LoginActions
-import org.martarcas.usermanager.manager.presentation.signup.SignUpViewModel
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -66,10 +69,12 @@ class UserListScreenTest {
         2, "John", "Smith", "logged@user.com", "12345678", Role.MOBILE_DEVELOPER
     )
 
+    private val loggedCEO = User(
+        4, "Albert", "Smith", "ceo@user.com", "12345678", Role.CEO )
+
     private lateinit var userListViewModel: UserListViewModel
     private lateinit var appViewModel: AppViewModel
     private lateinit var loginViewModel: LoginViewModel
-    private lateinit var signUpViewModel: SignUpViewModel
 
     @get:Rule
     val mockkRule = MockKRule(this)
@@ -124,10 +129,10 @@ class UserListScreenTest {
         updateRoleUseCase = mockk<UpdateRoleUseCase>()
         deleteUserUseCase = mockk<DeleteUserUseCase>()
 
-        coEvery { loginRequestUseCase.invoke(any()) } returns Result.Success(loggedUser)
-        coEvery { dataStoreUseCases.readUserUseCase.invoke() } returns flow { emit(loggedUser) }
+        coEvery { loginRequestUseCase.invoke(any()) } returns Result.Success(loggedCEO)
+        coEvery { dataStoreUseCases.readUserUseCase.invoke() } returns flow { emit(loggedCEO) }
         every { dataStoreUseCases.readRememberMeUseCase.invoke() } returns flow { emit(true) }
-        coEvery { dataStoreUseCases.saveRememberMeAndUserUseCase.invoke(true, loggedUser) } just Runs
+        coEvery { dataStoreUseCases.saveRememberMeAndUserUseCase.invoke(true, loggedCEO) } just Runs
         coEvery { getAllUsersUseCase.invoke() } returns Result.Success(dummyList.value)
 
         appViewModel = AppViewModel(
@@ -144,10 +149,11 @@ class UserListScreenTest {
             updateUserUseCase = updateUserUseCase,
             changeRoleUseCase = updateRoleUseCase,
             deleteUserUseCase = deleteUserUseCase,
-            dataStoreUseCases = dataStoreUseCases
+            dataStoreUseCases = dataStoreUseCases,
+            isTestEnvironment = true
         )
 
-        loginViewModel.onAction(LoginActions.OnEmailChange("Ivan.martinez@tribucorp.es"))
+        loginViewModel.onAction(LoginActions.OnEmailChange("ceo@user.com"))
         loginViewModel.onAction(LoginActions.OnPasswordChange("12345678"))
         loginViewModel.onAction(LoginActions.OnLoginButtonClick)
     }
@@ -260,6 +266,7 @@ class UserListScreenTest {
     }
 
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun searchResultsChangesWhenItsSearchedByNameOrSurnameAndResetsWhenQueryIsEmpty() = scope.runTest {
 
@@ -272,16 +279,18 @@ class UserListScreenTest {
                 viewModel = userListViewModel
             )
         }
-
-        userListViewModel.onAction(UserListAction.OnSearchQueryChange("Ivan"))
-        delay(2000)
         composeTestRule.waitForIdle()
 
-        assertEquals(expected = 1, actual = userListViewModel.state.value.searchResults.size)
+        userListViewModel.onAction(UserListAction.OnSearchQueryChange("Smith"))
+
+        advanceUntilIdle()
+        composeTestRule.waitForIdle()
+
+        assertEquals(expected = 2, actual = userListViewModel.state.value.searchResults.size)
 
         userListViewModel.onAction(UserListAction.OnSearchQueryChange(""))
-        delay(2000)
 
+        advanceUntilIdle()
         composeTestRule.waitForIdle()
 
         assertEquals(expected = 5, actual = userListViewModel.state.value.searchResults.size)
@@ -301,21 +310,38 @@ class UserListScreenTest {
             )
         }
 
-        loginViewModel.onAction(LoginActions.OnEmailChange("Ivan.martinez@tribucorp.es"))
-        loginViewModel.onAction(LoginActions.OnPasswordChange("12345678"))
-        loginViewModel.onAction(LoginActions.OnLoginButtonClick)
+
         composeTestRule.waitForIdle()
 
+        // Problema: No carga los nodos de la lazy column,
+        // el performScrollToIndex hace scroll del lazy row de los botones de filtro de rol
+        // en vez de la lazy column de la lista de usuarios,
+        // por lo tanto el test no carga bien la lista y no aparecen los botones.
+
+        composeTestRule.onNode(hasScrollAction()).performScrollToIndex(10)
+
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onAllNodes(isEnabled()).fetchSemanticsNodes().forEach {
+            println("Node: ${it.config}")
+        }
         println("USER "+ userListViewModel.state.value.loggedUser)
+
+
 
         assertEquals(expected = false, actual = userListViewModel.state.value.isUpdateBottomSheetOpen)
 
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithText("John").assertExists()
+
         composeTestRule.onNodeWithText("Delete").assertDoesNotExist()
+        composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithText("Change role").assertDoesNotExist()
+        composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithText("Update info").assertExists()
-
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText("Update info").performClick()
 
         assertEquals(expected = true, actual = userListViewModel.state.value.isUpdateBottomSheetOpen)
