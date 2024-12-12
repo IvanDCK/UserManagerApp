@@ -52,12 +52,7 @@ class UserListViewModel(
     private val _state = MutableStateFlow(UserListState())
     val state = _state
         .onStart {
-            if(cachedUsers.isEmpty()) {
-                observeSearchQuery()
-            }
-            if(isTestEnvironment) {
-                observeSearchQuery()
-            }
+            observeSearchQuery()
         }
         .stateIn(
             viewModelScope,

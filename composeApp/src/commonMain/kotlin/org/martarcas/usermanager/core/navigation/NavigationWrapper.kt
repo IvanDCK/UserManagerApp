@@ -16,7 +16,7 @@ import org.martarcas.usermanager.manager.presentation.signup.SignUpScreen
 fun NavigationWrapper(shouldStartFromList: Boolean) {
     val navController = rememberNavController()
 
-    val listViewModel: UserListViewModel = koinViewModel()
+
 
     NavHost(
         navController = navController,
@@ -57,6 +57,7 @@ fun NavigationWrapper(shouldStartFromList: Boolean) {
         }
 
         composable<List> {
+            val listViewModel: UserListViewModel = koinViewModel()
             UserListScreenRoot(
                 viewModel = listViewModel,
                 navigateToLogin = {
