@@ -24,7 +24,7 @@ fun SortButton(
             onClick = {
                 onAction(UserListAction.OnSortIconClick)
             },
-            startIcon = painterResource(resource = Res.drawable.sort_descending),
+            startIcon = painterResource(resource = Res.drawable.sort_ascending),
             contentPadding = PaddingValues(vertical = 10.dp, horizontal = 4.dp),
             iconTint = Color.Black,
             buttonColor = Sunny,
@@ -36,7 +36,7 @@ fun SortButton(
             onClick = {
                 onAction(UserListAction.OnSortIconClick)
             },
-            startIcon = painterResource(resource = Res.drawable.sort_ascending),
+            startIcon = painterResource(resource = Res.drawable.sort_descending),
             contentPadding = PaddingValues(vertical = 10.dp, horizontal = 4.dp),
             iconTint = Color.Black,
             buttonColor = Sunny,
