@@ -6,7 +6,6 @@
 - [Technologies](#technologies)
 - [Installing](#installing)
 - [Features](#features)
-- [Demo](#demo)
 
 ## Introduction
 UserManager is an application made with modern Android techniques in Jetpack Compose Multiplatform targeting Android and iOS.
@@ -26,37 +25,38 @@ It's main purpose is to provide an user friendly interface and ready to use app 
 - [Material-Components](https://github.com/material-components/material-components-android?tab=readme-ov-file): Material design components for building UI components.
 
 ## Installing
-To use the app properly, a backend server is required to handle all operations.
 
-[Backend Server](https://github.com/AlejandroDCK/UserManager-Backend)
-```bash
-git clone https://github.com/AlejandroDCK/UserManager-Backend.git
-```
-[App](https://github.com/IvanDCK/UserManagerApp)
+Clone this repository with:
 ```bash
 git clone https://github.com/IvanDCK/UserManagerApp
 ```
-Clone the repositories, start the backend server and run the app.
+In order use the app properly, a backend server is required to handle all operations.
+You can find the backend server repository here:
+[Backend Server](https://github.com/AlejandroDCK/UserManager-Backend)
+And clone it with:
+```bash
+git clone https://github.com/AlejandroDCK/UserManager-Backend.git
+```
+Start the backend server and start the app.
 
 ## Features
 UserManager has the following features implemented in three different screens:
 
-### Login Screen
-- User can login with their email and password.
-- Can choose to remember the user's credentials in order to log in automatically next time.
+#### Login Screen
+- Users can login with their email and password.
+- Can choose to remember their credentials in order to log in automatically next time.
 - If the user doesn't have an account, can navigate to the Sign up screen.
 
-### Sign Up Screen
-- New user can create an account with it's name, surname, email and password.
+#### Sign Up Screen
+- New users can create an account with their names, surnames, email and password.
 - If the user already have an account, can navigate to the Login screen.
 
-### List Screen
+#### List Screen
 - Users can search by name or surname to find a specific user.
 - Can filter the results by user roles and sort them by role importance.
 - User's of specific roles can update other users roles or manage them.
 - Logged user can update their own information.
 - User's can logout from the app.
 
-## Demo
 
 
