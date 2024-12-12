@@ -30,6 +30,7 @@ class SignUpViewModel(
      * @param update
      */
     private fun updateField(update: SignupUiState.() -> SignupUiState) {
+        println("UI State updated: $update")
         _uiState.update { it.update() }
     }
 
