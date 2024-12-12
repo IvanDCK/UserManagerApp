@@ -65,8 +65,7 @@ UserManager has the following features implemented in three different screens:
 - Logged user can update their own information.
 - Users can logout from the app.
 
-<img src="https://github.com/user-attachments/assets/2ef89c4d-7e8a-451a-aa54-3ea27df07409" width="300" height="700">
-<img src="https://github.com/user-attachments/assets/5979595c-6dcb-4346-b647-2a7637e60ebe" width="300" height="700">
-
+<img src="https://github.com/user-attachments/assets/bc0c2be9-c0ff-458e-9668-ea26dc8a799d" width="300" height="700">
+<img src="https://github.com/user-attachments/assets/a9a41398-cf61-4d0b-97ac-a6c0e897677b" width="300" height="700">
 
 
