@@ -47,16 +47,26 @@ UserManager has the following features implemented in three different screens:
 - Can choose to remember their credentials in order to log in automatically next time.
 - If the user doesn't have an account, can navigate to the Sign up screen.
 
+<img src="https://github.com/user-attachments/assets/70c7f31a-a9dc-4ed0-9fa9-7d7a759cac4f" width="300" height="700">
+<img src="https://github.com/user-attachments/assets/52af17d1-0da9-4615-a1c7-4940f080f234" width="300" height="700">
+
+
 #### Sign Up Screen
 - New users can create an account with their names, surnames, email and password.
 - If the user already have an account, can navigate to the Login screen.
 
+<img src="https://github.com/user-attachments/assets/7ca443d8-61c9-4f47-b589-04457a9646ca" width="300" height="700">
+<img src="https://github.com/user-attachments/assets/8f9faf8b-8552-45b0-af14-a0405d76779b" width="300" height="700">
+
 #### List Screen
 - Users can search by name or surname to find a specific user.
 - Can filter the results by user roles and sort them by role importance.
-- User's of specific roles can update other users roles or manage them.
+- Users of specific roles can update other users roles or manage them.
 - Logged user can update their own information.
-- User's can logout from the app.
+- Users can logout from the app.
+
+<img src="https://github.com/user-attachments/assets/2ef89c4d-7e8a-451a-aa54-3ea27df07409" width="300" height="700">
+<img src="https://github.com/user-attachments/assets/5979595c-6dcb-4346-b647-2a7637e60ebe" width="300" height="700">
 
 
 
