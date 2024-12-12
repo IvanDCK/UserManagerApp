@@ -3,16 +3,23 @@ package org.martarcas.usermanager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import org.koin.compose.viewmodel.koinViewModel
 import org.martarcas.usermanager.app.presentation.App
+import org.martarcas.usermanager.app.presentation.AppViewModel
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContent {
-            App()
+        installSplashScreen().apply {
+            setContent {
+                val splashViewModel: AppViewModel = koinViewModel()
+                setKeepOnScreenCondition(condition = { splashViewModel.splashCondition.value })
+                App(splashViewModel)
+            }
         }
+
     }
 }

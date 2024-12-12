@@ -63,7 +63,11 @@ class LoginViewModel(
             viewModelScope.launch {
                 val model = LoginUiModel(uiState.value.email, uiState.value.password).toLoginUserRequest()
                 loginRequestUseCase(model).onSuccess { userResponse ->
-                    if (uiState.value.rememberMeIsChecked) saveRememberMeAndUser(userResponse)
+                    if (uiState.value.rememberMeIsChecked) {
+                        saveRememberMeAndUser(true, userResponse)
+                    } else {
+                        saveRememberMeAndUser(false, userResponse)
+                    }
                     updateState { copy(shouldNavigateToList = true) }
                 }.onError { error ->
                     updateState { copy(errorMessage = error.toUiText()) }
@@ -81,7 +85,7 @@ class LoginViewModel(
      * @param email
      * @param password
      */
-    fun validateLoginInputs(email: String, password: String): ValidationResult {
+    private fun validateLoginInputs(email: String, password: String): ValidationResult {
         val errors = mutableListOf<String>()
         val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
 
@@ -115,9 +119,9 @@ class LoginViewModel(
     /**
      * Function to save the remember me and user in the data store
      */
-    private suspend fun saveRememberMeAndUser(userResponse: User) {
+    private suspend fun saveRememberMeAndUser(rememberMe: Boolean, userResponse: User) {
         dataStoreUseCases.saveRememberMeAndUserUseCase(
-            rememberMe = true,
+            rememberMe = rememberMe,
             user = userResponse.copy()
         )
     }

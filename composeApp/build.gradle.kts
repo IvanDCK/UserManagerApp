@@ -72,9 +72,10 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-
+            // Koin
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+            // Ktor client
             implementation(libs.ktor.client.okhttp)
         }
 
@@ -88,19 +89,22 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
-
+            // Splash Screen
+            implementation(libs.androidx.core.splashscreen)
+            // Navigation
             implementation(libs.jetbrains.compose.navigation)
+            // Serialization
             implementation(libs.kotlinx.serialization.json)
+            // Koin
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
             api(libs.koin.core)
             api(libs.koin.annotations)
-
+            // Ktor client
             implementation(libs.bundles.ktor)
-
             implementation(libs.paging.compose.common)
             implementation(libs.paging.common)
-
+            // Datastore
             implementation(libs.datastore.preferences)
             implementation(libs.atomicfu)
 
@@ -112,6 +116,7 @@ kotlin {
             implementation(libs.assertk)
             implementation(libs.junit)
 
+            // Koin
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
             api(libs.koin.core)

@@ -25,6 +25,7 @@ ksp = "2.0.21-1.0.28"
 pagingComposeCommon = "3.3.0-alpha02-0.4.0"
 datastore = "1.1.1"
 atomicfu = "0.23.2"
+coreSplashScreen = "1.0.1"
 assertk = "0.28.1"
 coreKtx = "1.6.1"
 composeTest = "1.7.0"
@@ -35,6 +36,7 @@ kotlinx-coroutines-test = "1.9.0"
 espressoIdlingResource = "3.6.1"
 runner = "1.6.2"
 test-mockk = "1.13.12"
+
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -57,6 +59,8 @@ assertk = { module = "com.willowtreeapps.assertk:assertk", version.ref = "assert
 compose-ui-test-junit4-android = { module = "androidx.compose.ui:ui-test-junit4-android", version.ref = "composeTest" }
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "composeTest" }
 core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashScreen" }
+
 
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-agent = { module = "io.mockk:mockk-agent", version.ref = "mockk" }

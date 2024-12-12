@@ -16,13 +16,17 @@ class AppViewModel(
     @Provided private val dataStoreUseCases: DataStoreUseCases
 ): ViewModel() {
 
-    private val _shouldStartFromList = MutableStateFlow(true)
+    private val _shouldStartFromList = MutableStateFlow(false)
     val shouldStartFromList = _shouldStartFromList.asStateFlow()
+
+    private val _splashCondition = MutableStateFlow(true)
+    val splashCondition = _splashCondition.asStateFlow()
 
     init {
         dataStoreUseCases.readRememberMeUseCase().onEach { shouldStartFromListScreen ->
             _shouldStartFromList.value = shouldStartFromListScreen
             delay(2000)
+            _splashCondition.value = false
         }.launchIn(viewModelScope)
     }
 }

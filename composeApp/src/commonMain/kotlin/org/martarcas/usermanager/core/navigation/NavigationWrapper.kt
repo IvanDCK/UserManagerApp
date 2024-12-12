@@ -13,14 +13,14 @@ import org.martarcas.usermanager.manager.presentation.login.LoginScreen
 import org.martarcas.usermanager.manager.presentation.signup.SignUpScreen
 
 @Composable
-fun NavigationWrapper(startDestination: String) {
+fun NavigationWrapper(shouldStartFromList: Boolean) {
     val navController = rememberNavController()
 
     val listViewModel: UserListViewModel = koinViewModel()
 
     NavHost(
         navController = navController,
-        startDestination = if (startDestination == "List") List else Login
+        startDestination = if (shouldStartFromList) List else Login
     ) {
 
         composable<Login>(
