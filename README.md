@@ -28,11 +28,11 @@ It's main purpose is to provide an user friendly interface and ready to use app 
 
 Clone this repository with:
 ```bash
-git clone https://github.com/IvanDCK/UserManagerApp
+git clone https://github.com/IvanDCK/UserManagerApp.git
 ```
 In order use the app properly, a backend server is required to handle all operations.
-You can find the backend server repository here:
-[Backend Server](https://github.com/AlejandroDCK/UserManager-Backend)
+You can find the backend server repository [here](https://github.com/AlejandroDCK/UserManager-Backend):
+
 And clone it with:
 ```bash
 git clone https://github.com/AlejandroDCK/UserManager-Backend.git
