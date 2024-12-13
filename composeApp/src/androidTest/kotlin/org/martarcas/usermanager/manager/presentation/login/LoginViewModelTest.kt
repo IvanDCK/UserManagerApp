@@ -19,16 +19,16 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.Rule
-import org.koin.test.KoinTest
-import org.martarcas.usermanager.app.presentation.AppViewModel
-import org.martarcas.usermanager.core.domain.use_cases.datastore.DataStoreUseCases
-import org.martarcas.usermanager.core.domain.use_cases.datastore.ReadRememberMeUseCase
-import org.martarcas.usermanager.core.domain.use_cases.datastore.ReadUserUseCase
-import org.martarcas.usermanager.core.domain.use_cases.datastore.SaveRememberMeAndUserUseCase
-import org.martarcas.usermanager.manager.domain.model.Role
-import org.martarcas.usermanager.manager.domain.model.user.User
-import org.martarcas.usermanager.manager.domain.use_cases.auth.LoginRequestUseCase
-import org.martarcas.usermanager.manager.presentation.login.model.LoginActions
+import org.martarcas.usermanager.domain.model.user.Role
+import org.martarcas.usermanager.domain.model.user.User
+import org.martarcas.usermanager.domain.use_cases.auth.LoginRequestUseCase
+import org.martarcas.usermanager.domain.use_cases.datastore.ReadRememberMeUseCase
+import org.martarcas.usermanager.domain.use_cases.datastore.ReadUserUseCase
+import org.martarcas.usermanager.domain.use_cases.datastore.SaveRememberMeAndUserUseCase
+import org.martarcas.usermanager.presentation.app.AppViewModel
+import org.martarcas.usermanager.presentation.login.LoginContent
+import org.martarcas.usermanager.presentation.login.LoginViewModel
+import org.martarcas.usermanager.presentation.login.model.LoginActions
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -51,14 +51,13 @@ class LoginViewModelTest {
     @MockK
     lateinit var readLoggedUserUseCase: ReadUserUseCase
 
-    @MockK
-    lateinit var readRememberMeUseCase: ReadRememberMeUseCase
 
     @MockK
     lateinit var saveRememberMeAndUserUseCase: SaveRememberMeAndUserUseCase
 
+
     @MockK
-    lateinit var dataStoreUseCases: DataStoreUseCases
+    lateinit var readRememberMeUseCase: ReadRememberMeUseCase
 
     @MockK
     lateinit var loginRequestUseCase: LoginRequestUseCase
@@ -76,23 +75,22 @@ class LoginViewModelTest {
         Dispatchers.setMain(testDispatcher)
 
         readLoggedUserUseCase = mockk()
-        dataStoreUseCases = mockk()
         saveRememberMeAndUserUseCase = mockk()
         readRememberMeUseCase = mockk()
         loginRequestUseCase = mockk()
 
         //coEvery { loginRequestUseCase.invoke(any()) } returns Result.Success(loggedUser)
         //coEvery { dataStoreUseCases.readUserUseCase.invoke() } returns flow { emit(loggedUser) }
-        every { dataStoreUseCases.readRememberMeUseCase.invoke() } returns flow { emit(false) }
+        every { readRememberMeUseCase.invoke() } returns flow { emit(false) }
         //coEvery { dataStoreUseCases.saveRememberMeAndUserUseCase.invoke(false, loggedUser) } returns Unit
 
         appViewModel = AppViewModel(
-            dataStoreUseCases = dataStoreUseCases
+            readRememberMeUseCase = readRememberMeUseCase
         )
 
         loginViewModel = LoginViewModel(
             loginRequestUseCase = loginRequestUseCase,
-            dataStoreUseCases = dataStoreUseCases
+            saveRememberMeAndUserUseCase = saveRememberMeAndUserUseCase,
         )
 
         //loginViewModel.onAction(LoginActions.OnEmailChange("logged@user.com"))

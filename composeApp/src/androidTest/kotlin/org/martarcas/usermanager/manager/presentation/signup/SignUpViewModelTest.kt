@@ -3,7 +3,6 @@ package org.martarcas.usermanager.manager.presentation.signup
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performTextInput
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -18,13 +17,14 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.Rule
-import org.martarcas.usermanager.app.presentation.AppViewModel
-import org.martarcas.usermanager.core.domain.use_cases.datastore.DataStoreUseCases
-import org.martarcas.usermanager.core.domain.use_cases.datastore.ReadRememberMeUseCase
-import org.martarcas.usermanager.core.domain.use_cases.datastore.ReadUserUseCase
-import org.martarcas.usermanager.core.domain.use_cases.datastore.SaveRememberMeAndUserUseCase
-import org.martarcas.usermanager.manager.domain.use_cases.auth.SignUpRequestUseCase
-import org.martarcas.usermanager.manager.presentation.signup.model.SignupActions
+import org.martarcas.usermanager.domain.use_cases.auth.SignUpRequestUseCase
+import org.martarcas.usermanager.domain.use_cases.datastore.ReadRememberMeUseCase
+import org.martarcas.usermanager.domain.use_cases.datastore.ReadUserUseCase
+import org.martarcas.usermanager.domain.use_cases.datastore.SaveRememberMeAndUserUseCase
+import org.martarcas.usermanager.presentation.app.AppViewModel
+import org.martarcas.usermanager.presentation.signup.SignUpContent
+import org.martarcas.usermanager.presentation.signup.SignUpViewModel
+import org.martarcas.usermanager.presentation.signup.model.SignupActions
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -47,8 +47,6 @@ class SignUpViewModelTest {
     @MockK
     lateinit var saveRememberMeAndUserUseCase: SaveRememberMeAndUserUseCase
 
-    @MockK
-    lateinit var dataStoreUseCases: DataStoreUseCases
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -67,12 +65,12 @@ class SignUpViewModelTest {
         readLoggedUserUseCase = mockk()
         saveRememberMeAndUserUseCase = mockk()
         readRememberMeUseCase = mockk()
-        dataStoreUseCases = mockk()
 
-        every { dataStoreUseCases.readRememberMeUseCase.invoke() } returns flow { emit(false) }
+
+        every { readRememberMeUseCase.invoke() } returns flow { emit(false) }
 
         appViewModel = AppViewModel(
-            dataStoreUseCases = dataStoreUseCases
+            readRememberMeUseCase = readRememberMeUseCase
         )
         signUpViewModel = SignUpViewModel(
             signUpRequestUseCase = signUpRequestUseCase,

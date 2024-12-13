@@ -20,7 +20,6 @@ import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -31,23 +30,24 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertNotEquals
 import org.junit.Rule
-import org.martarcas.usermanager.app.presentation.AppViewModel
-import org.martarcas.usermanager.core.domain.model.Result
-import org.martarcas.usermanager.core.domain.use_cases.datastore.DataStoreUseCases
-import org.martarcas.usermanager.core.domain.use_cases.datastore.ReadRememberMeUseCase
-import org.martarcas.usermanager.core.domain.use_cases.datastore.ReadUserUseCase
-import org.martarcas.usermanager.core.domain.use_cases.datastore.SaveRememberMeAndUserUseCase
-import org.martarcas.usermanager.manager.domain.model.Role
-import org.martarcas.usermanager.manager.domain.model.user.User
-import org.martarcas.usermanager.manager.domain.model.user.UserPublic
-import org.martarcas.usermanager.manager.domain.use_cases.auth.LoginRequestUseCase
-import org.martarcas.usermanager.manager.domain.use_cases.user.DeleteUserUseCase
-import org.martarcas.usermanager.manager.domain.use_cases.user.GetAllUsersUseCase
-import org.martarcas.usermanager.manager.domain.use_cases.user.UpdateRoleUseCase
-import org.martarcas.usermanager.manager.domain.use_cases.user.UpdateUserUseCase
-import org.martarcas.usermanager.manager.presentation.list.model.UserListAction
-import org.martarcas.usermanager.manager.presentation.login.LoginViewModel
-import org.martarcas.usermanager.manager.presentation.login.model.LoginActions
+import org.martarcas.usermanager.domain.model.response.Result
+import org.martarcas.usermanager.domain.model.user.Role
+import org.martarcas.usermanager.domain.model.user.User
+import org.martarcas.usermanager.domain.model.user.UserPublic
+import org.martarcas.usermanager.domain.use_cases.auth.LoginRequestUseCase
+import org.martarcas.usermanager.domain.use_cases.datastore.ReadRememberMeUseCase
+import org.martarcas.usermanager.domain.use_cases.datastore.ReadUserUseCase
+import org.martarcas.usermanager.domain.use_cases.datastore.SaveRememberMeAndUserUseCase
+import org.martarcas.usermanager.domain.use_cases.user.DeleteUserUseCase
+import org.martarcas.usermanager.domain.use_cases.user.GetAllUsersUseCase
+import org.martarcas.usermanager.domain.use_cases.user.UpdateRoleUseCase
+import org.martarcas.usermanager.domain.use_cases.user.UpdateUserUseCase
+import org.martarcas.usermanager.presentation.app.AppViewModel
+import org.martarcas.usermanager.presentation.list.UserListScreenRoot
+import org.martarcas.usermanager.presentation.list.UserListViewModel
+import org.martarcas.usermanager.presentation.list.model.UserListAction
+import org.martarcas.usermanager.presentation.login.LoginViewModel
+import org.martarcas.usermanager.presentation.login.model.LoginActions
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -90,13 +90,19 @@ class UserListScreenTest {
     lateinit var updateRoleUseCase: UpdateRoleUseCase
 
     @MockK
-    lateinit var dataStoreUseCases: DataStoreUseCases
-
-    @MockK
     lateinit var loginRequestUseCase: LoginRequestUseCase
 
     @MockK
     lateinit var deleteUserUseCase: DeleteUserUseCase
+
+    @MockK
+    lateinit var saveRememberMeAndUserUseCase: SaveRememberMeAndUserUseCase
+
+    @MockK
+    lateinit var readUserUseCase: ReadUserUseCase
+
+    @MockK
+    lateinit var readRememberMeUseCase: ReadRememberMeUseCase
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private var testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
@@ -111,27 +117,28 @@ class UserListScreenTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
 
-        dataStoreUseCases = mockk<DataStoreUseCases>()
         getAllUsersUseCase = mockk<GetAllUsersUseCase>()
         updateUserUseCase = mockk<UpdateUserUseCase>()
         loginRequestUseCase = mockk<LoginRequestUseCase>()
         updateRoleUseCase = mockk<UpdateRoleUseCase>()
         deleteUserUseCase = mockk<DeleteUserUseCase>()
+        readUserUseCase = mockk<ReadUserUseCase>()
+        saveRememberMeAndUserUseCase = mockk<SaveRememberMeAndUserUseCase>()
 
         coEvery { loginRequestUseCase.invoke(any()) } returns Result.Success(loggedCEO)
-        coEvery { dataStoreUseCases.readUserUseCase.invoke() } returns flow { emit(loggedCEO) }
-        every { dataStoreUseCases.readRememberMeUseCase.invoke() } returns flow { emit(true) }
-        coEvery { dataStoreUseCases.saveRememberMeAndUserUseCase.invoke(true, loggedCEO) } just Runs
+        coEvery { readUserUseCase.invoke() } returns flow { emit(loggedCEO) }
+        every { readRememberMeUseCase.invoke() } returns flow { emit(true) }
+        coEvery { saveRememberMeAndUserUseCase.invoke(true, loggedCEO) } just Runs
         coEvery { getAllUsersUseCase.invoke() } returns Result.Success(dummyList.value)
-        coEvery { dataStoreUseCases.saveRememberMeAndUserUseCase(false, any()) } just Runs
+        coEvery { saveRememberMeAndUserUseCase(false, any()) } just Runs
 
         appViewModel = AppViewModel(
-            dataStoreUseCases = dataStoreUseCases
+            readRememberMeUseCase = readRememberMeUseCase
         )
 
         loginViewModel = LoginViewModel(
             loginRequestUseCase = loginRequestUseCase,
-            dataStoreUseCases = dataStoreUseCases
+            saveRememberMeAndUserUseCase = saveRememberMeAndUserUseCase
         )
 
         userListViewModel = UserListViewModel(
@@ -139,7 +146,8 @@ class UserListScreenTest {
             updateUserUseCase = updateUserUseCase,
             changeRoleUseCase = updateRoleUseCase,
             deleteUserUseCase = deleteUserUseCase,
-            dataStoreUseCases = dataStoreUseCases,
+            saveRememberMeAndUserUseCase = saveRememberMeAndUserUseCase,
+            readUserUseCase = readUserUseCase,
             isTestEnvironment = true
         )
 
