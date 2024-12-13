@@ -7,8 +7,8 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.coroutines.ensureActive
 import org.martarcas.usermanager.core.domain.model.DataError
-import kotlin.coroutines.coroutineContext
 import org.martarcas.usermanager.core.domain.model.Result
+import kotlin.coroutines.coroutineContext
 
 suspend inline fun <reified T> safeCall(
     execute: () -> HttpResponse

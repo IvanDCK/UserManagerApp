@@ -1,7 +1,7 @@
 package org.martarcas.usermanager.manager.domain
 
-import org.martarcas.usermanager.core.domain.model.Result
 import org.martarcas.usermanager.core.domain.model.DataError
+import org.martarcas.usermanager.core.domain.model.Result
 import org.martarcas.usermanager.manager.data.remote.requests.DeleteUserRequest
 import org.martarcas.usermanager.manager.data.remote.requests.GetUserByIdRequest
 import org.martarcas.usermanager.manager.data.remote.requests.UpdateRoleRequest

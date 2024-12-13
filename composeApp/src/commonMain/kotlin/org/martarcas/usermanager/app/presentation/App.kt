@@ -2,8 +2,10 @@ package org.martarcas.usermanager.app.presentation
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.*
+import androidx.compose.runtime.mutableStateOf
 import org.koin.compose.viewmodel.koinViewModel
 import org.martarcas.usermanager.core.navigation.NavigationWrapper
 import org.martarcas.usermanager.core.presentation.DarkColorScheme

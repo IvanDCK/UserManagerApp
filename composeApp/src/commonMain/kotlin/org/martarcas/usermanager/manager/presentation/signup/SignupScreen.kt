@@ -32,9 +32,9 @@ import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.martarcas.usermanager.manager.presentation.components.AuthBottomBar
 import org.martarcas.usermanager.manager.presentation.components.AuthButton
+import org.martarcas.usermanager.manager.presentation.components.AuthHeader
 import org.martarcas.usermanager.manager.presentation.components.AuthTextField
 import org.martarcas.usermanager.manager.presentation.components.getPasswordVisibilityIcon
-import org.martarcas.usermanager.manager.presentation.components.AuthHeader
 import org.martarcas.usermanager.manager.presentation.signup.model.SignupActions
 import org.martarcas.usermanager.manager.presentation.signup.model.SignupUiState
 import usermanagerapp.composeapp.generated.resources.Res

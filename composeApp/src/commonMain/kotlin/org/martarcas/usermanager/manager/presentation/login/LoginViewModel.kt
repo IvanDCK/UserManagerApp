@@ -10,10 +10,10 @@ import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import org.martarcas.usermanager.core.domain.model.onError
 import org.martarcas.usermanager.core.domain.model.onSuccess
+import org.martarcas.usermanager.core.domain.use_cases.datastore.DataStoreUseCases
 import org.martarcas.usermanager.core.presentation.toUiText
 import org.martarcas.usermanager.manager.domain.model.user.User
 import org.martarcas.usermanager.manager.domain.use_cases.auth.LoginRequestUseCase
-import org.martarcas.usermanager.core.domain.use_cases.datastore.DataStoreUseCases
 import org.martarcas.usermanager.manager.presentation.login.model.LoginActions
 import org.martarcas.usermanager.manager.presentation.login.model.LoginUiModel
 import org.martarcas.usermanager.manager.presentation.login.model.LoginUiState

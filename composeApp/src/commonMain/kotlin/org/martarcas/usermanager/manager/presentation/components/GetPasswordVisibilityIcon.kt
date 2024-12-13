@@ -1,7 +1,6 @@
 package org.martarcas.usermanager.manager.presentation.components
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import org.jetbrains.compose.resources.DrawableResource
 import usermanagerapp.composeapp.generated.resources.Res

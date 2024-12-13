@@ -1,7 +1,7 @@
 package org.martarcas.usermanager.manager.data.remote.network
 
-import org.martarcas.usermanager.core.domain.model.Result
 import org.martarcas.usermanager.core.domain.model.DataError
+import org.martarcas.usermanager.core.domain.model.Result
 import org.martarcas.usermanager.manager.data.remote.dto.UserDto
 import org.martarcas.usermanager.manager.data.remote.dto.UserPublicDto
 import org.martarcas.usermanager.manager.data.remote.requests.DeleteUserRequest
