@@ -9,4 +9,5 @@ data class UpdateUserRequest(
     val newSurname: String,
     val newEmail: String,
     val newPassword: String,
+    val newAvatar: String
 )

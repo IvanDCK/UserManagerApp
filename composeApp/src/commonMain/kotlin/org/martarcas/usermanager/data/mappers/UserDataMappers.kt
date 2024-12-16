@@ -12,7 +12,8 @@ fun UserDto.toUser(): User {
         surname = surname,
         email = email,
         password = password,
-        role = role
+        role = role,
+        avatarId = avatarId
     )
 }
 
@@ -21,6 +22,7 @@ fun UserPublicDto.toUserPublic(): UserPublic {
         id = id,
         name = name,
         surname = surname,
-        role = role
+        role = role,
+        avatarId = avatarId
     )
 }

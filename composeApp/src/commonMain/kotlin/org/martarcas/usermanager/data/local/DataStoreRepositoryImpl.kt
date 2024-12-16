@@ -26,6 +26,7 @@ class DataStoreRepositoryImpl(
         val USER_EMAIL = stringPreferencesKey("user_email")
         val USER_PASSWORD = stringPreferencesKey("user_password")
         val USER_ROLE = stringPreferencesKey("user_role")
+        val USER_AVATAR = stringPreferencesKey("user_avatar")
     }
 
     override suspend fun saveRememberMeAndUserData(rememberMe: Boolean, user: User) {
@@ -38,6 +39,7 @@ class DataStoreRepositoryImpl(
                 preferences[USER_EMAIL] = user.email
                 preferences[USER_PASSWORD] = user.password
                 preferences[USER_ROLE] = user.role.toString()
+                preferences[USER_AVATAR] = user.avatarId
             }
         } catch (e: Exception) {
             println("Error: $e")
@@ -62,7 +64,8 @@ class DataStoreRepositoryImpl(
                     surname = preferences[USER_LAST_NAME] ?: "",
                     email = preferences[USER_EMAIL] ?: "",
                     password = preferences[USER_PASSWORD] ?: "",
-                    role = Role.valueOf(preferences[USER_ROLE] ?: "NEW_USER")
+                    role = Role.valueOf(preferences[USER_ROLE] ?: "NEW_USER"),
+                    avatarId = preferences[USER_AVATAR] ?: ""
                 )
             }
     }

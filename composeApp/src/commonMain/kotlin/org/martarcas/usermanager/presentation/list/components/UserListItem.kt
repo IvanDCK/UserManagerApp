@@ -36,7 +36,6 @@ fun UserListItem(
     loggedUser: User?,
     user: UserPublic,
     isDropdownOpen: Boolean,
-    onUpdateInfoClick: () -> Unit,
     onChangeRoleClick: () -> Unit,
     onChangeRoleApply: (Int, Role) -> Unit,
     onDeleteClick: () -> Unit,
@@ -109,14 +108,6 @@ fun UserListItem(
                         }
                     }
                 }
-            }
-
-            if (loggedUser?.id == user.id) {
-                MultipurposeButton(
-                    text = "Update info",
-                    onClick = onUpdateInfoClick,
-                    modifier = Modifier.padding(horizontal = 4.dp)
-                )
             }
 
             if (loggedUser?.role == Role.CEO || loggedUser?.role == Role.HUMAN_RESOURCES) {

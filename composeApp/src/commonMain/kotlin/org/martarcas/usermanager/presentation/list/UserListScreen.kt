@@ -30,7 +30,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.martarcas.usermanager.domain.model.user.Role
 import org.martarcas.usermanager.domain.model.user.User
 import org.martarcas.usermanager.presentation.list.components.ListSearchBar
-import org.martarcas.usermanager.presentation.list.components.LogoutButton
 import org.martarcas.usermanager.presentation.list.components.RoleButton
 import org.martarcas.usermanager.presentation.list.components.SortButton
 import org.martarcas.usermanager.presentation.list.components.UserList
@@ -43,7 +42,6 @@ import usermanagerapp.composeapp.generated.resources.no_search_results
 @Composable
 fun UserListScreenRoot(
     viewModel: UserListViewModel,
-    navigateToLogin: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -68,7 +66,6 @@ fun UserListScreenRoot(
         onBottomSheetAction = { action ->
             viewModel.onBottomSheetAction(action)
         },
-        navigateToLogin = navigateToLogin
     )
 }
 
@@ -79,7 +76,6 @@ fun UserListScreen(
     state: UserListState,
     onAction: (UserListAction) -> Unit,
     onBottomSheetAction: (UpdateInfoBottomSheetActions) -> Unit,
-    navigateToLogin: () -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -113,7 +109,6 @@ fun UserListScreen(
                     .padding(horizontal = 8.dp, vertical = 8.dp)
             )
             SortButton(sortAscending, onAction)
-            LogoutButton(onAction, navigateToLogin)
         }
 
         LazyRow(
@@ -180,7 +175,6 @@ fun UserListScreen(
                     UserList(
                         users = state.searchResults,
                         loggedUser = loggedUser,
-                        onBottomSheetAction = onBottomSheetAction,
                         state = state,
                         onDeleteConfirm = {
                             onAction(UserListAction.OnDeleteConfirm(it))
@@ -193,9 +187,6 @@ fun UserListScreen(
                         },
                         onChangeRoleApply = { userId, role ->
                             onAction(UserListAction.OnChangeRoleApply(userId, role))
-                        },
-                        onUpdateInfoClick = {
-                            onAction(UserListAction.OnUpdateInfoClick(it))
                         },
                         modifier = Modifier,
                         scrollState = searchResultsListState

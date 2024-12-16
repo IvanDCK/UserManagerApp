@@ -15,6 +15,7 @@ import org.martarcas.usermanager.di.databaseModule
 import org.martarcas.usermanager.di.datastoreModule
 import org.martarcas.usermanager.di.platformModule
 import org.martarcas.usermanager.domain.repository.UserRepository
+import org.martarcas.usermanager.domain.use_cases.activity.CreateActivityLogUseCase
 import org.martarcas.usermanager.domain.use_cases.auth.LoginRequestUseCase
 import org.martarcas.usermanager.domain.use_cases.auth.SignUpRequestUseCase
 import org.martarcas.usermanager.domain.use_cases.datastore.ReadRememberMeUseCase
@@ -64,6 +65,7 @@ val testModule = module {
     singleOf(::SaveRememberMeAndUserUseCase)
     singleOf(::ReadUserUseCase)
     singleOf(::ReadRememberMeUseCase)
+    singleOf(::CreateActivityLogUseCase)
 
     viewModel<UserListViewModel> {
         UserListViewModel(
@@ -72,7 +74,8 @@ val testModule = module {
             updateUserUseCase = get(),
             deleteUserUseCase = get(),
             saveRememberMeAndUserUseCase = get(),
-            readUserUseCase = get()
+            readUserUseCase = get(),
+            createActivityLogUseCase = get()
         )
     }
     viewModel<AppViewModel> {

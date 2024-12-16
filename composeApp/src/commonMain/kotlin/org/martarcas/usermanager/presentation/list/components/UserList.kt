@@ -24,8 +24,6 @@ fun UserList(
     loggedUser: User?,
     users: List<UserPublic>,
     state: UserListState,
-    onBottomSheetAction: (UpdateInfoBottomSheetActions) -> Unit,
-    onUpdateInfoClick: (Int) -> Unit,
     onChangeRoleClick: (Int) -> Unit,
     onChangeRoleApply: (Int, Role) -> Unit,
     onDeleteClick: (Int) -> Unit,
@@ -48,7 +46,6 @@ fun UserList(
                     user = user,
                     loggedUser = loggedUser,
                     isDropdownOpen = state.isChangeRoleDropdownOpen && state.selectedUserId == user.id,
-                    onUpdateInfoClick = { onUpdateInfoClick(user.id) },
                     onChangeRoleClick = { onChangeRoleClick(user.id) },
                     onChangeRoleApply = { userId, newRole ->
                         onChangeRoleApply(userId, newRole) } ,
@@ -67,23 +64,6 @@ fun UserList(
                     )
                 }
             }
-        }
-        if (state.isUpdateBottomSheetOpen) {
-            BottomSheetMultiplatform(
-                isOpen = state.isUpdateBottomSheetOpen,
-                onDismiss = { onUpdateInfoClick(state.selectedUserId ?: 0) },
-                content = {
-                    BottomSheetContent(
-                        state = state,
-                        onNameChange = { onBottomSheetAction(UpdateInfoBottomSheetActions.OnNameChange(it)) },
-                        onSurnameChange = { onBottomSheetAction(UpdateInfoBottomSheetActions.OnSurnameChange(it)) },
-                        onEmailChange = { onBottomSheetAction(UpdateInfoBottomSheetActions.OnEmailChange(it)) },
-                        onPasswordChange = { onBottomSheetAction(UpdateInfoBottomSheetActions.OnPasswordChange(it)) },
-                        onPasswordToggle = { onBottomSheetAction(UpdateInfoBottomSheetActions.OnPasswordVisibilityChange) },
-                        onUpdateInfo = { onBottomSheetAction(UpdateInfoBottomSheetActions.OnUpdateInfoClick) }
-                    )
-                }
-            )
         }
     }
 }

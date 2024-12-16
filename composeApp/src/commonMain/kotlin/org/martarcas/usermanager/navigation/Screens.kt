@@ -15,4 +15,7 @@ sealed class Destinations {
 
     @Serializable
     data object Activity: Destinations()
+
+    @Serializable
+    data object Profile: Destinations()
 }

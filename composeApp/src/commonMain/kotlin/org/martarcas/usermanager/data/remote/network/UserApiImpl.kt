@@ -22,7 +22,7 @@ import org.martarcas.usermanager.data.remote.safeCall
 import org.martarcas.usermanager.domain.model.response.DataError
 import org.martarcas.usermanager.domain.model.response.Result
 
-private const val BASE_URL = "http://192.168.1.29:8080"
+private const val BASE_URL = "http://192.168.1.19:8080"
 
 @Single
 class UserApiImpl(

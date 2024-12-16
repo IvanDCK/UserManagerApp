@@ -36,7 +36,7 @@ fun MultipurposeButton(
         colors = ButtonDefaults.elevatedButtonColors(
             containerColor = buttonColor
         ),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(15.dp),
         modifier = modifier,
         contentPadding = contentPadding
     ) {

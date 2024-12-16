@@ -25,6 +25,8 @@ import org.martarcas.usermanager.presentation.activity.ActivityScreen
 import org.martarcas.usermanager.presentation.list.UserListScreenRoot
 import org.martarcas.usermanager.presentation.list.UserListViewModel
 import org.martarcas.usermanager.presentation.login.LoginScreen
+import org.martarcas.usermanager.presentation.profile.ProfileScreen
+import org.martarcas.usermanager.presentation.profile.ProfileViewModel
 import org.martarcas.usermanager.presentation.signup.SignUpScreen
 
 @Composable
@@ -35,7 +37,7 @@ fun NavigationWrapper(shouldStartFromList: Boolean) {
 
     Scaffold(
         bottomBar = {
-            if (currentRoute == "org.martarcas.usermanager.navigation.Destinations.List" || currentRoute == "org.martarcas.usermanager.navigation.Destinations.Activity") {
+            if (currentRoute == "org.martarcas.usermanager.navigation.Destinations.List" || currentRoute == "org.martarcas.usermanager.navigation.Destinations.Activity" || currentRoute == "org.martarcas.usermanager.navigation.Destinations.Profile") {
                 BottomAppBar(
                     modifier = Modifier
                         .height(80.dp)
@@ -110,16 +112,24 @@ fun NavigationWrapper(shouldStartFromList: Boolean) {
                 val listViewModel: UserListViewModel = koinViewModel()
                 UserListScreenRoot(
                     viewModel = listViewModel,
-                    navigateToLogin = {
-                        navController.navigate(Destinations.Login)
-                    }
                 )
             }
 
             composable<Destinations.Activity> {
                 ActivityScreen()
             }
-        }
-    }
 
+            composable<Destinations.Profile> {
+
+                val profileViewModel: ProfileViewModel = koinViewModel()
+
+                ProfileScreen(profileViewModel = profileViewModel) {
+                    navController.navigate(Destinations.Login) {
+                        popUpTo<Destinations.Login> { inclusive = true }
+                    }
+                }
+            }
+        }
+
+    }
 }

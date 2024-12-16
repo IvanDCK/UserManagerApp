@@ -10,6 +10,7 @@ fun SignupUiModel.toDomainUser(): User {
         surname = lastName,
         email = email,
         password = password,
-        role = org.martarcas.usermanager.domain.model.user.Role.NEW_USER
+        role = org.martarcas.usermanager.domain.model.user.Role.NEW_USER,
+        avatarId = avatarId
     )
 }

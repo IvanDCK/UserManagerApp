@@ -21,6 +21,7 @@ data class UserListState (
     val surname: String = "",
     val email: String = "",
     val password: String = "",
+    val avatarId: String = "",
     val isPasswordVisible: Boolean = false,
     val isUpdateInfoLoading: Boolean = false,
     val bottomSheetErrorMessage: UiText? = null

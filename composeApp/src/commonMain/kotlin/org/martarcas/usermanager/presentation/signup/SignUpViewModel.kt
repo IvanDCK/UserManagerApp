@@ -59,7 +59,8 @@ class SignUpViewModel(
             name = _uiState.value.firstName,
             surname = _uiState.value.lastName,
             email = _uiState.value.email,
-            password = _uiState.value.password
+            password = _uiState.value.password,
+
         )
 
         if (validationResult.isValid) {
@@ -68,7 +69,8 @@ class SignUpViewModel(
                     firstName = _uiState.value.firstName,
                     lastName = _uiState.value.lastName,
                     email = _uiState.value.email,
-                    password = _uiState.value.password
+                    password = _uiState.value.password,
+                    avatarId = _uiState.value.avatarId
                 ).toDomainUser()
 
                 val response = signUpRequestUseCase(userModel)
@@ -97,7 +99,7 @@ class SignUpViewModel(
         name: String,
         surname: String,
         email: String,
-        password: String
+        password: String,
     ): org.martarcas.usermanager.presentation.signup.model.ValidationResult {
         val errors = mutableListOf<String>()
 

@@ -11,6 +11,7 @@ fun LoginUiModel.toDomainUser(): User {
         surname = "",
         email = email,
         password = password,
-        role = Role.NEW_USER
+        role = Role.NEW_USER,
+        avatarId = "user_avatar0"
     )
 }

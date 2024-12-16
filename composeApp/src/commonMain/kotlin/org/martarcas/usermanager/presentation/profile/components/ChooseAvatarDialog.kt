@@ -1,0 +1,135 @@
+package org.martarcas.usermanager.presentation.profile.components
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
+import org.martarcas.usermanager.presentation.profile.ProfileViewModel
+import org.martarcas.usermanager.presentation.profile.model.AvatarDialogActions
+import usermanagerapp.composeapp.generated.resources.Res
+import usermanagerapp.composeapp.generated.resources.user_avatar0
+import usermanagerapp.composeapp.generated.resources.user_avatar1
+import usermanagerapp.composeapp.generated.resources.user_avatar2
+import usermanagerapp.composeapp.generated.resources.user_avatar3
+import usermanagerapp.composeapp.generated.resources.user_avatar4
+import usermanagerapp.composeapp.generated.resources.user_avatar5
+import usermanagerapp.composeapp.generated.resources.user_avatar6
+import usermanagerapp.composeapp.generated.resources.user_avatar7
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ChooseAvatarBottomSheet(profileViewModel: ProfileViewModel) {
+
+    val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
+
+    val modalSheetState = rememberModalBottomSheetState()
+
+    if (uiState.showAvatarChooserDialog) {
+        ModalBottomSheet(
+            sheetState = modalSheetState,
+            onDismissRequest = { profileViewModel.onAvatarDialogAction(AvatarDialogActions.OnDismissClick) },
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(),
+            ) {
+                Text(
+                    modifier = Modifier.padding(15.dp),
+                    text = "Choose avatar",
+                    fontSize = 24.sp,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(4),
+                    contentPadding = PaddingValues(horizontal = 15.dp, vertical = 15.dp),
+                    horizontalArrangement = Arrangement.spacedBy(15.dp),
+                    verticalArrangement = Arrangement.spacedBy(15.dp)
+                ) {
+                    items(8) {
+                        Box(
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clip(RoundedCornerShape(15.dp))
+                                .clickable {
+                                    profileViewModel.onAvatarDialogAction(
+                                        AvatarDialogActions.OnSelectNewAvatar(
+                                            "user_avatar$it"
+                                        )
+                                    )
+                                }
+                        ) {
+                            Image(
+                                modifier = Modifier.fillMaxSize(),
+                                painter = painterResource(avatarNameDispenser(it)),
+                                contentDescription = "image_avatar_chooser",
+                                contentScale = ContentScale.Crop
+                            )
+                            println("AVATAR ID BOTTOM: ${uiState.avatarId}")
+                            if (uiState.avatarId == "user_avatar$it") {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(Color.White.copy(alpha = 0.4f))
+                                ) {
+                                    Icon(
+                                        modifier = Modifier
+                                            .align(Alignment.Center),
+                                        imageVector = Icons.Rounded.Check,
+                                        tint = Color.White,
+                                        contentDescription = "check_icon_avatar_selected"
+                                    )
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+}
+
+fun avatarNameDispenser(index: Int): DrawableResource {
+    return when (index) {
+        0 -> Res.drawable.user_avatar0
+        1 -> Res.drawable.user_avatar1
+        2 -> Res.drawable.user_avatar2
+        3 -> Res.drawable.user_avatar3
+        4 -> Res.drawable.user_avatar4
+        5 -> Res.drawable.user_avatar5
+        6 -> Res.drawable.user_avatar6
+        7 -> Res.drawable.user_avatar7
+        else -> Res.drawable.user_avatar0
+    }
+}

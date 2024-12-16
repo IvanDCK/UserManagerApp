@@ -16,6 +16,7 @@ fun User.toCreateUserRequest(): CreateUserRequest {
         name = name,
         surname = surname,
         email = email,
-        password = password
+        password = password,
+        avatarId = avatarId
     )
 }

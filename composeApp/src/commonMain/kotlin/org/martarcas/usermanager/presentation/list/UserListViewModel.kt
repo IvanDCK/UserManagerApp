@@ -45,7 +45,6 @@ import org.martarcas.usermanager.presentation.ui_utils.toUiText
 class UserListViewModel(
     private val getAllUsersUseCase: GetAllUsersUseCase,
     private val changeRoleUseCase: UpdateRoleUseCase,
-    private val updateUserUseCase: UpdateUserUseCase,
     private val deleteUserUseCase: DeleteUserUseCase,
     private val createActivityLogUseCase: CreateActivityLogUseCase,
     @Provided private val saveRememberMeAndUserUseCase: SaveRememberMeAndUserUseCase,
@@ -277,7 +276,7 @@ class UserListViewModel(
                 viewModelScope.launch {
                     saveRememberMeAndUserUseCase.invoke(
                         false,
-                        User(0, "", "", "", "", Role.NEW_USER)
+                        User(0, "", "", "", "", Role.NEW_USER, avatarId = "user_avatar0")
                     )
                 }
             }
@@ -329,91 +328,8 @@ class UserListViewModel(
                     )
                 }
             }
-
-            UpdateInfoBottomSheetActions.OnUpdateInfoClick -> {
-                updateUser()
-            }
         }
 
-    }
-
-    /**
-     * Validates the inputs and updates the user info, then updates the datastore preferences and fetches all users
-     */
-    private fun updateUser() {
-        viewModelScope.launch {
-            _state.update {
-                it.copy(
-                    isUpdateInfoLoading = true
-                )
-            }
-            val validationResult = validateUpdateInfoInputs(
-                name = _state.value.name,
-                surname = _state.value.surname,
-                email = _state.value.email,
-                password = _state.value.password
-            )
-
-            if (validationResult.isValid.not()) {
-                _state.update {
-                    it.copy(
-                        bottomSheetErrorMessage = UiText.DynamicString(
-                            validationResult.errors.joinToString(
-                                "\n"
-                            )
-                        ),
-                        isUpdateInfoLoading = false
-                    )
-                }
-                return@launch
-            }
-            updateUserUseCase.invoke(
-                UpdateUserRequest(
-                    userId = _state.value.selectedUserId!!,
-                    newName = _state.value.name,
-                    newSurname = _state.value.surname,
-                    newEmail = _state.value.email,
-                    newPassword = _state.value.password
-                )
-            )
-                .onSuccess {
-                    val userName = getUserNameSurnameByUserId(_state.value.selectedUserId!!)
-                    val newUserInfo = User(
-                        id = _state.value.selectedUserId!!,
-                        name = _state.value.name,
-                        surname = _state.value.surname,
-                        email = _state.value.email,
-                        password = _state.value.password,
-                        role = _state.value.loggedUser!!.role
-                    )
-                    _state.update {
-                        it.copy(
-                            isUpdateInfoLoading = false,
-                            bottomSheetErrorMessage = null,
-                            loggedUser = newUserInfo,
-                        )
-                    }
-                    updateSavedUser(newUserInfo)
-                    getAllUsers()
-                    createActivityLog(
-                        ActivityLog(
-                            userName,
-                            "UpdateUserInfo",
-                            "none",
-                            "none",
-                            getCurrentTimestamp()
-                        )
-                    )
-                }
-                .onError { error ->
-                    _state.update {
-                        it.copy(
-                            bottomSheetErrorMessage = error.toUiText(),
-                            isUpdateInfoLoading = false
-                        )
-                    }
-                }
-        }
     }
 
     /**
@@ -534,36 +450,6 @@ class UserListViewModel(
     }
 
     /**
-     * Validates the inputs for the update info bottom sheet
-     * @param name
-     * @param surname
-     * @param email
-     * @param password
-     */
-    private fun validateUpdateInfoInputs(
-        name: String,
-        surname: String,
-        email: String,
-        password: String
-    ): org.martarcas.usermanager.presentation.signup.model.ValidationResult {
-        val errors = mutableListOf<String>()
-
-        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
-        if (email.isBlank() || !email.matches(emailRegex)) {
-            errors.add("The email is not valid.")
-        }
-        if (password.isBlank()) errors.add("The password cannot be empty.")
-
-        if (name.isBlank()) errors.add("The name cannot be empty.")
-        if (surname.isBlank()) errors.add("The surname cannot be empty.")
-
-        return org.martarcas.usermanager.presentation.signup.model.ValidationResult(
-            errors.isEmpty(),
-            errors
-        )
-    }
-
-    /**
      * Retrieves the logged user from the datastore and updates the state with it
      */
     private fun getLoggedUser() {
@@ -577,20 +463,6 @@ class UserListViewModel(
             }
         }
     }
-
-    /**
-     * Updates the user in the datastore
-     * @param updatedUser
-     */
-    private fun updateSavedUser(updatedUser: User) {
-        viewModelScope.launch {
-            saveRememberMeAndUserUseCase.invoke(
-                rememberMe = true,
-                user = updatedUser
-            )
-        }
-    }
-
 
     init {
         getAllUsers()

@@ -6,5 +6,4 @@ sealed interface UpdateInfoBottomSheetActions {
     data class OnEmailChange(val email: String): UpdateInfoBottomSheetActions
     data class OnPasswordChange(val password: String): UpdateInfoBottomSheetActions
     data object OnPasswordVisibilityChange: UpdateInfoBottomSheetActions
-    data object OnUpdateInfoClick: UpdateInfoBottomSheetActions
 }
