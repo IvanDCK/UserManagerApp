@@ -1,4 +1,4 @@
-package org.martarcas.usermanager.domain.model.repository
+package org.martarcas.usermanager.domain.repository
 
 import org.martarcas.usermanager.data.remote.requests.DeleteUserRequest
 import org.martarcas.usermanager.data.remote.requests.GetUserByIdRequest

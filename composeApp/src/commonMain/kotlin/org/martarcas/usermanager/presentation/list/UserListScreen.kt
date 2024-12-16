@@ -2,6 +2,7 @@ package org.martarcas.usermanager.presentation.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -52,9 +53,13 @@ fun UserListScreenRoot(
         state = state,
         sortAscending = state.sortAscending,
         onAction = { action ->
-            when(action) {
+            when (action) {
                 is UserListAction.OnUpdateInfoClick -> UserListAction.OnUpdateInfoClick(action.id)
-                is UserListAction.OnChangeRoleApply -> UserListAction.OnChangeRoleApply(action.id, action.role)
+                is UserListAction.OnChangeRoleApply -> UserListAction.OnChangeRoleApply(
+                    action.id,
+                    action.role
+                )
+
                 is UserListAction.OnDeleteConfirm -> UserListAction.OnDeleteConfirm(action.id)
                 else -> Unit
             }
@@ -114,7 +119,7 @@ fun UserListScreen(
         LazyRow(
             modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp, start = 16.dp, end = 16.dp)
         ) {
-            items(Role.entries.sortedBy { it.importance }){ role ->
+            items(Role.entries.sortedBy { it.importance }) { role ->
                 RoleButton(
                     text = role.name.replace("_", " "),
                     onClick = {
@@ -127,29 +132,48 @@ fun UserListScreen(
 
             }
 
-            
-        }
 
+        }
         if (state.isLoading) {
-            CircularProgressIndicator()
+            Column(
+                modifier = Modifier
+                    .weight(1f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator()
+            }
         } else {
             when {
                 state.errorMessage != null -> {
-                    Text(
-                        text = state.errorMessage.asString(),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.error
-                    )
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .align(Alignment.Center),
+                            text = state.errorMessage.asString(),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
-
                 state.searchResults.isEmpty() -> {
-                    Text(
-                        text = stringResource(Res.string.no_search_results),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.error
-                    )
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .align(Alignment.Center),
+                            text = stringResource(Res.string.no_search_results),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
 
                 else -> {
@@ -171,8 +195,8 @@ fun UserListScreen(
                             onAction(UserListAction.OnChangeRoleApply(userId, role))
                         },
                         onUpdateInfoClick = {
-                            onAction(UserListAction.OnUpdateInfoClick(it))}
-                        ,
+                            onAction(UserListAction.OnUpdateInfoClick(it))
+                        },
                         modifier = Modifier,
                         scrollState = searchResultsListState
                     )

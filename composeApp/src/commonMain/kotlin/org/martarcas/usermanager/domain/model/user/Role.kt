@@ -11,5 +11,24 @@ enum class Role(val importance: Int) {
     UX_UI_DESIGNER(4),
     DATA_SCIENTIST(4),
     DATA_ANALYST(4),
-    NEW_USER(5)
+    NEW_USER(5);
+
+    val formattedName: String
+        get() = when (this) {
+            CEO -> "CEO"
+            HUMAN_RESOURCES -> "Human Resources"
+            PROJECT_MANAGER -> "Project Manager"
+            MOBILE_DEVELOPER -> "Mobile Developer"
+            BACKEND_DEVELOPER -> "Backend Developer"
+            FRONTEND_DEVELOPER -> "Frontend Developer"
+            FULLSTACK_DEVELOPER -> "Fullstack Developer"
+            UX_UI_DESIGNER -> "UX/UI Designer"
+            DATA_SCIENTIST -> "Data Scientist"
+            DATA_ANALYST -> "Data Analyst"
+            NEW_USER -> "New User"
+        }
+}
+
+fun String.toFormattedRole(): String {
+    return Role.valueOf(this).formattedName
 }

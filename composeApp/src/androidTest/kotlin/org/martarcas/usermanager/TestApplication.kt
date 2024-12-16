@@ -14,7 +14,7 @@ import org.martarcas.usermanager.data.remote.repository.UserRepositoryImpl
 import org.martarcas.usermanager.di.databaseModule
 import org.martarcas.usermanager.di.datastoreModule
 import org.martarcas.usermanager.di.platformModule
-import org.martarcas.usermanager.domain.model.repository.UserRepository
+import org.martarcas.usermanager.domain.repository.UserRepository
 import org.martarcas.usermanager.domain.use_cases.auth.LoginRequestUseCase
 import org.martarcas.usermanager.domain.use_cases.auth.SignUpRequestUseCase
 import org.martarcas.usermanager.domain.use_cases.datastore.ReadRememberMeUseCase

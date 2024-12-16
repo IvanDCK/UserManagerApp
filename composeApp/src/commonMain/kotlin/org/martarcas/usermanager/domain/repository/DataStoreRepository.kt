@@ -1,4 +1,4 @@
-package org.martarcas.usermanager.domain.model.repository
+package org.martarcas.usermanager.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 import org.martarcas.usermanager.domain.model.user.User

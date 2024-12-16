@@ -16,7 +16,7 @@ import org.martarcas.usermanager.domain.use_cases.datastore.SaveRememberMeAndUse
 import org.martarcas.usermanager.presentation.login.model.LoginActions
 import org.martarcas.usermanager.presentation.login.model.LoginUiModel
 import org.martarcas.usermanager.presentation.login.model.LoginUiState
-import org.martarcas.usermanager.presentation.mappers.toLoginUserRequest
+import org.martarcas.usermanager.presentation.mappers.toDomainUser
 import org.martarcas.usermanager.presentation.ui_utils.toUiText
 
 @KoinViewModel
@@ -56,12 +56,16 @@ class LoginViewModel(
      */
     private fun handleLogin() {
         updateState { copy(isLoadingOnClick = true) }
+        val email = _uiState.value.email
+        val password = _uiState.value.password
 
-        val validationResult = validateLoginInputs(uiState.value.email, uiState.value.password)
+        val validationResult = validateLoginInputs(email, password)
         if (validationResult.isValid) {
             viewModelScope.launch {
-                val model = LoginUiModel(uiState.value.email, uiState.value.password).toLoginUserRequest()
-                loginRequestUseCase(model).onSuccess { userResponse ->
+
+                val loginUserModel = LoginUiModel(email, password).toDomainUser()
+
+                loginRequestUseCase(loginUserModel).onSuccess { userResponse ->
                     if (uiState.value.rememberMeIsChecked) {
                         saveRememberMeAndUser(true, userResponse)
                     } else {

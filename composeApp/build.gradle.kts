@@ -107,6 +107,8 @@ kotlin {
             // Datastore
             implementation(libs.datastore.preferences)
             implementation(libs.atomicfu)
+            // Datetime
+            implementation(libs.kotinx.datetime)
 
         }
 
@@ -230,6 +232,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.media3.common.ktx)
     implementation(libs.androidx.runner)
     debugImplementation(compose.uiTooling)
     testImplementation(libs.mockk)

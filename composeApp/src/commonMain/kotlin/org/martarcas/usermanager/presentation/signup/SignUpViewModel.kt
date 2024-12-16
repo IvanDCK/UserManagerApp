@@ -10,7 +10,7 @@ import org.koin.android.annotation.KoinViewModel
 import org.martarcas.usermanager.domain.model.response.onError
 import org.martarcas.usermanager.domain.model.response.onSuccess
 import org.martarcas.usermanager.domain.use_cases.auth.SignUpRequestUseCase
-import org.martarcas.usermanager.presentation.mappers.toCreateUserRequest
+import org.martarcas.usermanager.presentation.mappers.toDomainUser
 import org.martarcas.usermanager.presentation.signup.model.SignupActions
 import org.martarcas.usermanager.presentation.signup.model.SignupUiModel
 import org.martarcas.usermanager.presentation.signup.model.SignupUiState
@@ -69,7 +69,7 @@ class SignUpViewModel(
                     lastName = _uiState.value.lastName,
                     email = _uiState.value.email,
                     password = _uiState.value.password
-                ).toCreateUserRequest()
+                ).toDomainUser()
 
                 val response = signUpRequestUseCase(userModel)
 

@@ -10,12 +10,12 @@ import org.martarcas.usermanager.data.remote.requests.UpdateRoleRequest
 import org.martarcas.usermanager.data.remote.requests.UpdateUserRequest
 import org.martarcas.usermanager.data.remote.requests.auth.CreateUserRequest
 import org.martarcas.usermanager.data.remote.requests.auth.LoginUserRequest
-import org.martarcas.usermanager.domain.model.repository.UserRepository
 import org.martarcas.usermanager.domain.model.response.DataError
 import org.martarcas.usermanager.domain.model.response.Result
 import org.martarcas.usermanager.domain.model.response.map
 import org.martarcas.usermanager.domain.model.user.User
 import org.martarcas.usermanager.domain.model.user.UserPublic
+import org.martarcas.usermanager.domain.repository.UserRepository
 
 @Single
 class UserRepositoryImpl(

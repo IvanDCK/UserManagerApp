@@ -18,8 +18,6 @@ fun App(splashViewModel: AppViewModel = koinViewModel()) {
     val shouldStartFromList by splashViewModel.shouldStartFromList.collectAsState()
 
     MaterialTheme(colorScheme = colors) {
-
         NavigationWrapper(shouldStartFromList)
-
     }
 }

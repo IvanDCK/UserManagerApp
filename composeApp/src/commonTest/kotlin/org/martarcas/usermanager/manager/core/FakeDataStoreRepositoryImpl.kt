@@ -2,7 +2,7 @@ package org.martarcas.usermanager.manager.core
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.martarcas.usermanager.domain.model.repository.DataStoreRepository
+import org.martarcas.usermanager.domain.repository.DataStoreRepository
 import org.martarcas.usermanager.domain.model.user.Role
 import org.martarcas.usermanager.domain.model.user.User
 

@@ -15,16 +15,20 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import org.martarcas.usermanager.data.remote.requests.DeleteUserRequest
 import org.martarcas.usermanager.data.remote.requests.UpdateRoleRequest
 import org.martarcas.usermanager.data.remote.requests.UpdateUserRequest
+import org.martarcas.usermanager.domain.model.activity.ActivityLog
 import org.martarcas.usermanager.domain.model.response.onError
 import org.martarcas.usermanager.domain.model.response.onSuccess
 import org.martarcas.usermanager.domain.model.user.Role
 import org.martarcas.usermanager.domain.model.user.User
 import org.martarcas.usermanager.domain.model.user.UserPublic
+import org.martarcas.usermanager.domain.use_cases.activity.CreateActivityLogUseCase
 import org.martarcas.usermanager.domain.use_cases.datastore.ReadUserUseCase
 import org.martarcas.usermanager.domain.use_cases.datastore.SaveRememberMeAndUserUseCase
 import org.martarcas.usermanager.domain.use_cases.user.DeleteUserUseCase
@@ -43,6 +47,7 @@ class UserListViewModel(
     private val changeRoleUseCase: UpdateRoleUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
     private val deleteUserUseCase: DeleteUserUseCase,
+    private val createActivityLogUseCase: CreateActivityLogUseCase,
     @Provided private val saveRememberMeAndUserUseCase: SaveRememberMeAndUserUseCase,
     @Provided private val readUserUseCase: ReadUserUseCase,
     private val isTestEnvironment: Boolean = false
@@ -111,17 +116,20 @@ class UserListViewModel(
             _state.value.selectedRoles.contains(user.role)
         }
 
-        val listToSearch = if (_state.value.selectedRoles.isEmpty()){
+        val listToSearch = if (_state.value.selectedRoles.isEmpty()) {
             cachedUsers
         } else {
             filteredUsersByRole
         }
 
         val filteredUsers = listToSearch.filter {
-            it.name.contains(query, ignoreCase = true) || it.surname.contains(query, ignoreCase = true)
+            it.name.contains(query, ignoreCase = true) || it.surname.contains(
+                query,
+                ignoreCase = true
+            )
         }
 
-        if (filteredUsers.isEmpty()){
+        if (filteredUsers.isEmpty()) {
             _state.update {
                 it.copy(
                     searchResults = emptyList(),
@@ -147,7 +155,7 @@ class UserListViewModel(
             _state.value.selectedRoles.contains(user.role)
         }
 
-        if (filteredUsers.isEmpty()){
+        if (filteredUsers.isEmpty()) {
             _state.update {
                 it.copy(
                     searchResults = emptyList(),
@@ -163,7 +171,7 @@ class UserListViewModel(
             }
         }
 
-        if (_state.value.selectedRoles.isEmpty()){
+        if (_state.value.selectedRoles.isEmpty()) {
             _state.update {
                 it.copy(
                     searchResults = cachedUsers,
@@ -172,12 +180,13 @@ class UserListViewModel(
             }
         }
     }
+
     /**
      * Handles all the user list actions
      * @param action
      */
     fun onAction(action: UserListAction) {
-        when(action) {
+        when (action) {
             is UserListAction.OnUpdateInfoClick -> {
                 _state.update {
                     it.copy(
@@ -203,12 +212,14 @@ class UserListViewModel(
                 }
 
             }
+
             is UserListAction.OnDeleteConfirm -> deleteUser(action.id)
             is UserListAction.OnSearchQueryChange -> {
                 _state.update {
                     it.copy(searchQuery = action.query)
                 }
             }
+
             is UserListAction.OnRoleFilterClick -> {
                 _state.update {
                     it.copy(
@@ -221,6 +232,7 @@ class UserListViewModel(
                 }
                 filterUsersByRole()
             }
+
             UserListAction.OnSortIconClick -> {
                 _state.update {
                     it.copy(
@@ -276,8 +288,8 @@ class UserListViewModel(
      * Handles the bottom sheet actions that opens when the user clicks on the update info button
      * @param action
      */
-    fun onBottomSheetAction(action: UpdateInfoBottomSheetActions){
-        when(action) {
+    fun onBottomSheetAction(action: UpdateInfoBottomSheetActions) {
+        when (action) {
             is UpdateInfoBottomSheetActions.OnEmailChange -> {
                 _state.update {
                     it.copy(
@@ -285,6 +297,7 @@ class UserListViewModel(
                     )
                 }
             }
+
             is UpdateInfoBottomSheetActions.OnNameChange -> {
                 _state.update {
                     it.copy(
@@ -292,6 +305,7 @@ class UserListViewModel(
                     )
                 }
             }
+
             is UpdateInfoBottomSheetActions.OnPasswordChange -> {
                 _state.update {
                     it.copy(
@@ -299,6 +313,7 @@ class UserListViewModel(
                     )
                 }
             }
+
             UpdateInfoBottomSheetActions.OnPasswordVisibilityChange -> {
                 _state.update {
                     it.copy(
@@ -306,6 +321,7 @@ class UserListViewModel(
                     )
                 }
             }
+
             is UpdateInfoBottomSheetActions.OnSurnameChange -> {
                 _state.update {
                     it.copy(
@@ -313,6 +329,7 @@ class UserListViewModel(
                     )
                 }
             }
+
             UpdateInfoBottomSheetActions.OnUpdateInfoClick -> {
                 updateUser()
             }
@@ -330,7 +347,6 @@ class UserListViewModel(
                     isUpdateInfoLoading = true
                 )
             }
-
             val validationResult = validateUpdateInfoInputs(
                 name = _state.value.name,
                 surname = _state.value.surname,
@@ -341,13 +357,16 @@ class UserListViewModel(
             if (validationResult.isValid.not()) {
                 _state.update {
                     it.copy(
-                        bottomSheetErrorMessage = UiText.DynamicString(validationResult.errors.joinToString("\n")),
+                        bottomSheetErrorMessage = UiText.DynamicString(
+                            validationResult.errors.joinToString(
+                                "\n"
+                            )
+                        ),
                         isUpdateInfoLoading = false
                     )
                 }
                 return@launch
             }
-
             updateUserUseCase.invoke(
                 UpdateUserRequest(
                     userId = _state.value.selectedUserId!!,
@@ -358,6 +377,7 @@ class UserListViewModel(
                 )
             )
                 .onSuccess {
+                    val userName = getUserNameSurnameByUserId(_state.value.selectedUserId!!)
                     val newUserInfo = User(
                         id = _state.value.selectedUserId!!,
                         name = _state.value.name,
@@ -375,6 +395,15 @@ class UserListViewModel(
                     }
                     updateSavedUser(newUserInfo)
                     getAllUsers()
+                    createActivityLog(
+                        ActivityLog(
+                            userName,
+                            "UpdateUserInfo",
+                            "none",
+                            "none",
+                            getCurrentTimestamp()
+                        )
+                    )
                 }
                 .onError { error ->
                     _state.update {
@@ -424,6 +453,10 @@ class UserListViewModel(
      * @param id
      */
     private fun deleteUser(id: Int) = viewModelScope.launch {
+        val fullName = getUserNameSurnameByUserId(_state.value.loggedUser!!.id)
+        val fullTargetName = getUserNameSurnameByUserId(id)
+
+        println("NAME AND TARGET NAME: $fullName $fullTargetName")
         deleteUserUseCase.invoke(DeleteUserRequest(id))
             .onSuccess {
                 _state.update {
@@ -433,6 +466,15 @@ class UserListViewModel(
                     )
                 }
                 getAllUsers()
+                createActivityLog(
+                    ActivityLog(
+                        fullName,
+                        "DeleteUser",
+                        "none",
+                        fullTargetName,
+                        getCurrentTimestamp()
+                    )
+                )
             }
             .onError { error ->
                 _state.update {
@@ -451,9 +493,20 @@ class UserListViewModel(
      * @param role
      */
     private fun changeRole(id: Int, role: Role) = viewModelScope.launch {
+        val fullName = getUserNameSurnameByUserId(_state.value.loggedUser!!.id)
+        val fullTargetName = getUserNameSurnameByUserId(id)
         changeRoleUseCase.invoke(UpdateRoleRequest(id, role.name))
             .onSuccess {
                 getAllUsers()
+                createActivityLog(
+                    ActivityLog(
+                        fullName,
+                        "ChangeRole",
+                        role.name,
+                        fullTargetName,
+                        getCurrentTimestamp()
+                    )
+                )
             }
             .onError { error ->
                 _state.update {
@@ -462,6 +515,22 @@ class UserListViewModel(
                     )
                 }
             }
+    }
+
+    private fun getUserNameSurnameByUserId(userId: Int): String {
+        return cachedUsers.first { it.id == userId }.name +
+                " " + cachedUsers.first { it.id == userId }.surname
+    }
+
+    private fun createActivityLog(activityLog: ActivityLog) {
+        viewModelScope.launch {
+            createActivityLogUseCase(activityLog)
+        }
+    }
+
+    private fun getCurrentTimestamp(): String {
+        val currentInstant: Instant = Clock.System.now()
+        return currentInstant.toEpochMilliseconds().toString()
     }
 
     /**
