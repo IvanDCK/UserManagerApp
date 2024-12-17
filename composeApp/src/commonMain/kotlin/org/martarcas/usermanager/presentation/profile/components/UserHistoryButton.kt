@@ -1,4 +1,4 @@
-package org.martarcas.usermanager.presentation.list.components
+package org.martarcas.usermanager.presentation.profile.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -7,24 +7,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
-import org.martarcas.usermanager.presentation.profile.ProfileViewModel
-import org.martarcas.usermanager.presentation.profile.model.ProfileActions
+import org.martarcas.usermanager.presentation.list.components.MultipurposeButton
 import org.martarcas.usermanager.presentation.ui_utils.ClosedNight
 import usermanagerapp.composeapp.generated.resources.Res
-import usermanagerapp.composeapp.generated.resources.logout_light
+import usermanagerapp.composeapp.generated.resources.list_icon
 
 @Composable
-fun LogoutButton(profileViewModel: ProfileViewModel, navigateToLogin: () -> Unit) {
+fun UserHistoryButton(navigateToUserHistory: () -> Unit) {
     MultipurposeButton(
         modifier = Modifier.padding(end = 8.dp),
         onClick = {
-            profileViewModel.onProfileAction(ProfileActions.OnLogoutButtonClick)
-            navigateToLogin()
+            navigateToUserHistory()
         },
-        startIcon = painterResource(resource = Res.drawable.logout_light),
+        startIcon = painterResource(resource = Res.drawable.list_icon),
         contentPadding = PaddingValues(vertical = 10.dp, horizontal = 4.dp),
         iconTint = Color.White,
         buttonColor = ClosedNight,
-        contentDescription = "logout_button"
+        contentDescription = "user_history_button"
     )
 }

@@ -34,6 +34,7 @@ import org.martarcas.usermanager.domain.model.response.Result
 import org.martarcas.usermanager.domain.model.user.Role
 import org.martarcas.usermanager.domain.model.user.User
 import org.martarcas.usermanager.domain.model.user.UserPublic
+import org.martarcas.usermanager.domain.use_cases.activity.CreateActivityLogUseCase
 import org.martarcas.usermanager.domain.use_cases.auth.LoginRequestUseCase
 import org.martarcas.usermanager.domain.use_cases.datastore.ReadRememberMeUseCase
 import org.martarcas.usermanager.domain.use_cases.datastore.ReadUserUseCase
@@ -57,20 +58,20 @@ class UserListScreenTest {
 
     private val dummyList = mutableStateOf(
         listOf(
-            UserPublic(1, "David", "Doe", Role.BACKEND_DEVELOPER),
-            UserPublic(2, "John", "Smith", Role.MOBILE_DEVELOPER),
-            UserPublic(3, "Jane", "Doe", Role.PROJECT_MANAGER),
-            UserPublic(4, "Albert", "Smith", Role.CEO),
-            UserPublic(5, "Alice", "Doe", Role.NEW_USER),
+            UserPublic(1, "David", "Doe", Role.BACKEND_DEVELOPER, ""),
+            UserPublic(2, "John", "Smith", Role.MOBILE_DEVELOPER, ""),
+            UserPublic(3, "Jane", "Doe", Role.PROJECT_MANAGER, ""),
+            UserPublic(4, "Albert", "Smith", Role.CEO, ""),
+            UserPublic(5, "Alice", "Doe", Role.NEW_USER, ""),
         )
     )
 
     private val loggedUser = User(
-        2, "John", "Smith", "logged@user.com", "12345678", Role.MOBILE_DEVELOPER
+        2, "John", "Smith", "logged@user.com", "12345678", Role.MOBILE_DEVELOPER, ""
     )
 
     private val loggedCEO = User(
-        4, "Albert", "Smith", "ceo@user.com", "12345678", Role.CEO
+        4, "Albert", "Smith", "ceo@user.com", "12345678", Role.CEO, ""
     )
 
     private lateinit var userListViewModel: UserListViewModel
@@ -103,6 +104,9 @@ class UserListScreenTest {
 
     @MockK
     lateinit var readRememberMeUseCase: ReadRememberMeUseCase
+    
+    @MockK
+    lateinit var  createActivityLogUseCase: CreateActivityLogUseCase
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private var testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
@@ -143,7 +147,7 @@ class UserListScreenTest {
 
         userListViewModel = UserListViewModel(
             getAllUsersUseCase = getAllUsersUseCase,
-            updateUserUseCase = updateUserUseCase,
+            createActivityLogUseCase = createActivityLogUseCase,
             changeRoleUseCase = updateRoleUseCase,
             deleteUserUseCase = deleteUserUseCase,
             saveRememberMeAndUserUseCase = saveRememberMeAndUserUseCase,
@@ -172,8 +176,7 @@ class UserListScreenTest {
 
         composeTestRule.setContent {
             UserListScreenRoot(
-                viewModel = userListViewModel,
-                navigateToLogin = {}
+                viewModel = userListViewModel
             )
         }
 
@@ -197,8 +200,7 @@ class UserListScreenTest {
 
         composeTestRule.setContent {
             UserListScreenRoot(
-                viewModel = userListViewModel,
-                navigateToLogin = {}
+                viewModel = userListViewModel
             )
         }
 
@@ -250,8 +252,7 @@ class UserListScreenTest {
 
         composeTestRule.setContent {
             UserListScreenRoot(
-                viewModel = userListViewModel,
-                navigateToLogin = {}
+                viewModel = userListViewModel
             )
         }
 
@@ -293,8 +294,7 @@ class UserListScreenTest {
 
             composeTestRule.setContent {
                 UserListScreenRoot(
-                    viewModel = userListViewModel,
-                    navigateToLogin = {}
+                    viewModel = userListViewModel
                 )
             }
             composeTestRule.waitForIdle()
@@ -324,8 +324,7 @@ class UserListScreenTest {
 
         composeTestRule.setContent {
             UserListScreenRoot(
-                viewModel = userListViewModel,
-                navigateToLogin = {}
+                viewModel = userListViewModel
             )
         }
 
@@ -380,8 +379,7 @@ class UserListScreenTest {
 
         composeTestRule.setContent {
             UserListScreenRoot(
-                viewModel = userListViewModel,
-                navigateToLogin = {}
+                viewModel = userListViewModel
             )
         }
         composeTestRule.waitForIdle()

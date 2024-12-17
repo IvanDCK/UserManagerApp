@@ -6,9 +6,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import org.koin.android.annotation.KoinViewModel
+import org.martarcas.usermanager.domain.model.activity.ActivityLog
 import org.martarcas.usermanager.domain.model.response.onError
 import org.martarcas.usermanager.domain.model.response.onSuccess
+import org.martarcas.usermanager.domain.use_cases.activity.CreateActivityLogUseCase
 import org.martarcas.usermanager.domain.use_cases.auth.SignUpRequestUseCase
 import org.martarcas.usermanager.presentation.mappers.toDomainUser
 import org.martarcas.usermanager.presentation.signup.model.SignupActions
@@ -18,7 +22,8 @@ import org.martarcas.usermanager.presentation.ui_utils.toUiText
 
 @KoinViewModel
 class SignUpViewModel(
-    private val signUpRequestUseCase: SignUpRequestUseCase
+    private val signUpRequestUseCase: SignUpRequestUseCase,
+    private val createActivityLogUseCase: CreateActivityLogUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SignupUiState())
@@ -29,7 +34,6 @@ class SignUpViewModel(
      * @param update
      */
     private fun updateField(update: SignupUiState.() -> SignupUiState) {
-        println("UI State updated: $update")
         _uiState.update { it.update() }
     }
 
@@ -64,10 +68,12 @@ class SignUpViewModel(
         )
 
         if (validationResult.isValid) {
+            val firstName = _uiState.value.firstName
+            val lastName = _uiState.value.lastName
             viewModelScope.launch {
                 val userModel = SignupUiModel(
-                    firstName = _uiState.value.firstName,
-                    lastName = _uiState.value.lastName,
+                    firstName = firstName,
+                    lastName = lastName,
                     email = _uiState.value.email,
                     password = _uiState.value.password,
                     avatarId = _uiState.value.avatarId
@@ -76,7 +82,17 @@ class SignUpViewModel(
                 val response = signUpRequestUseCase(userModel)
 
                 response.onSuccess {
+                    createActivityLog(
+                        ActivityLog(
+                            "$firstName $lastName",
+                            "CreatedUser",
+                            "none",
+                            "none",
+                            getCurrentTimestamp()
+                        )
+                    )
                     updateField { copy(shouldNavigateToLogin = true) }
+
                 }.onError { error ->
                     updateField { copy(errorMessage = error.toUiText()) }
                     resetLoadingProgress()
@@ -131,4 +147,17 @@ class SignUpViewModel(
     private fun resetLoadingProgress() {
         updateField { copy(isLoadingOnClick = false) }
     }
+
+    private fun createActivityLog(activityLog: ActivityLog) {
+        viewModelScope.launch {
+            createActivityLogUseCase(activityLog)
+        }
+    }
+
+    private fun getCurrentTimestamp(): String {
+        val currentInstant: Instant = Clock.System.now()
+        return currentInstant.toEpochMilliseconds().toString()
+    }
+
+
 }

@@ -2,12 +2,14 @@ package org.martarcas.usermanager.presentation.profile
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,10 +36,11 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.martarcas.usermanager.presentation.components.AuthTextField
 import org.martarcas.usermanager.presentation.components.getPasswordVisibilityIcon
-import org.martarcas.usermanager.presentation.list.components.LogoutButton
 import org.martarcas.usermanager.presentation.profile.components.ChooseAvatarBottomSheet
+import org.martarcas.usermanager.presentation.profile.components.LogoutButton
 import org.martarcas.usermanager.presentation.profile.components.ProfileButton
 import org.martarcas.usermanager.presentation.profile.components.UserAvatar
+import org.martarcas.usermanager.presentation.profile.components.UserHistoryButton
 import org.martarcas.usermanager.presentation.profile.model.ProfileActions
 import org.martarcas.usermanager.presentation.profile.model.ProfileUiState
 import org.martarcas.usermanager.presentation.ui_utils.ClosedNight
@@ -54,7 +57,7 @@ import usermanagerapp.composeapp.generated.resources.user_avatar7
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(profileViewModel: ProfileViewModel, navigateToLogin: () -> Unit) {
+fun ProfileScreen(profileViewModel: ProfileViewModel, navigateToLogin: () -> Unit, navigateToUserHistory: () -> Unit) {
 
     val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
 
@@ -63,7 +66,19 @@ fun ProfileScreen(profileViewModel: ProfileViewModel, navigateToLogin: () -> Uni
             TopAppBar(
                 title = {},
                 actions = {
-                    LogoutButton(profileViewModel, navigateToLogin)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        UserHistoryButton(navigateToUserHistory)
+
+                        Spacer(modifier = Modifier.width(20.dp))
+
+                        LogoutButton(profileViewModel, navigateToLogin)
+
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )

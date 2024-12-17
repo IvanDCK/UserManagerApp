@@ -18,4 +18,7 @@ sealed class Destinations {
 
     @Serializable
     data object Profile: Destinations()
+
+    @Serializable
+    data object UserHistory: Destinations()
 }
