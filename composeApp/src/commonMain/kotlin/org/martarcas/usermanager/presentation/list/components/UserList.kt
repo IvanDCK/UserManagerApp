@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import org.martarcas.usermanager.domain.model.user.Role
 import org.martarcas.usermanager.domain.model.user.User
 import org.martarcas.usermanager.domain.model.user.UserPublic
-import org.martarcas.usermanager.presentation.list.model.UpdateInfoBottomSheetActions
 import org.martarcas.usermanager.presentation.list.model.UserListState
 
 @Composable

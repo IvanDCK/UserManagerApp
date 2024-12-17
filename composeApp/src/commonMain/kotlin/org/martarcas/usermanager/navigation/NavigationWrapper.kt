@@ -28,6 +28,7 @@ import org.martarcas.usermanager.presentation.login.LoginScreen
 import org.martarcas.usermanager.presentation.profile.ProfileScreen
 import org.martarcas.usermanager.presentation.profile.ProfileViewModel
 import org.martarcas.usermanager.presentation.signup.SignUpScreen
+import org.martarcas.usermanager.presentation.user_history.UserHistoryScreen
 
 @Composable
 fun NavigationWrapper(shouldStartFromList: Boolean) {
@@ -123,12 +124,27 @@ fun NavigationWrapper(shouldStartFromList: Boolean) {
 
                 val profileViewModel: ProfileViewModel = koinViewModel()
 
-                ProfileScreen(profileViewModel = profileViewModel) {
-                    navController.navigate(Destinations.Login) {
-                        popUpTo<Destinations.Login> { inclusive = true }
+                ProfileScreen(profileViewModel = profileViewModel,
+                    navigateToLogin = {
+                        navController.navigate(Destinations.Login) {
+                            popUpTo<Destinations.Login> { inclusive = true }
+                        }
+                    },
+                    navigateToUserHistory = {
+                        navController.navigate(Destinations.UserHistory)
+                    }
+                )
+            }
+
+            composable<Destinations.UserHistory> {
+
+                UserHistoryScreen {
+                    navController.navigate(Destinations.Profile) {
+                        popUpTo<Destinations.Profile> { inclusive = true }
                     }
                 }
             }
+
         }
 
     }

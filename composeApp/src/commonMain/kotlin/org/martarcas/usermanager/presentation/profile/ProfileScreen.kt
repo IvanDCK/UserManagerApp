@@ -36,10 +36,8 @@ import org.martarcas.usermanager.presentation.components.AuthTextField
 import org.martarcas.usermanager.presentation.components.getPasswordVisibilityIcon
 import org.martarcas.usermanager.presentation.list.components.LogoutButton
 import org.martarcas.usermanager.presentation.profile.components.ChooseAvatarBottomSheet
-import org.martarcas.usermanager.presentation.profile.components.DeleteUserDialog
 import org.martarcas.usermanager.presentation.profile.components.ProfileButton
 import org.martarcas.usermanager.presentation.profile.components.UserAvatar
-import org.martarcas.usermanager.presentation.profile.model.DeleteDialogActions
 import org.martarcas.usermanager.presentation.profile.model.ProfileActions
 import org.martarcas.usermanager.presentation.profile.model.ProfileUiState
 import org.martarcas.usermanager.presentation.ui_utils.ClosedNight
@@ -56,7 +54,7 @@ import usermanagerapp.composeapp.generated.resources.user_avatar7
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(profileViewModel: ProfileViewModel, navigateToLogin: () -> Unit) {
+fun ProfileScreen(profileViewModel: ProfileViewModel, navigateToLogin: () -> Unit, navigateToUserHistory: () -> Unit) {
 
     val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
 
@@ -65,7 +63,19 @@ fun ProfileScreen(profileViewModel: ProfileViewModel, navigateToLogin: () -> Uni
             TopAppBar(
                 title = {},
                 actions = {
-                    LogoutButton(profileViewModel, navigateToLogin)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        UserHistoryButton(navigateToUserHistory)
+
+                        Spacer(modifier = Modifier.width(20.dp))
+
+                        LogoutButton(profileViewModel, navigateToLogin)
+
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
@@ -81,12 +91,12 @@ fun ProfileScreen(profileViewModel: ProfileViewModel, navigateToLogin: () -> Uni
                 .statusBarsPadding(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
-        ) { ProfileScreenContent(uiState, profileViewModel, navigateToLogin) }
+        ) { ProfileScreenContent(uiState, profileViewModel) }
     }
 }
 
 @Composable
-fun ProfileScreenContent(uiState: ProfileUiState, profileViewModel: ProfileViewModel, navigateToLogin: () -> Unit) {
+fun ProfileScreenContent(uiState: ProfileUiState, profileViewModel: ProfileViewModel) {
 
     val loggedUser = uiState.loggedUser
 

@@ -1,4 +1,4 @@
-package org.martarcas.usermanager.presentation.activity.components
+package org.martarcas.usermanager.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,11 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.martarcas.usermanager.presentation.activity.ActivityViewModel
 import org.martarcas.usermanager.presentation.activity.model.ActivityUiModel
+import org.martarcas.usermanager.presentation.ui_utils.formatActivityType
+import org.martarcas.usermanager.presentation.ui_utils.formatTimestampDifference
 
 @Composable
-fun ActivityItem(activityItem: ActivityUiModel, activityViewModel: ActivityViewModel) {
+fun ActivityItem(activityItem: ActivityUiModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -39,13 +40,13 @@ fun ActivityItem(activityItem: ActivityUiModel, activityViewModel: ActivityViewM
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = activityViewModel.formatActivityType(activityItem.activityType),
+                text = formatActivityType(activityItem.activityType),
                 fontSize = 23.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
             Text(
-                text = activityViewModel.formatTimestampDifference(activityItem.actionTimestamp.toLong()),
+                text = formatTimestampDifference(activityItem.actionTimestamp.toLong()),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.ExtraLight,
                 color = MaterialTheme.colorScheme.onPrimaryContainer

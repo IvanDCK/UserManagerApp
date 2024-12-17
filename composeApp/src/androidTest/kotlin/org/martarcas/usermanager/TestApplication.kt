@@ -71,7 +71,6 @@ val testModule = module {
         UserListViewModel(
             getAllUsersUseCase = get(),
             changeRoleUseCase = get(),
-            updateUserUseCase = get(),
             deleteUserUseCase = get(),
             saveRememberMeAndUserUseCase = get(),
             readUserUseCase = get(),
@@ -93,7 +92,8 @@ val testModule = module {
 
     viewModel<SignUpViewModel> {
         SignUpViewModel(
-            signUpRequestUseCase = get()
+            signUpRequestUseCase = get(),
+            createActivityLogUseCase = get()
         )
     }
 

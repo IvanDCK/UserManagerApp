@@ -1,4 +1,4 @@
-package org.martarcas.usermanager.presentation.activity.components
+package org.martarcas.usermanager.presentation.components
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -38,6 +38,11 @@ fun ActivityTextBuilder(activityItem: ActivityUiModel): AnnotatedString {
                 appendStyledText(activityItem.targetUserName, boldStyle)
                 appendStyledText(" has been removed from the system by ", lightStyle)
                 appendStyledText(activityItem.userName, italicBoldStyle)
+            }
+
+            "CreatedUser" -> {
+                appendStyledText(activityItem.userName, boldStyle)
+                appendStyledText(" has joined this organization ", lightStyle)
             }
 
             else -> {

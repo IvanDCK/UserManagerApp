@@ -39,7 +39,7 @@ class LoginViewModelTest {
 
 
     private val loggedUser = User(
-        2, "John", "Smith", "logged@user.com", "12345678", Role.MOBILE_DEVELOPER
+        2, "John", "Smith", "logged@user.com", "12345678", Role.MOBILE_DEVELOPER, ""
     )
 
     private lateinit var appViewModel: AppViewModel

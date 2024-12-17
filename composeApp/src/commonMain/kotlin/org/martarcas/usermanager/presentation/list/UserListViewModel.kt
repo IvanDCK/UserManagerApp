@@ -21,7 +21,6 @@ import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import org.martarcas.usermanager.data.remote.requests.DeleteUserRequest
 import org.martarcas.usermanager.data.remote.requests.UpdateRoleRequest
-import org.martarcas.usermanager.data.remote.requests.UpdateUserRequest
 import org.martarcas.usermanager.domain.model.activity.ActivityLog
 import org.martarcas.usermanager.domain.model.response.onError
 import org.martarcas.usermanager.domain.model.response.onSuccess
@@ -34,7 +33,6 @@ import org.martarcas.usermanager.domain.use_cases.datastore.SaveRememberMeAndUse
 import org.martarcas.usermanager.domain.use_cases.user.DeleteUserUseCase
 import org.martarcas.usermanager.domain.use_cases.user.GetAllUsersUseCase
 import org.martarcas.usermanager.domain.use_cases.user.UpdateRoleUseCase
-import org.martarcas.usermanager.domain.use_cases.user.UpdateUserUseCase
 import org.martarcas.usermanager.presentation.list.model.UpdateInfoBottomSheetActions
 import org.martarcas.usermanager.presentation.list.model.UserListAction
 import org.martarcas.usermanager.presentation.list.model.UserListState
