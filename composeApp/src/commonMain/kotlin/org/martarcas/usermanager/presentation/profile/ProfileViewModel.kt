@@ -6,9 +6,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.DrawableResource
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
+import org.martarcas.usermanager.data.remote.requests.DeleteUserRequest
 import org.martarcas.usermanager.data.remote.requests.UpdateUserRequest
 import org.martarcas.usermanager.domain.model.response.onError
 import org.martarcas.usermanager.domain.model.response.onSuccess
@@ -16,18 +19,30 @@ import org.martarcas.usermanager.domain.model.user.Role
 import org.martarcas.usermanager.domain.model.user.User
 import org.martarcas.usermanager.domain.use_cases.datastore.ReadUserUseCase
 import org.martarcas.usermanager.domain.use_cases.datastore.SaveRememberMeAndUserUseCase
+import org.martarcas.usermanager.domain.use_cases.user.DeleteUserUseCase
 import org.martarcas.usermanager.domain.use_cases.user.UpdateUserUseCase
-import org.martarcas.usermanager.presentation.profile.model.AvatarDialogActions
+import org.martarcas.usermanager.presentation.profile.model.AvatarBottomSheetActions
+import org.martarcas.usermanager.presentation.profile.model.DeleteDialogActions
 import org.martarcas.usermanager.presentation.profile.model.ProfileActions
 import org.martarcas.usermanager.presentation.profile.model.ProfileUiState
 import org.martarcas.usermanager.presentation.ui_utils.UiText
 import org.martarcas.usermanager.presentation.ui_utils.toUiText
+import usermanagerapp.composeapp.generated.resources.Res
+import usermanagerapp.composeapp.generated.resources.user_avatar0
+import usermanagerapp.composeapp.generated.resources.user_avatar1
+import usermanagerapp.composeapp.generated.resources.user_avatar2
+import usermanagerapp.composeapp.generated.resources.user_avatar3
+import usermanagerapp.composeapp.generated.resources.user_avatar4
+import usermanagerapp.composeapp.generated.resources.user_avatar5
+import usermanagerapp.composeapp.generated.resources.user_avatar6
+import usermanagerapp.composeapp.generated.resources.user_avatar7
 
 @KoinViewModel
 class ProfileViewModel(
     @Provided private val saveRememberMeAndUserUseCase: SaveRememberMeAndUserUseCase,
     @Provided private val readUserUseCase: ReadUserUseCase,
-    private val updateUserUseCase: UpdateUserUseCase
+    private val updateUserUseCase: UpdateUserUseCase,
+    private val deleteUserUseCase: DeleteUserUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -71,12 +86,15 @@ class ProfileViewModel(
                     showAvatarChooserDialog = true
                 )
             }
+
             is ProfileActions.OnFirstNameChange -> updateProfileState { copy(firstNameText = action.value) }
             is ProfileActions.OnLastNameChange -> updateProfileState { copy(lastNameText = action.value) }
             is ProfileActions.OnEmailChange -> updateProfileState { copy(emailText = action.value) }
             is ProfileActions.OnPasswordChange -> updateProfileState { copy(passwordText = action.value) }
             is ProfileActions.OnPasswordVisibleClick -> updateProfileState { copy(isPasswordVisible = !isPasswordVisible) }
-            is ProfileActions.OnSaveButtonClick -> { updateUser() }
+            is ProfileActions.OnSaveButtonClick -> {
+                updateUser()
+            }
 
             is ProfileActions.OnRemoveAccountButtonClick -> updateProfileState {
                 copy(
@@ -86,9 +104,20 @@ class ProfileViewModel(
         }
     }
 
-    fun onAvatarDialogAction(action: AvatarDialogActions) {
+    fun onDeleteDialogAction(action: DeleteDialogActions) {
         when (action) {
-            is AvatarDialogActions.OnSelectNewAvatar -> {
+            is DeleteDialogActions.OnConfirmClick -> handleDeleteUser()
+            is DeleteDialogActions.OnDismissClick -> updateProfileState {
+                copy(
+                    showRemoveAccountPopup = false
+                )
+            }
+        }
+    }
+
+    fun onAvatarBottomSheetAction(action: AvatarBottomSheetActions) {
+        when (action) {
+            is AvatarBottomSheetActions.OnSelectNewAvatar -> {
                 updateProfileState {
                     copy(
                         showAvatarChooserDialog = false,
@@ -97,7 +126,7 @@ class ProfileViewModel(
                 }
             }
 
-            is AvatarDialogActions.OnDismissClick -> updateProfileState {
+            is AvatarBottomSheetActions.OnDismissClick -> updateProfileState {
                 copy(
                     showAvatarChooserDialog = false
                 )
@@ -155,7 +184,8 @@ class ProfileViewModel(
                         role = _uiState.value.loggedUser!!.role,
                         avatarId = _uiState.value.avatarId
                     )
-                    updateProfileState { copy(
+                    updateProfileState {
+                        copy(
                             isLoading = false,
                             loggedUser = newUserInfo,
                         )
@@ -184,6 +214,49 @@ class ProfileViewModel(
                 rememberMe = true,
                 user = updatedUser
             )
+        }
+    }
+
+    private fun handleDeleteUser() {
+        viewModelScope.launch {
+            updateProfileState {
+                copy(
+                    isLoading = true
+                )
+            }
+            deleteUserUseCase(DeleteUserRequest(_uiState.value.loggedUser?.id!!))
+                .onSuccess {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            showRemoveAccountPopup = false,
+                            loggedUser = null
+                        )
+                    }
+                }
+                .onError { error ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = error.toUiText(),
+                            showRemoveAccountPopup = false,
+                        )
+                    }
+                }
+        }
+    }
+
+    fun avatarNameDispenser(index: Int): DrawableResource {
+        return when (index) {
+            0 -> Res.drawable.user_avatar0
+            1 -> Res.drawable.user_avatar1
+            2 -> Res.drawable.user_avatar2
+            3 -> Res.drawable.user_avatar3
+            4 -> Res.drawable.user_avatar4
+            5 -> Res.drawable.user_avatar5
+            6 -> Res.drawable.user_avatar6
+            7 -> Res.drawable.user_avatar7
+            else -> Res.drawable.user_avatar0
         }
     }
 

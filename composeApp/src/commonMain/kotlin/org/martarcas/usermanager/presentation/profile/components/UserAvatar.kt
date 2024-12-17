@@ -17,9 +17,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
+import org.martarcas.usermanager.presentation.mappers.toDrawableProfileImage
 import org.martarcas.usermanager.presentation.profile.ProfileViewModel
 import org.martarcas.usermanager.presentation.profile.model.ProfileActions
-import org.martarcas.usermanager.presentation.profile.toDrawableProfileImage
 import org.martarcas.usermanager.presentation.ui_utils.ClosedNight
 
 @Composable

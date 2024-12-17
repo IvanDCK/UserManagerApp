@@ -8,5 +8,5 @@ import org.martarcas.usermanager.domain.repository.UserRepository
 class DeleteUserUseCase(
     private val userRepository: UserRepository
 ) {
-    suspend fun invoke(deleteUserRequest: DeleteUserRequest) = userRepository.deleteUser(deleteUserRequest)
+    suspend operator fun invoke(deleteUserRequest: DeleteUserRequest) = userRepository.deleteUser(deleteUserRequest)
 }

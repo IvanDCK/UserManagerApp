@@ -36,8 +36,10 @@ import org.martarcas.usermanager.presentation.components.AuthTextField
 import org.martarcas.usermanager.presentation.components.getPasswordVisibilityIcon
 import org.martarcas.usermanager.presentation.list.components.LogoutButton
 import org.martarcas.usermanager.presentation.profile.components.ChooseAvatarBottomSheet
+import org.martarcas.usermanager.presentation.profile.components.DeleteUserDialog
 import org.martarcas.usermanager.presentation.profile.components.ProfileButton
 import org.martarcas.usermanager.presentation.profile.components.UserAvatar
+import org.martarcas.usermanager.presentation.profile.model.DeleteDialogActions
 import org.martarcas.usermanager.presentation.profile.model.ProfileActions
 import org.martarcas.usermanager.presentation.profile.model.ProfileUiState
 import org.martarcas.usermanager.presentation.ui_utils.ClosedNight
@@ -79,12 +81,12 @@ fun ProfileScreen(profileViewModel: ProfileViewModel, navigateToLogin: () -> Uni
                 .statusBarsPadding(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
-        ) { ProfileScreenContent(uiState, profileViewModel) }
+        ) { ProfileScreenContent(uiState, profileViewModel, navigateToLogin) }
     }
 }
 
 @Composable
-fun ProfileScreenContent(uiState: ProfileUiState, profileViewModel: ProfileViewModel) {
+fun ProfileScreenContent(uiState: ProfileUiState, profileViewModel: ProfileViewModel, navigateToLogin: () -> Unit) {
 
     val loggedUser = uiState.loggedUser
 
@@ -98,6 +100,16 @@ fun ProfileScreenContent(uiState: ProfileUiState, profileViewModel: ProfileViewM
     when {
         uiState.isLoading -> {
             CircularProgressIndicator()
+        }
+
+        uiState.showRemoveAccountPopup -> {
+            DeleteUserDialog(
+                onConfirm = {
+                    profileViewModel.onDeleteDialogAction(DeleteDialogActions.OnConfirmClick)
+                    navigateToLogin()
+                },
+                onDismiss = { profileViewModel.onDeleteDialogAction(DeleteDialogActions.OnDismissClick) }
+            )
         }
 
         else -> {
@@ -201,20 +213,5 @@ fun ProfileScreenContent(uiState: ProfileUiState, profileViewModel: ProfileViewM
                 )
             }
         }
-    }
-}
-
-
-fun String.toDrawableProfileImage(): DrawableResource {
-    return when (this) {
-        "user_avatar0" -> return Res.drawable.user_avatar0
-        "user_avatar1" -> return Res.drawable.user_avatar1
-        "user_avatar2" -> return Res.drawable.user_avatar2
-        "user_avatar3" -> return Res.drawable.user_avatar3
-        "user_avatar4" -> return Res.drawable.user_avatar4
-        "user_avatar5" -> return Res.drawable.user_avatar5
-        "user_avatar6" -> return Res.drawable.user_avatar6
-        "user_avatar7" -> return Res.drawable.user_avatar7
-        else -> return Res.drawable.user_avatar0
     }
 }

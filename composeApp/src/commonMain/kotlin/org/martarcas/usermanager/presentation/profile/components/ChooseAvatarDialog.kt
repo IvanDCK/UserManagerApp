@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,7 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.martarcas.usermanager.presentation.profile.ProfileViewModel
-import org.martarcas.usermanager.presentation.profile.model.AvatarDialogActions
+import org.martarcas.usermanager.presentation.profile.model.AvatarBottomSheetActions
 import usermanagerapp.composeapp.generated.resources.Res
 import usermanagerapp.composeapp.generated.resources.user_avatar0
 import usermanagerapp.composeapp.generated.resources.user_avatar1
@@ -58,7 +57,7 @@ fun ChooseAvatarBottomSheet(profileViewModel: ProfileViewModel) {
     if (uiState.showAvatarChooserDialog) {
         ModalBottomSheet(
             sheetState = modalSheetState,
-            onDismissRequest = { profileViewModel.onAvatarDialogAction(AvatarDialogActions.OnDismissClick) },
+            onDismissRequest = { profileViewModel.onAvatarBottomSheetAction(AvatarBottomSheetActions.OnDismissClick) },
         ) {
             Column(
                 modifier = Modifier
@@ -82,8 +81,8 @@ fun ChooseAvatarBottomSheet(profileViewModel: ProfileViewModel) {
                                 .size(100.dp)
                                 .clip(RoundedCornerShape(15.dp))
                                 .clickable {
-                                    profileViewModel.onAvatarDialogAction(
-                                        AvatarDialogActions.OnSelectNewAvatar(
+                                    profileViewModel.onAvatarBottomSheetAction(
+                                        AvatarBottomSheetActions.OnSelectNewAvatar(
                                             "user_avatar$it"
                                         )
                                     )
@@ -91,11 +90,10 @@ fun ChooseAvatarBottomSheet(profileViewModel: ProfileViewModel) {
                         ) {
                             Image(
                                 modifier = Modifier.fillMaxSize(),
-                                painter = painterResource(avatarNameDispenser(it)),
+                                painter = painterResource(profileViewModel.avatarNameDispenser(it)),
                                 contentDescription = "image_avatar_chooser",
                                 contentScale = ContentScale.Crop
                             )
-                            println("AVATAR ID BOTTOM: ${uiState.avatarId}")
                             if (uiState.avatarId == "user_avatar$it") {
                                 Box(
                                     modifier = Modifier
@@ -117,19 +115,5 @@ fun ChooseAvatarBottomSheet(profileViewModel: ProfileViewModel) {
                 }
             }
         }
-    }
-}
-
-fun avatarNameDispenser(index: Int): DrawableResource {
-    return when (index) {
-        0 -> Res.drawable.user_avatar0
-        1 -> Res.drawable.user_avatar1
-        2 -> Res.drawable.user_avatar2
-        3 -> Res.drawable.user_avatar3
-        4 -> Res.drawable.user_avatar4
-        5 -> Res.drawable.user_avatar5
-        6 -> Res.drawable.user_avatar6
-        7 -> Res.drawable.user_avatar7
-        else -> Res.drawable.user_avatar0
     }
 }
