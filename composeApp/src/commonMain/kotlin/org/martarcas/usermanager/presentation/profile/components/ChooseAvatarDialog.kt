@@ -32,19 +32,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.martarcas.usermanager.presentation.profile.ProfileViewModel
 import org.martarcas.usermanager.presentation.profile.model.AvatarBottomSheetActions
-import usermanagerapp.composeapp.generated.resources.Res
-import usermanagerapp.composeapp.generated.resources.user_avatar0
-import usermanagerapp.composeapp.generated.resources.user_avatar1
-import usermanagerapp.composeapp.generated.resources.user_avatar2
-import usermanagerapp.composeapp.generated.resources.user_avatar3
-import usermanagerapp.composeapp.generated.resources.user_avatar4
-import usermanagerapp.composeapp.generated.resources.user_avatar5
-import usermanagerapp.composeapp.generated.resources.user_avatar6
-import usermanagerapp.composeapp.generated.resources.user_avatar7
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

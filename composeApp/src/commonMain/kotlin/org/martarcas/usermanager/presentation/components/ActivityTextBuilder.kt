@@ -47,7 +47,7 @@ fun ActivityTextBuilder(activityItem: ActivityUiModel): AnnotatedString {
 
             else -> {
                 appendStyledText(activityItem.userName, italicBoldStyle)
-                appendStyledText(" updated his personal information ", lightStyle)
+                appendStyledText(" updated their personal information ", lightStyle)
             }
         }
     }

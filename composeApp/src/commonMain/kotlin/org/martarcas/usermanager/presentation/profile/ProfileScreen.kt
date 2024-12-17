@@ -2,12 +2,14 @@ package org.martarcas.usermanager.presentation.profile
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
@@ -30,27 +32,20 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.martarcas.usermanager.presentation.components.AuthTextField
 import org.martarcas.usermanager.presentation.components.getPasswordVisibilityIcon
-import org.martarcas.usermanager.presentation.list.components.LogoutButton
 import org.martarcas.usermanager.presentation.profile.components.ChooseAvatarBottomSheet
+import org.martarcas.usermanager.presentation.profile.components.DeleteUserDialog
+import org.martarcas.usermanager.presentation.profile.components.LogoutButton
 import org.martarcas.usermanager.presentation.profile.components.ProfileButton
 import org.martarcas.usermanager.presentation.profile.components.UserAvatar
+import org.martarcas.usermanager.presentation.profile.components.UserHistoryButton
+import org.martarcas.usermanager.presentation.profile.model.DeleteDialogActions
 import org.martarcas.usermanager.presentation.profile.model.ProfileActions
 import org.martarcas.usermanager.presentation.profile.model.ProfileUiState
 import org.martarcas.usermanager.presentation.ui_utils.ClosedNight
 import org.martarcas.usermanager.presentation.ui_utils.Hazy
-import usermanagerapp.composeapp.generated.resources.Res
-import usermanagerapp.composeapp.generated.resources.user_avatar0
-import usermanagerapp.composeapp.generated.resources.user_avatar1
-import usermanagerapp.composeapp.generated.resources.user_avatar2
-import usermanagerapp.composeapp.generated.resources.user_avatar3
-import usermanagerapp.composeapp.generated.resources.user_avatar4
-import usermanagerapp.composeapp.generated.resources.user_avatar5
-import usermanagerapp.composeapp.generated.resources.user_avatar6
-import usermanagerapp.composeapp.generated.resources.user_avatar7
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -91,12 +86,14 @@ fun ProfileScreen(profileViewModel: ProfileViewModel, navigateToLogin: () -> Uni
                 .statusBarsPadding(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
-        ) { ProfileScreenContent(uiState, profileViewModel) }
+        ) { ProfileScreenContent(uiState, profileViewModel){
+            navigateToLogin()
+        } }
     }
 }
 
 @Composable
-fun ProfileScreenContent(uiState: ProfileUiState, profileViewModel: ProfileViewModel) {
+fun ProfileScreenContent(uiState: ProfileUiState, profileViewModel: ProfileViewModel, navigateToLogin: () -> Unit) {
 
     val loggedUser = uiState.loggedUser
 

@@ -8,15 +8,19 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import org.jetbrains.compose.resources.DrawableResource
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import org.martarcas.usermanager.data.remote.requests.DeleteUserRequest
 import org.martarcas.usermanager.data.remote.requests.UpdateUserRequest
+import org.martarcas.usermanager.domain.model.activity.ActivityLog
 import org.martarcas.usermanager.domain.model.response.onError
 import org.martarcas.usermanager.domain.model.response.onSuccess
 import org.martarcas.usermanager.domain.model.user.Role
 import org.martarcas.usermanager.domain.model.user.User
+import org.martarcas.usermanager.domain.use_cases.activity.CreateActivityLogUseCase
 import org.martarcas.usermanager.domain.use_cases.datastore.ReadUserUseCase
 import org.martarcas.usermanager.domain.use_cases.datastore.SaveRememberMeAndUserUseCase
 import org.martarcas.usermanager.domain.use_cases.user.DeleteUserUseCase
@@ -42,7 +46,8 @@ class ProfileViewModel(
     @Provided private val saveRememberMeAndUserUseCase: SaveRememberMeAndUserUseCase,
     @Provided private val readUserUseCase: ReadUserUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
-    private val deleteUserUseCase: DeleteUserUseCase
+    private val deleteUserUseCase: DeleteUserUseCase,
+    private val createActivityLogUseCase: CreateActivityLogUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -191,6 +196,17 @@ class ProfileViewModel(
                         )
                     }
                     updateSavedUser(newUserInfo)
+                    val firstName = _uiState.value.firstNameText
+                    val lastName = _uiState.value.lastNameText
+                    createActivityLog(
+                        ActivityLog(
+                            "$firstName $lastName",
+                            "UpdateUser",
+                            "none",
+                            "none",
+                            getCurrentTimestamp()
+                        )
+                    )
 
                 }
                 .onError { error ->
@@ -201,6 +217,12 @@ class ProfileViewModel(
                         )
                     }
                 }
+        }
+    }
+
+    private fun createActivityLog(activityLog: ActivityLog) {
+        viewModelScope.launch {
+            createActivityLogUseCase(activityLog)
         }
     }
 
@@ -281,5 +303,9 @@ class ProfileViewModel(
             errors.isEmpty(),
             errors
         )
+    }
+    private fun getCurrentTimestamp(): String {
+        val currentInstant: Instant = Clock.System.now()
+        return currentInstant.toEpochMilliseconds().toString()
     }
 }
