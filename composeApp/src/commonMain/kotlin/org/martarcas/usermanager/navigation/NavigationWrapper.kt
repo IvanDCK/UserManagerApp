@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -28,6 +29,8 @@ import org.martarcas.usermanager.presentation.login.LoginScreen
 import org.martarcas.usermanager.presentation.profile.ProfileScreen
 import org.martarcas.usermanager.presentation.profile.ProfileViewModel
 import org.martarcas.usermanager.presentation.signup.SignUpScreen
+import org.martarcas.usermanager.presentation.ui_utils.ClosedNight
+import org.martarcas.usermanager.presentation.ui_utils.MateBlack
 import org.martarcas.usermanager.presentation.user_history.UserHistoryScreen
 
 @Composable
@@ -41,7 +44,9 @@ fun NavigationWrapper(shouldStartFromList: Boolean) {
             if (currentRoute == "org.martarcas.usermanager.navigation.Destinations.List" || currentRoute == "org.martarcas.usermanager.navigation.Destinations.Activity" || currentRoute == "org.martarcas.usermanager.navigation.Destinations.Profile") {
                 BottomAppBar(
                     modifier = Modifier
-                        .height(80.dp)
+                        .height(80.dp),
+                    containerColor = MaterialTheme.colorScheme.background,
+                    tonalElevation = 3.dp
                 ) {
                     NavigationBarItems.entries.forEach { item ->
                         NavigationBarItem(

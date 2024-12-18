@@ -15,7 +15,6 @@ import usermanagerapp.composeapp.generated.resources.list_icon
 @Composable
 fun UserHistoryButton(navigateToUserHistory: () -> Unit) {
     MultipurposeButton(
-        modifier = Modifier.padding(end = 8.dp),
         onClick = {
             navigateToUserHistory()
         },

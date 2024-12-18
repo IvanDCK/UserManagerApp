@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,8 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
+import org.martarcas.usermanager.presentation.activity.components.FilterButton
 import org.martarcas.usermanager.presentation.activity.model.ActivityUiState
 import org.martarcas.usermanager.presentation.components.ActivityItem
+import org.martarcas.usermanager.presentation.components.ProgressLoading
 
 @Composable
 fun ActivityScreen() {
@@ -27,15 +31,22 @@ fun ActivityScreen() {
     val activityViewModel: ActivityViewModel = koinViewModel()
     val uiState by activityViewModel.uiState.collectAsStateWithLifecycle()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    Scaffold(
+        floatingActionButton = {
+            FilterButton(uiState, activityViewModel)
+        },
+        floatingActionButtonPosition = FabPosition.End
     ) {
-        ActivityScreenContent(
-            uiState = uiState
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ActivityScreenContent(
+                uiState = uiState
+            )
+        }
     }
 }
 
@@ -44,7 +55,7 @@ fun ActivityScreenContent(uiState: ActivityUiState) {
 
     when {
         uiState.isLoading -> {
-            CircularProgressIndicator()
+            ProgressLoading()
         }
 
         uiState.activityList.isNotEmpty() -> {

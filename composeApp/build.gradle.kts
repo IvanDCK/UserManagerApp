@@ -109,6 +109,11 @@ kotlin {
             implementation(libs.atomicfu)
             // Datetime
             implementation(libs.kotinx.datetime)
+            // Compottie animations
+            implementation(libs.compottie)
+            implementation(libs.compottie.dot)
+            implementation(libs.compottie.network)
+            implementation(libs.compottie.resources)
 
         }
 

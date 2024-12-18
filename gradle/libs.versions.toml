@@ -38,6 +38,7 @@ runner = "1.6.2"
 test-mockk = "1.13.12"
 media3CommonKtx = "1.5.0"
 datetime = "0.6.1"
+compottie="2.0.0-rc02"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -62,6 +63,11 @@ compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", ve
 core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashScreen" }
 kotinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime"}
+
+compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
+compottie-dot = { module = "io.github.alexzhirkevich:compottie-dot", version.ref = "compottie" }
+compottie-network = { module = "io.github.alexzhirkevich:compottie-network", version.ref = "compottie" }
+compottie-resources = { module = "io.github.alexzhirkevich:compottie-resources", version.ref = "compottie" }
 
 
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }

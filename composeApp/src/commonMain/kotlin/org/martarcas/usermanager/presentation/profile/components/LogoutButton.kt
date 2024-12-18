@@ -17,7 +17,7 @@ import usermanagerapp.composeapp.generated.resources.logout_light
 @Composable
 fun LogoutButton(profileViewModel: ProfileViewModel, navigateToLogin: () -> Unit) {
     MultipurposeButton(
-        modifier = Modifier.padding(end = 8.dp),
+        modifier = Modifier.padding(end = 12.dp),
         onClick = {
             profileViewModel.onProfileAction(ProfileActions.OnLogoutButtonClick)
             navigateToLogin()

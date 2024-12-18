@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.stringResource
 import org.martarcas.usermanager.domain.model.user.Role
 import org.martarcas.usermanager.domain.model.user.User
+import org.martarcas.usermanager.presentation.components.ProgressLoading
 import org.martarcas.usermanager.presentation.list.components.ListSearchBar
 import org.martarcas.usermanager.presentation.list.components.RoleButton
 import org.martarcas.usermanager.presentation.list.components.SortButton
@@ -63,9 +64,6 @@ fun UserListScreenRoot(
             }
             viewModel.onAction(action)
         },
-        onBottomSheetAction = { action ->
-            viewModel.onBottomSheetAction(action)
-        },
     )
 }
 
@@ -75,7 +73,6 @@ fun UserListScreen(
     sortAscending: Boolean,
     state: UserListState,
     onAction: (UserListAction) -> Unit,
-    onBottomSheetAction: (UpdateInfoBottomSheetActions) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -136,7 +133,7 @@ fun UserListScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CircularProgressIndicator()
+                ProgressLoading()
             }
         } else {
             when {

@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.painterResource
 import org.martarcas.usermanager.presentation.components.AuthTextField
+import org.martarcas.usermanager.presentation.components.ProgressLoading
 import org.martarcas.usermanager.presentation.components.getPasswordVisibilityIcon
 import org.martarcas.usermanager.presentation.profile.components.ChooseAvatarBottomSheet
 import org.martarcas.usermanager.presentation.profile.components.DeleteUserDialog
@@ -56,21 +57,11 @@ fun ProfileScreen(profileViewModel: ProfileViewModel, navigateToLogin: () -> Uni
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {},
+                title = {
+                    UserHistoryButton(navigateToUserHistory)
+                },
                 actions = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-                        UserHistoryButton(navigateToUserHistory)
-
-                        Spacer(modifier = Modifier.width(20.dp))
-
-                        LogoutButton(profileViewModel, navigateToLogin)
-
-                    }
+                    LogoutButton(profileViewModel, navigateToLogin)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
@@ -106,7 +97,7 @@ fun ProfileScreenContent(uiState: ProfileUiState, profileViewModel: ProfileViewM
 
     when {
         uiState.isLoading -> {
-            CircularProgressIndicator()
+            ProgressLoading()
         }
 
         uiState.showRemoveAccountPopup -> {
