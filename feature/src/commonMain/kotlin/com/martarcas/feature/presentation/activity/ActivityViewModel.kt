@@ -7,6 +7,7 @@ import com.martarcas.domain.model.response.onSuccess
 import com.martarcas.domain.use_cases.activity.GetAllActivityLogsUseCase
 import com.martarcas.domain.use_cases.datastore.ReadUserUseCase
 import com.martarcas.feature.mappers.toActivityUiModel
+import com.martarcas.feature.presentation.activity.model.ActivityActions
 import com.martarcas.feature.presentation.activity.model.ActivityUiState
 import com.martarcas.feature.presentation.ui_utils.toUiText
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,9 +53,9 @@ class ActivityViewModel(
     }
 
 
-    fun onAction(action: com.martarcas.feature.presentation.activity.model.ActivityActions) {
+    fun onAction(action: ActivityActions) {
         when (action) {
-            is com.martarcas.feature.presentation.activity.model.ActivityActions.OnFilterByOwnLogsButtonClick -> {
+            is ActivityActions.OnFilterByOwnLogsButtonClick -> {
                 updateState { copy(filterByOwnLogs = !filterByOwnLogs) }
                 handleActivityListFiltered()
             }

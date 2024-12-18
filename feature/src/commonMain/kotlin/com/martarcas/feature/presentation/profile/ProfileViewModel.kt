@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alejandroarcas.core.requests.DeleteUserRequest
 import com.alejandroarcas.core.requests.UpdateUserRequest
+import com.alejandroarcas.core.requests.activity.CreateActivityLogRequest
 import com.martarcas.domain.model.activity.ActivityLog
 import com.martarcas.domain.model.response.onError
 import com.martarcas.domain.model.response.onSuccess
@@ -200,12 +201,11 @@ class ProfileViewModel(
                     val firstName = _uiState.value.firstNameText
                     val lastName = _uiState.value.lastNameText
                     createActivityLog(
-                        ActivityLog(
+                        CreateActivityLogRequest(
                             "$firstName $lastName",
                             "UpdateUser",
                             "none",
-                            "none",
-                            getCurrentTimestamp()
+                            "none"
                         )
                     )
 
@@ -221,7 +221,7 @@ class ProfileViewModel(
         }
     }
 
-    private fun createActivityLog(activityLog: ActivityLog) {
+    private fun createActivityLog(activityLog: CreateActivityLogRequest) {
         viewModelScope.launch {
             createActivityLogUseCase(activityLog)
         }

@@ -22,7 +22,7 @@ import io.ktor.client.request.setBody
 import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
 
-private const val BASE_URL = "http://10.0.2.2:8080" //  192.168.1.19   -    10.0.2.2
+private const val BASE_URL = "http://192.168.1.19:8080" //  192.168.1.19   -    10.0.2.2
 
 @Single
 class UserApiImpl(

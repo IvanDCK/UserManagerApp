@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alejandroarcas.core.requests.DeleteUserRequest
 import com.alejandroarcas.core.requests.UpdateRoleRequest
+import com.alejandroarcas.core.requests.activity.CreateActivityLogRequest
 import com.martarcas.domain.model.activity.ActivityLog
 import com.martarcas.domain.model.response.onError
 import com.martarcas.domain.model.response.onSuccess
@@ -380,12 +381,11 @@ class UserListViewModel(
                 }
                 getAllUsers()
                 createActivityLog(
-                    ActivityLog(
+                    CreateActivityLogRequest(
                         fullName,
                         "DeleteUser",
                         "none",
                         fullTargetName,
-                        getCurrentTimestamp()
                     )
                 )
             }
@@ -412,12 +412,11 @@ class UserListViewModel(
             .onSuccess {
                 getAllUsers()
                 createActivityLog(
-                    ActivityLog(
+                    CreateActivityLogRequest(
                         fullName,
                         "ChangeRole",
                         role.name,
                         fullTargetName,
-                        getCurrentTimestamp()
                     )
                 )
             }
@@ -435,7 +434,7 @@ class UserListViewModel(
                 " " + cachedUsers.first { it.id == userId }.surname
     }
 
-    private fun createActivityLog(activityLog: ActivityLog) {
+    private fun createActivityLog(activityLog: CreateActivityLogRequest) {
         viewModelScope.launch {
             createActivityLogUseCase(activityLog)
         }

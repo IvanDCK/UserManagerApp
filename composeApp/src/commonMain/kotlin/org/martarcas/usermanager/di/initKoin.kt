@@ -21,6 +21,5 @@ fun initKoin(config: KoinAppDeclaration? = null) {
             PresentationModule().module,
             AppVMModule().module
         )
-       // printLogger(Level.DEBUG)
     }
 }

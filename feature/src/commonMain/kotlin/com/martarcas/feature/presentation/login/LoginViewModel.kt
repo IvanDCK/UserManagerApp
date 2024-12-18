@@ -2,14 +2,13 @@ package com.martarcas.feature.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alejandroarcas.core.requests.auth.LoginUserRequest
 import com.martarcas.domain.model.response.onError
 import com.martarcas.domain.model.response.onSuccess
 import com.martarcas.domain.model.user.User
 import com.martarcas.domain.use_cases.auth.LoginRequestUseCase
 import com.martarcas.domain.use_cases.datastore.SaveRememberMeAndUserUseCase
-import com.martarcas.feature.mappers.toDomainUser
 import com.martarcas.feature.presentation.login.model.LoginActions
-import com.martarcas.feature.presentation.login.model.LoginUiModel
 import com.martarcas.feature.presentation.login.model.LoginUiState
 import com.martarcas.feature.presentation.signup.model.ValidationResult
 import com.martarcas.feature.presentation.ui_utils.toUiText
@@ -64,9 +63,9 @@ class LoginViewModel(
         if (validationResult.isValid) {
             viewModelScope.launch {
 
-                val loginUserModel = LoginUiModel(email, password).toDomainUser()
+                val loginUserRequest = LoginUserRequest(email, password)
 
-                loginRequestUseCase(loginUserModel).onSuccess { userResponse ->
+                loginRequestUseCase(loginUserRequest).onSuccess { userResponse ->
                     if (uiState.value.rememberMeIsChecked) {
                         saveRememberMeAndUser(true, userResponse)
                     } else {

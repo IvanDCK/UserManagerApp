@@ -2,14 +2,14 @@ package com.martarcas.feature.presentation.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alejandroarcas.core.requests.activity.CreateActivityLogRequest
+import com.alejandroarcas.core.requests.auth.CreateUserRequest
 import com.martarcas.domain.model.activity.ActivityLog
 import com.martarcas.domain.model.response.onError
 import com.martarcas.domain.model.response.onSuccess
 import com.martarcas.domain.use_cases.activity.CreateActivityLogUseCase
 import com.martarcas.domain.use_cases.auth.SignUpRequestUseCase
-import com.martarcas.feature.mappers.toDomainUser
 import com.martarcas.feature.presentation.signup.model.SignupActions
-import com.martarcas.feature.presentation.signup.model.SignupUiModel
 import com.martarcas.feature.presentation.signup.model.SignupUiState
 import com.martarcas.feature.presentation.signup.model.ValidationResult
 import com.martarcas.feature.presentation.ui_utils.toUiText
@@ -72,24 +72,23 @@ class SignUpViewModel(
             val firstName = _uiState.value.firstName
             val lastName = _uiState.value.lastName
             viewModelScope.launch {
-                val userModel = SignupUiModel(
-                    firstName = firstName,
-                    lastName = lastName,
+                val userModel = CreateUserRequest(
+                    name = firstName,
+                    surname = lastName,
                     email = _uiState.value.email,
                     password = _uiState.value.password,
                     avatarId = _uiState.value.avatarId
-                ).toDomainUser()
+                )
 
                 val response = signUpRequestUseCase(userModel)
 
                 response.onSuccess {
                     createActivityLog(
-                        ActivityLog(
+                        CreateActivityLogRequest(
                             "$firstName $lastName",
                             "CreatedUser",
                             "none",
-                            "none",
-                            getCurrentTimestamp()
+                            "none"
                         )
                     )
                     updateField { copy(shouldNavigateToLogin = true) }
@@ -149,7 +148,7 @@ class SignUpViewModel(
         updateField { copy(isLoadingOnClick = false) }
     }
 
-    private fun createActivityLog(activityLog: ActivityLog) {
+    private fun createActivityLog(activityLog: CreateActivityLogRequest) {
         viewModelScope.launch {
             createActivityLogUseCase(activityLog)
         }
