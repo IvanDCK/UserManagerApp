@@ -5,8 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import org.koin.compose.viewmodel.koinViewModel
-import org.martarcas.usermanager.presentation.app.App
-import org.martarcas.usermanager.presentation.app.AppViewModel
+import org.martarcas.usermanager.presentation.App
+import org.martarcas.usermanager.presentation.AppViewModel
 
 class MainActivity : ComponentActivity() {
 

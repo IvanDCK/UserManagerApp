@@ -15,7 +15,7 @@ plugins {
 
     alias(libs.plugins.jetbrains.kotlin.serialization)
     alias(libs.plugins.ksp)
-    
+
     alias(libs.plugins.cocoapods)
 
     //alias(libs.plugins.roborazzi)
@@ -66,9 +66,9 @@ kotlin {
         }
 
     }
-    
+
     sourceSets {
-        
+
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -115,6 +115,13 @@ kotlin {
             implementation(libs.compottie.network)
             implementation(libs.compottie.resources)
 
+            // Feature dependency
+            implementation(project("::feature"))
+            // Domain dependency
+            implementation(project("::domain"))
+            // Data dependency
+            implementation(project("::data"))
+
         }
 
         commonTest.dependencies {
@@ -137,7 +144,7 @@ kotlin {
 
 
             // Doesn't work
-           // implementation(libs.robolectric)
+            // implementation(libs.robolectric)
             //implementation(libs.roborazzi)
             //implementation(libs.roborazzi.compose)
             //implementation(libs.roborazzi.rule)
@@ -150,7 +157,7 @@ kotlin {
         }
     }
     // KSP Common SourceSet
-    sourceSets.named("commonMain").configure{
+    sourceSets.named("commonMain").configure {
         kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
     }
 }
@@ -164,9 +171,10 @@ dependencies {
     add("kspIosSimulatorArm64", libs.koin.ksp.compiler)
 }
 
+
 // KSP Metadata Trigger
 project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
-    if(name != "kspCommonMainKotlinMetadata") {
+    if (name != "kspCommonMainKotlinMetadata") {
         dependsOn("kspCommonMainKotlinMetadata")
     }
 }
@@ -225,7 +233,13 @@ android {
         }
         unitTests.all { test ->
             test.testLogging {
-                events.addAll(listOf(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED))
+                events.addAll(
+                    listOf(
+                        TestLogEvent.FAILED,
+                        TestLogEvent.PASSED,
+                        TestLogEvent.SKIPPED
+                    )
+                )
                 showCauses = true
                 showExceptions = true
                 exceptionFormat = TestExceptionFormat.FULL

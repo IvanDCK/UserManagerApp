@@ -6,7 +6,7 @@ import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.okhttp.OkHttp
 import org.koin.core.module.Module
 import org.koin.dsl.module
-import org.martarcas.usermanager.data.local.model.createDataStore
+import com.martarcas.data.local.model.createDataStore
 
 
 actual val platformModule: Module

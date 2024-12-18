@@ -21,17 +21,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.martarcas.feature.activity.ActivityScreen
+import com.martarcas.feature.list.UserListScreenRoot
+import com.martarcas.feature.list.UserListViewModel
+import com.martarcas.feature.login.LoginScreen
+import com.martarcas.feature.profile.ProfileScreen
+import com.martarcas.feature.profile.ProfileViewModel
+import com.martarcas.feature.signup.SignUpScreen
+import com.martarcas.feature.user_history.UserHistoryScreen
 import org.koin.compose.viewmodel.koinViewModel
-import org.martarcas.usermanager.presentation.activity.ActivityScreen
-import org.martarcas.usermanager.presentation.list.UserListScreenRoot
-import org.martarcas.usermanager.presentation.list.UserListViewModel
-import org.martarcas.usermanager.presentation.login.LoginScreen
-import org.martarcas.usermanager.presentation.profile.ProfileScreen
-import org.martarcas.usermanager.presentation.profile.ProfileViewModel
-import org.martarcas.usermanager.presentation.signup.SignUpScreen
-import org.martarcas.usermanager.presentation.ui_utils.ClosedNight
-import org.martarcas.usermanager.presentation.ui_utils.MateBlack
-import org.martarcas.usermanager.presentation.user_history.UserHistoryScreen
 
 @Composable
 fun NavigationWrapper(shouldStartFromList: Boolean) {
