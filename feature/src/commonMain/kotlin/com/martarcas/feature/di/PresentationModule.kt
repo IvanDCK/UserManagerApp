@@ -5,5 +5,5 @@ import org.koin.core.annotation.Module
 
 
 @Module
-@ComponentScan("org.martarcas.feature")
+@ComponentScan("com.martarcas.feature.presentation")
 class PresentationModule

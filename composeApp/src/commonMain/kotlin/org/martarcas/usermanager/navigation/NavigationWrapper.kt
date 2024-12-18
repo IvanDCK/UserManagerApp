@@ -21,14 +21,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.martarcas.feature.activity.ActivityScreen
-import com.martarcas.feature.list.UserListScreenRoot
-import com.martarcas.feature.list.UserListViewModel
-import com.martarcas.feature.login.LoginScreen
-import com.martarcas.feature.profile.ProfileScreen
-import com.martarcas.feature.profile.ProfileViewModel
-import com.martarcas.feature.signup.SignUpScreen
-import com.martarcas.feature.user_history.UserHistoryScreen
+import com.martarcas.feature.presentation.activity.ActivityScreen
+import com.martarcas.feature.presentation.list.UserListScreenRoot
+import com.martarcas.feature.presentation.list.UserListViewModel
+import com.martarcas.feature.presentation.login.LoginScreen
+import com.martarcas.feature.presentation.profile.ProfileScreen
+import com.martarcas.feature.presentation.profile.ProfileViewModel
+import com.martarcas.feature.presentation.signup.SignUpScreen
+import com.martarcas.feature.presentation.user_history.UserHistoryScreen
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

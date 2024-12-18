@@ -4,6 +4,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performTextInput
+import com.martarcas.domain.use_cases.activity.CreateActivityLogUseCase
+import com.martarcas.domain.use_cases.auth.SignUpRequestUseCase
+import com.martarcas.domain.use_cases.datastore.ReadRememberMeUseCase
+import com.martarcas.domain.use_cases.datastore.ReadUserUseCase
+import com.martarcas.domain.use_cases.datastore.SaveRememberMeAndUserUseCase
+import com.martarcas.feature.presentation.signup.SignUpContent
+import com.martarcas.feature.presentation.signup.SignUpViewModel
+import com.martarcas.feature.presentation.signup.model.SignupActions
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
@@ -17,14 +25,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.Rule
-import org.martarcas.usermanager.domain.use_cases.auth.SignUpRequestUseCase
-import org.martarcas.usermanager.domain.use_cases.datastore.ReadRememberMeUseCase
-import org.martarcas.usermanager.domain.use_cases.datastore.ReadUserUseCase
-import org.martarcas.usermanager.domain.use_cases.datastore.SaveRememberMeAndUserUseCase
-import org.martarcas.usermanager.presentation.app.AppViewModel
-import org.martarcas.usermanager.presentation.signup.SignUpContent
-import org.martarcas.usermanager.presentation.signup.SignUpViewModel
-import org.martarcas.usermanager.presentation.signup.model.SignupActions
+import org.martarcas.usermanager.presentation.AppViewModel
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -46,6 +47,8 @@ class SignUpViewModelTest {
 
     @MockK
     lateinit var saveRememberMeAndUserUseCase: SaveRememberMeAndUserUseCase
+    @MockK
+    lateinit var createActivityLogUseCase: CreateActivityLogUseCase
 
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -74,6 +77,7 @@ class SignUpViewModelTest {
         )
         signUpViewModel = SignUpViewModel(
             signUpRequestUseCase = signUpRequestUseCase,
+            createActivityLogUseCase = createActivityLogUseCase
         )
     }
 

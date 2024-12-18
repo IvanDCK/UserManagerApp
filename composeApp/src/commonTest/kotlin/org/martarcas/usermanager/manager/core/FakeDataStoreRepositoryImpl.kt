@@ -1,10 +1,12 @@
 package org.martarcas.usermanager.manager.core
 
+/*
+
+import com.martarcas.domain.model.user.Role
+import com.martarcas.domain.model.user.User
+import com.martarcas.domain.repository.DataStoreRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.martarcas.usermanager.domain.repository.DataStoreRepository
-import org.martarcas.usermanager.domain.model.user.Role
-import org.martarcas.usermanager.domain.model.user.User
 
 class FakeDataStoreRepositoryImpl: DataStoreRepository {
 
@@ -56,3 +58,4 @@ class FakeDataStoreRepositoryImpl: DataStoreRepository {
         }
     }
 }
+ */

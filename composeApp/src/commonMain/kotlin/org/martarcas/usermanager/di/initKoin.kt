@@ -1,9 +1,9 @@
 package org.martarcas.usermanager.di
 
-import com.martarcas.di.DataModule
-import com.martarcas.di.DomainModule
-import com.martarcas.di.databaseModule
-import com.martarcas.di.datastoreModule
+import com.martarcas.data.di.DataModule
+import com.martarcas.data.di.databaseModule
+import com.martarcas.data.di.datastoreModule
+import com.martarcas.domain.di.DomainModule
 import com.martarcas.feature.di.PresentationModule
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
@@ -19,6 +19,7 @@ fun initKoin(config: KoinAppDeclaration? = null) {
             DataModule().module,
             DomainModule().module,
             PresentationModule().module,
+            AppVMModule().module
         )
        // printLogger(Level.DEBUG)
     }

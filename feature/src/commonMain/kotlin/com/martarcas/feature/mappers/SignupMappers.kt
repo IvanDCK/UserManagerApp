@@ -2,7 +2,7 @@ package com.martarcas.feature.mappers
 
 import com.martarcas.domain.model.user.Role
 import com.martarcas.domain.model.user.User
-import com.martarcas.feature.signup.model.SignupUiModel
+import com.martarcas.feature.presentation.signup.model.SignupUiModel
 
 fun SignupUiModel.toDomainUser(): User {
     return User(

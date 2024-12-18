@@ -1,6 +1,25 @@
 package org.martarcas.usermanager
 
 import android.app.Application
+import com.martarcas.data.di.databaseModule
+import com.martarcas.data.di.datastoreModule
+import com.martarcas.data.remote.network.UserApi
+import com.martarcas.data.remote.network.UserApiImpl
+import com.martarcas.data.remote.repository.UserRepositoryImpl
+import com.martarcas.domain.repository.UserRepository
+import com.martarcas.domain.use_cases.activity.CreateActivityLogUseCase
+import com.martarcas.domain.use_cases.auth.LoginRequestUseCase
+import com.martarcas.domain.use_cases.auth.SignUpRequestUseCase
+import com.martarcas.domain.use_cases.datastore.ReadRememberMeUseCase
+import com.martarcas.domain.use_cases.datastore.ReadUserUseCase
+import com.martarcas.domain.use_cases.datastore.SaveRememberMeAndUserUseCase
+import com.martarcas.domain.use_cases.user.DeleteUserUseCase
+import com.martarcas.domain.use_cases.user.GetAllUsersUseCase
+import com.martarcas.domain.use_cases.user.UpdateRoleUseCase
+import com.martarcas.domain.use_cases.user.UpdateUserUseCase
+import com.martarcas.feature.presentation.list.UserListViewModel
+import com.martarcas.feature.presentation.login.LoginViewModel
+import com.martarcas.feature.presentation.signup.SignUpViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.getKoinApplicationOrNull
 import org.koin.core.context.startKoin
@@ -8,27 +27,8 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.martarcas.usermanager.data.remote.network.UserApi
-import org.martarcas.usermanager.data.remote.network.UserApiImpl
-import org.martarcas.usermanager.data.remote.repository.UserRepositoryImpl
-import org.martarcas.usermanager.di.databaseModule
-import org.martarcas.usermanager.di.datastoreModule
 import org.martarcas.usermanager.di.platformModule
-import org.martarcas.usermanager.domain.repository.UserRepository
-import org.martarcas.usermanager.domain.use_cases.activity.CreateActivityLogUseCase
-import org.martarcas.usermanager.domain.use_cases.auth.LoginRequestUseCase
-import org.martarcas.usermanager.domain.use_cases.auth.SignUpRequestUseCase
-import org.martarcas.usermanager.domain.use_cases.datastore.ReadRememberMeUseCase
-import org.martarcas.usermanager.domain.use_cases.datastore.ReadUserUseCase
-import org.martarcas.usermanager.domain.use_cases.datastore.SaveRememberMeAndUserUseCase
-import org.martarcas.usermanager.domain.use_cases.user.DeleteUserUseCase
-import org.martarcas.usermanager.domain.use_cases.user.GetAllUsersUseCase
-import org.martarcas.usermanager.domain.use_cases.user.UpdateRoleUseCase
-import org.martarcas.usermanager.domain.use_cases.user.UpdateUserUseCase
-import org.martarcas.usermanager.presentation.app.AppViewModel
-import org.martarcas.usermanager.presentation.list.UserListViewModel
-import org.martarcas.usermanager.presentation.login.LoginViewModel
-import org.martarcas.usermanager.presentation.signup.SignUpViewModel
+import org.martarcas.usermanager.presentation.AppViewModel
 
 class TestApplication : Application() {
     override fun onCreate() {

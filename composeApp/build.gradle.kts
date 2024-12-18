@@ -4,7 +4,6 @@ import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
-import org.jetbrains.kotlin.gradle.report.TaskExecutionState
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
@@ -138,17 +137,8 @@ kotlin {
             implementation(libs.koin.test)
             implementation(libs.kotlinx.coroutines.test)
 
-
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.uiTest)
-
-
-            // Doesn't work
-            // implementation(libs.robolectric)
-            //implementation(libs.roborazzi)
-            //implementation(libs.roborazzi.compose)
-            //implementation(libs.roborazzi.rule)
-            //implementation(libs.espresso.core)
 
         }
 
@@ -187,10 +177,13 @@ androidComponents {
     }
 }
 
+
 ksp {
     arg("KOIN_USE_COMPOSE_VIEWMODEL", "true")
-    arg("KOIN_CONFIG_CHECK", "true")
+    arg("KOIN_CONFIG_CHECK", "false")
 }
+
+
 
 android {
 

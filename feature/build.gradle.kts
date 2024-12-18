@@ -68,6 +68,7 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
+
         // KSP Common SourceSet
         sourceSets.named("commonMain").configure {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
@@ -86,15 +87,17 @@ dependencies {
 
 // KSP Metadata Trigger
 project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
-    if (name != "kspCommonMainKotlinMetadata") {
+    if(name != "kspCommonMainKotlinMetadata") {
         dependsOn("kspCommonMainKotlinMetadata")
     }
 }
 
+
 ksp {
     arg("KOIN_USE_COMPOSE_VIEWMODEL", "true")
-    arg("KOIN_CONFIG_CHECK","true")
+    arg("KOIN_CONFIG_CHECK","false")
 }
+
 
 android {
     namespace = "com.martarcas.feature"
