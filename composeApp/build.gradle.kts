@@ -116,10 +116,8 @@ kotlin {
 
             // Feature dependency
             implementation(project("::feature"))
-            // Domain dependency
-            implementation(project("::domain"))
-            // Data dependency
-            implementation(project("::data"))
+            // Di dependency
+            implementation(project("::core-di"))
 
         }
 
@@ -140,10 +138,6 @@ kotlin {
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.uiTest)
 
-        }
-
-        nativeMain.dependencies {
-            implementation(libs.ktor.client.darwin)
         }
     }
     // KSP Common SourceSet

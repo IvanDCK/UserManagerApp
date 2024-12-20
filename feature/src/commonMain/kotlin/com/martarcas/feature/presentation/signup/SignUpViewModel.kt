@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alejandroarcas.core.requests.activity.CreateActivityLogRequest
 import com.alejandroarcas.core.requests.auth.CreateUserRequest
-import com.martarcas.domain.model.activity.ActivityLog
 import com.martarcas.domain.model.response.onError
 import com.martarcas.domain.model.response.onSuccess
 import com.martarcas.domain.use_cases.activity.CreateActivityLogUseCase

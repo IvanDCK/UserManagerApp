@@ -1,4 +1,4 @@
-package com.martarcas.data.di
+package com.martarcas.di.data
 
 import com.martarcas.data.local.DataStoreRepositoryImpl
 import com.martarcas.data.local.model.createDataStore

@@ -1,4 +1,4 @@
-package com.martarcas.feature.di
+package com.martarcas.di.presentation
 
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module

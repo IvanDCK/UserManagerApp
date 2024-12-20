@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import com.martarcas.feature.presentation.AppViewModel
 import com.martarcas.feature.presentation.ui_utils.DarkColorScheme
 import com.martarcas.feature.presentation.ui_utils.LightColorScheme
 import org.koin.compose.viewmodel.koinViewModel

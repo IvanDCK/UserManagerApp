@@ -1,4 +1,4 @@
-package org.martarcas.usermanager.presentation
+package com.martarcas.feature.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,4 +1,4 @@
-package com.martarcas.data.di
+package com.martarcas.di.data
 
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module

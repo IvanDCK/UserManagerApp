@@ -1,4 +1,4 @@
-package org.martarcas.usermanager.di
+package com.martarcas.di
 
 import org.koin.core.module.Module
 

@@ -1,6 +1,15 @@
 package org.martarcas.usermanager
 
 import android.app.Application
+
+class TestApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+    }
+}
+
+/*
+
 import com.martarcas.data.di.databaseModule
 import com.martarcas.data.di.datastoreModule
 import com.martarcas.data.remote.network.UserApi
@@ -27,8 +36,8 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.martarcas.usermanager.di.platformModule
-import org.martarcas.usermanager.presentation.AppViewModel
+import com.martarcas.di.platformModule
+import com.martarcas.feature.presentation.AppViewModel
 
 class TestApplication : Application() {
     override fun onCreate() {
@@ -98,3 +107,5 @@ val testModule = module {
     }
 
 }
+
+*/

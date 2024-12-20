@@ -1,4 +1,4 @@
-package org.martarcas.usermanager.di
+package com.martarcas.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

@@ -1,4 +1,4 @@
-package com.martarcas.data.di
+package com.martarcas.di.data
 
 import com.martarcas.data.remote.HttpClientFactory
 import org.koin.dsl.module
